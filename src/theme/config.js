@@ -8,7 +8,7 @@ const config = defineConfig({
           50: "#1D4ED8", //blue
           100: "#9D9D9D", //dark grey
           200: "#000000", //black
-          300: "#D9D9D9", //light grey
+          300: "#D9D9D9", //light grey (logo)
           400: "#FFFFFF", //white
           500: "#EF5D60", //primary
         },
@@ -24,6 +24,10 @@ const config = defineConfig({
     },
   },
   globalCss: {
+    "*": {
+      margin: 0,
+      padding: 0,
+    },
     body: {
       fontFamily: "Inter, sans-serif",
     },
