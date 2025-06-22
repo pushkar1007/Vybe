@@ -11,9 +11,11 @@ import Profile from "./pages/Profile";
 import VybeHighlights from "./components/common/VybeHighlights";
 import ProtectedRoute from "./components/common/ProtectedRoute";
 import Auth from "./pages/Auth";
+import { useAuth } from "./context/AuthContext";
 
 function App() {
 
+  const { user } = useAuth();
   const location = useLocation();
 
   const hideVybeHighlights = ["/explore"];
