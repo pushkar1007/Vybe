@@ -8,6 +8,9 @@ import VybCirclesIcon from "../icons/VybCirclesIcon";
 import RenderLink from "../ui/RenderLink";
 import SpinnerBtn from "../ui/SpinnerBtn";
 import { Link } from "react-router-dom";
+import { useAuth } from "../../context/AuthContext";
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 const SideMenu = () => {
   const sideMenuLinks = [
@@ -43,6 +46,28 @@ const SideMenu = () => {
     },
   ];
 
+  const [postLoading, setPostLoading] = useState(false);
+  const [logoutLoading, setLogoutLoading] = useState(false);
+  const navigate = useNavigate();
+
+  const { logoutUser } = useAuth();
+
+  const handleLogoutClick = () => {
+    setLogoutLoading(true);
+    setTimeout(() => {
+      logoutUser();
+      setLogoutLoading(false);
+      navigate("/auth");
+    }, 1000);
+  };
+
+  const handlePostClick = () => {
+    setPostLoading(true);
+    setTimeout(() => {
+      setPostLoading(false);
+    }, 1000);
+  };
+
   return (
     <Stack
       bg="brand.500"
@@ -61,8 +86,23 @@ const SideMenu = () => {
           </Link>
         ))}
       </Box>
-      <SpinnerBtn text="Profile" fontSize="16px" fontWeight="bold" />
-      <SpinnerBtn text="Logout" mt="12px" fontSize="16px" fontWeight="bold" />
+      <SpinnerBtn
+        text="Post"
+        fontSize="16px"
+        fontWeight="bold"
+        onClick={handlePostClick}
+        isDisabled={postLoading}
+        loading={postLoading}
+      />
+      <SpinnerBtn
+        text="Logout"
+        mt="12px"
+        fontSize="16px"
+        fontWeight="bold"
+        onClick={handleLogoutClick}
+        isDisabled={logoutLoading}
+        loading={logoutLoading}
+      />
     </Stack>
   );
 };

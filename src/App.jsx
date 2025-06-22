@@ -9,6 +9,8 @@ import VyBuds from "./pages/VyBuds";
 import VybCircles from "./pages/VybCircles";
 import Profile from "./pages/Profile";
 import VybeHighlights from "./components/common/VybeHighlights";
+import ProtectedRoute from "./components/common/ProtectedRoute";
+import Auth from "./pages/Auth";
 
 function App() {
 
@@ -17,20 +19,73 @@ function App() {
   const hideVybeHighlights = ["/explore"];
   const shouldHideVybeHighlights = hideVybeHighlights.includes(location.pathname);
 
+  if (!user) {
+    return (
+      <Routes>
+        <Route path="/auth" element={<Auth/>} />
+      </Routes>
+    );
+  }
+
   return (
     <>
       <Header />
-      <HStack alignItems="normal" justifyContent="space-between" h="calc(100vh -115px)"> 
-        <SideMenu  />
+      <HStack
+        alignItems="normal"
+        justifyContent="space-between"
+        h="calc(100vh -115px)"
+      >
+        <SideMenu />
         <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/notifications" element={<Notifications />} />
-          <Route path="/explore" element={<Explore />} />
-          <Route path="/vybuds" element={<VyBuds />} />
-          <Route path="/vybcircles" element={<VybCircles />} />
-          <Route path="/profile" element={<Profile />} />
+          <Route
+            path="/"
+            element={
+              <ProtectedRoute>
+                <Home />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/notifications"
+            element={
+              <ProtectedRoute>
+                <Notifications />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/explore"
+            element={
+              <ProtectedRoute>
+                <Explore />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/vybuds"
+            element={
+              <ProtectedRoute>
+                <VyBuds />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/vybcircles"
+            element={
+              <ProtectedRoute>
+                <VybCircles />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/profile"
+            element={
+                <Profile />
+              
+            }
+          />
         </Routes>
-        {!shouldHideVybeHighlights && <VybeHighlights/>}
+        {!shouldHideVybeHighlights && <VybeHighlights />}
       </HStack>
     </>
   );
