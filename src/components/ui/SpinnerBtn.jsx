@@ -24,7 +24,7 @@ const SpinnerBtn = ({ text, ...props }) => {
       spinnerPlacement="start"
       height="4opx"
       width="138px"
-      mr="35px"
+      mr="50px"
       rounded="full"
       bg="white"
       color="black"

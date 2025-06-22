@@ -20,7 +20,7 @@ function App() {
   return (
     <>
       <Header />
-      <HStack alignItems="normal" justifyContent="space-between"> 
+      <HStack alignItems="normal" justifyContent="space-between" h="calc(100vh -115px)"> 
         <SideMenu  />
         <Routes>
           <Route path="/" element={<Home />} />

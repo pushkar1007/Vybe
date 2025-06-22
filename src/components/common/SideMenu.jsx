@@ -46,11 +46,15 @@ const SideMenu = () => {
   return (
     <Stack
       bg="brand.500"
-      w="272px"
+      w="350px"
+      minH="calc(100vh - 115px)"
+      maxH="calc(100vh - 115px)"
       alignItems="end"
-      height="calc(100vh - 115px)"
+      position="sticky"
+      py={4}
+      overflow="auto"
     >
-      <Box mr="18px" key="navlinks">
+      <Box mr="30px" key="navlinks">
         {sideMenuLinks.map((sideMenu) => (
           <Link to={sideMenu.link}>
             <RenderLink text={sideMenu.text} icon={sideMenu.icon} />

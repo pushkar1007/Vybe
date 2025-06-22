@@ -6,14 +6,14 @@ import { Link } from "react-router-dom";
 
 const Header = () => {
   return (
-    <HStack bg="brand.500" padding="26px" justifyContent="space-between">
+    <HStack bg="brand.500" px={{base: "4", md: "10", lg: "20"}} py="4" justifyContent="space-between" alignItems="center" top="0" zIndex="1000" position="sticky" minH="115px" maxH="115px">
       <Link to="/">
         <Icon
           as={LogoIcon}
           h="63px"
           w="100px"
           color="brand.300"
-          ml="50px"
+          ml="120px"
           cursor="pointer"
         />
       </Link>

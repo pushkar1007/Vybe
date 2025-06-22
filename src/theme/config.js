@@ -31,6 +31,9 @@ const config = defineConfig({
     body: {
       fontFamily: "Inter, sans-serif",
     },
+    "#root": {
+      height: "100%"
+    }
   },
 });
 
