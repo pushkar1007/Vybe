@@ -4,7 +4,7 @@ import { createIcon } from "@chakra-ui/react";
 
 const CustomIcon = createIcon({
   displayName: "LogoIcon",
-  viewBox: "0 0 144 37", 
+  viewBox: "0 0 139 64", 
   path: (
     <>
       <path
