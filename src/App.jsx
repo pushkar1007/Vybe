@@ -1,7 +1,7 @@
 import { HStack } from "@chakra-ui/react";
 import Header from "./components/common/Header";
 import SideMenu from "./components/common/SideMenu";
-import { Routes, Route, useLocation } from "react-router-dom";
+import { Routes, Route, useLocation, Navigate } from "react-router-dom";
 import Home from "./pages/Home";
 import Notifications from "./pages/Notifications";
 import Explore from "./pages/Explore";
@@ -12,19 +12,31 @@ import VybeHighlights from "./components/common/VybeHighlights";
 import ProtectedRoute from "./components/common/ProtectedRoute";
 import Auth from "./pages/Auth";
 import { useAuth } from "./context/AuthContext";
+import SignUp from "./pages/SignUp";
+import Login from "./pages/Login";
 
 function App() {
-
   const { user } = useAuth();
   const location = useLocation();
 
   const hideVybeHighlights = ["/explore"];
-  const shouldHideVybeHighlights = hideVybeHighlights.includes(location.pathname);
+  const shouldHideVybeHighlights = hideVybeHighlights.includes(
+    location.pathname,
+  );
+
+  const isAuthPage = ["/auth", "/signup", "/login"].includes(location.pathname);
+
+  if (user && isAuthPage) {
+    return <Navigate to="/" replace />;
+  }
 
   if (!user) {
     return (
       <Routes>
-        <Route path="/auth" element={<Auth/>} />
+        <Route path="/auth" element={<Auth />} />
+        <Route path="/signup" element={<SignUp />} />
+        <Route to="/login" element={<Login />} />
+        <Route path="*" element={<Navigate to="/auth" replace />} />
       </Routes>
     );
   }
@@ -79,13 +91,7 @@ function App() {
               </ProtectedRoute>
             }
           />
-          <Route
-            path="/profile"
-            element={
-                <Profile />
-              
-            }
-          />
+          <Route path="/profile" element={<Profile />} />
         </Routes>
         {!shouldHideVybeHighlights && <VybeHighlights />}
       </HStack>

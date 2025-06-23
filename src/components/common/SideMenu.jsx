@@ -9,7 +9,6 @@ import RenderLink from "../ui/RenderLink";
 import SpinnerBtn from "../ui/SpinnerBtn";
 import { Link } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
-import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 const SideMenu = () => {
@@ -46,27 +45,16 @@ const SideMenu = () => {
     },
   ];
 
-  const [postLoading, setPostLoading] = useState(false);
-  const [logoutLoading, setLogoutLoading] = useState(false);
   const navigate = useNavigate();
 
   const { logoutUser } = useAuth();
 
-  const handleLogoutClick = () => {
-    setLogoutLoading(true);
-    setTimeout(() => {
-      logoutUser();
-      setLogoutLoading(false);
-      navigate("/auth");
-    }, 1000);
+  const handleLogoutClick = async () => {
+    await logoutUser();
+    navigate("/auth");
   };
 
-  const handlePostClick = () => {
-    setPostLoading(true);
-    setTimeout(() => {
-      setPostLoading(false);
-    }, 1000);
-  };
+  const handlePostClick = () => {};
 
   return (
     <Stack
@@ -90,18 +78,21 @@ const SideMenu = () => {
         text="Post"
         fontSize="16px"
         fontWeight="bold"
+        rounded="full"
+        height="4opx"
+        width="138px"
+        mr="50px"
         onClick={handlePostClick}
-        isDisabled={postLoading}
-        loading={postLoading}
       />
       <SpinnerBtn
         text="Logout"
         mt="12px"
         fontSize="16px"
         fontWeight="bold"
-        onClick={handleLogoutClick}
-        isDisabled={logoutLoading}
-        loading={logoutLoading}
+        rounded="full"
+        height="4opx"
+        width="138px"
+        mr="50px"
       />
     </Stack>
   );
