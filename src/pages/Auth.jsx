@@ -58,7 +58,6 @@ const Auth = () => {
           h="120px"
           w="275px"
           color="brand.200"
-          cursor="pointer"
         />
       </Stack>
       <VStack p="100px" w="50%" h="100vh">

@@ -1,8 +1,9 @@
 import { HStack, Icon } from "@chakra-ui/react";
 import LogoIcon from "../icons/LogoIcon";
-import SearchTab from "../ui/SearchTab";
+import InputTab from "../ui/InputTab";
 import ProfileMenu from "../ui/ProfileMenu";
 import { Link } from "react-router-dom";
+import { LuSearch } from "react-icons/lu";
 
 const Header = () => {
   return (
@@ -29,7 +30,12 @@ const Header = () => {
         />
       </Link>
       <HStack gap="60px" mt="8px" alignItems="end">
-        <SearchTab />
+        <InputTab
+          startElement={<LuSearch color="white" size="18px" />}
+          placeholder="Wanna Vybe?"
+          w="fit-content"
+          maxW="260px"
+        />
         <ProfileMenu />
       </HStack>
     </HStack>
