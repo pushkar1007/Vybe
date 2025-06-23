@@ -51,7 +51,6 @@ const SideMenu = () => {
 
   const handleLogoutClick = async () => {
     await logoutUser();
-    navigate("/auth");
   };
 
   const handlePostClick = () => {};
@@ -79,7 +78,7 @@ const SideMenu = () => {
         fontSize="16px"
         fontWeight="bold"
         rounded="full"
-        height="4opx"
+        height="40px"
         width="138px"
         mr="50px"
         type="button"
@@ -95,6 +94,7 @@ const SideMenu = () => {
         width="138px"
         mr="50px"
         type="button"
+        to="/auth"
         onClick={handleLogoutClick}
       />
     </Stack>

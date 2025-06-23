@@ -8,7 +8,8 @@ const SpinnerBtn = ({
   to = null,
   delay = 1000,
   onClick = null,
-  type,
+  type = "button",
+  isLoading= false,
   ...props
 }) => {
   const [loading, setLoading] = useState(false);
@@ -20,10 +21,9 @@ const SpinnerBtn = ({
 
     setLoading(true);
 
-    if (onClick) await onClick();
-
-    setTimeout(() => {
+    setTimeout( async () => {
       setLoading(false);
+      if (onClick) await onClick();
       if (to) navigate(to);
     }, delay);
   };
@@ -32,8 +32,8 @@ const SpinnerBtn = ({
     <Button
       spinner={<BeatLoader size={8} color="black" />}
       onClick={handleClick}
-      isDisabled={loading}
-      loading={loading}
+      isDisabled={isLoading || loading}
+      loading={isLoading || loading}
       spinnerPlacement="start"
       bg="white"
       color="black"

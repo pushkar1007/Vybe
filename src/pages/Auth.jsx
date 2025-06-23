@@ -53,7 +53,6 @@ const Auth = () => {
                 {detail.label}
               </Text>
               <SpinnerBtn
-                type="button"
                 text={detail.text}
                 w="353px"
                 h="82px"
