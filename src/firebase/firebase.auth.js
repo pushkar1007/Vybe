@@ -5,6 +5,7 @@ import {
   sendEmailVerification,
   validatePassword,
   signOut,
+  signInWithEmailAndPassword,
 } from "firebase/auth";
 import { firebaseConfig } from "./config.js";
 

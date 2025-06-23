@@ -1,44 +1,18 @@
 import SpinnerBtn from "@/components/ui/SpinnerBtn";
 import LogoIcon from "../components/icons/LogoIcon";
 import { Heading, HStack, Icon, Stack, Text, VStack } from "@chakra-ui/react";
-import { useNavigate } from "react-router-dom";
-import { useState } from "react";
 
 const Auth = () => {
-  const [sigupLoading, setSignupLoading] = useState(false);
-  const [loginLoading, setLoginLoading] = useState(false);
-  const navigate = useNavigate();
-
-  const handleSignupClick = () => {
-    setSignupLoading(true);
-    setTimeout(() => {
-      setSignupLoading(false);
-      navigate("/signup");
-    }, 1000);
-  };
-
-  const handleLoginClick = () => {
-    setLoginLoading(true);
-    setTimeout(() => {
-      setLoginLoading(false);
-      navigate("/login");
-    }, 1000);
-  };
-
   const buttonDetails = [
     {
       text: "Sign Up",
       link: "/signup",
       label: "Already have an account?",
-      onClick: handleSignupClick,
-      loading: sigupLoading,
     },
     {
       text: "Login",
       link: "/login",
       label: "Don’t have an account?",
-      onClick: handleLoginClick,
-      loading: loginLoading,
     },
   ];
 
@@ -79,6 +53,7 @@ const Auth = () => {
                 {detail.label}
               </Text>
               <SpinnerBtn
+                type="button"
                 text={detail.text}
                 w="353px"
                 h="82px"

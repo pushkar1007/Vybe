@@ -82,6 +82,7 @@ const SideMenu = () => {
         height="4opx"
         width="138px"
         mr="50px"
+        type="button"
         onClick={handlePostClick}
       />
       <SpinnerBtn
@@ -93,6 +94,8 @@ const SideMenu = () => {
         height="4opx"
         width="138px"
         mr="50px"
+        type="button"
+        onClick={handleLogoutClick}
       />
     </Stack>
   );

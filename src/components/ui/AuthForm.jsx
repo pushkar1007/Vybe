@@ -6,8 +6,9 @@ import { LuUserRound } from "react-icons/lu";
 import { AiOutlineMail } from "react-icons/ai";
 import { IoLockClosedOutline } from "react-icons/io5";
 import SpinnerBtn from "./SpinnerBtn";
+import Firebase from "@/firebase/firebase.auth";
 
-const AuthForm = ({ mode = "login", onSubmit }) => {
+const AuthForm = ({ mode, onSubmit }) => {
   const isSignup = mode === "signup";
 
   const initialValues = {
@@ -42,9 +43,22 @@ const AuthForm = ({ mode = "login", onSubmit }) => {
       <Formik
         initialValues={initialValues}
         validationSchema={validationSchema}
-        onSubmit={(values, actions) => {
-          onSubmit(values, actions);
-        }}
+        onSubmit={
+          isSignup
+            ? async (values) => {
+                const user = await Firebase.createUser({
+                  email: values.email,
+                  password: values.password,
+                });
+              }
+            : async (values) => {
+              console.log("abc");
+                const user = await Firebase.loginUser({
+                  email: values.email,
+                  password: values.password,
+                });
+              }
+        }
       >
         {({ errors, touched, isSubmitting, getFieldProps }) => (
           <Form
