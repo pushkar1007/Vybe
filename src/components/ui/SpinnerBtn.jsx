@@ -3,32 +3,42 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { BeatLoader } from "react-spinners";
 
-const SpinnerBtn = ({ text, ...props }) => {
+const SpinnerBtn = ({
+  text,
+  to = null,
+  delay = 1000,
+  onClick = null,
+  type = "button",
+  isLoading = false,
+  ...props
+}) => {
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
-  const handleClick = () => {
+  const handleClick = async (e) => {
+    if (type === "submit") return;
+    e.preventDefault();
+
     setLoading(true);
-    setTimeout(() => {
+
+    setTimeout(async () => {
       setLoading(false);
-      navigate("/profile");
-    }, 1000);
+      if (onClick) await onClick();
+      if (to) navigate(to);
+    }, delay);
   };
 
   return (
     <Button
-      onClick={handleClick}
-      isDisabled={loading}
       spinner={<BeatLoader size={8} color="black" />}
-      loading={loading}
+      onClick={handleClick}
+      isDisabled={isLoading || loading}
+      loading={isLoading || loading}
       spinnerPlacement="start"
-      height="4opx"
-      width="138px"
-      mr="50px"
-      rounded="full"
       bg="white"
       color="black"
       boxShadow="4px 8px 4px rgba(0,0,0,0.1)"
+      type={type}
       {...props}
     >
       {text}

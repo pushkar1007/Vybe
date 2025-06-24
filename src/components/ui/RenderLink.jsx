@@ -18,11 +18,29 @@ const RenderLink = ({ text, icon }) => {
       alignItems="center"
       cursor="pointer"
     >
-      <Icon as={icon} h="20px" w="20px" color="brand.400" />
+      <Icon
+        as={icon}
+        h={{
+          base: "20px",
+          md: "30px",
+          lg: "20px",
+        }}
+        w={{
+          base: "20px",
+          md: "30px",
+          lg: "20px",
+        }}
+        color="brand.400"
+      />
       <Text
         fontSize="20px"
         fontWeight="medium"
         color="brand.400"
+        display={{
+          base: "block",
+          md: "none",
+          lg: "block",
+        }}
       >
         {text}
       </Text>
