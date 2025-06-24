@@ -9,7 +9,7 @@ const SpinnerBtn = ({
   delay = 1000,
   onClick = null,
   type = "button",
-  isLoading= false,
+  isLoading = false,
   ...props
 }) => {
   const [loading, setLoading] = useState(false);
@@ -21,7 +21,7 @@ const SpinnerBtn = ({
 
     setLoading(true);
 
-    setTimeout( async () => {
+    setTimeout(async () => {
       setLoading(false);
       if (onClick) await onClick();
       if (to) navigate(to);

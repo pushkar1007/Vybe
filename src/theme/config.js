@@ -21,6 +21,15 @@ const config = defineConfig({
           value: "Inter, sans-serif",
         },
       },
+      breakpoints: {
+        base: "0em", // 0px
+        sm: "30em", // 480px
+        md: "48em", // 768px
+        lg: "64em", // 1024px
+        lgx: "70em",
+        xl: "75em", // 1200px
+        "2xl": "90em", // 1440px
+      },
     },
   },
   globalCss: {
@@ -32,8 +41,8 @@ const config = defineConfig({
       fontFamily: "Inter, sans-serif",
     },
     "#root": {
-      height: "100%"
-    }
+      height: "100%",
+    },
   },
 });
 

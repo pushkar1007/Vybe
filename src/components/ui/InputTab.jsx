@@ -8,7 +8,11 @@ export const InputTab = ({startElement, ...props}) => {
           variant="unstyled"
           color="white"
           _placeholder={{ color: "whiteAlpha.600", fontWeight: "normal" }}
-          fontSize="lg"
+          fontSize={{
+            base: "sm",
+            md: "md",
+            lg: "lg",
+          }}
           fontWeight="normal"
           border="1px solid white"
           borderRadius="xl"
