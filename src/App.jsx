@@ -112,16 +112,9 @@ function App() {
         {!shouldHideVybeHighlights && (
           <Box
             flexShrink={0}
-            minW={{
+            w={{
               base: "0px",
-              md: "160px",
-              lg: "220px",
-              lgx: "280px",
-              xl: "360px",
-            }}
-            maxW={{
-              base: "0px",
-              md: "160px",
+              md: "200px",
               lg: "220px",
               lgx: "280px",
               xl: "360px",

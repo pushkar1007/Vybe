@@ -5,20 +5,14 @@ const VybeHighlights = () => {
     <Stack
       bg="brand.500"
       color="white"
-      minW={{
+      w={{
         base: "0px",
-        md: "160px",
-        lg: "220px",
+        md: "200px",
+        lg: "240px",
         lgx: "280px",
         xl: "360px",
       }}
-      maxW={{
-        base: "0px",
-        md: "220px",
-        lg: "320px",
-        lgx: "350px",
-        xl: "360px",
-      }}
+    
       position="sticky"
       top="115px"
       alignItems="center"
@@ -70,7 +64,7 @@ const VybeHighlights = () => {
             xl: "2xl",
           }}
         >
-          Vybe Radar
+          VybeRadar
         </Heading>
       </Box>
     </Stack>
