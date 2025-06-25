@@ -12,23 +12,27 @@ const VybeHighlights = () => {
         lgx: "280px",
         xl: "360px",
       }}
-    
       position="sticky"
       top="115px"
       alignItems="center"
-      minH="calc(100vh - 115px)"
-      maxH="calc(100vh - 115px)"
+      h="full"
       py={4}
       display={{
         base: "none",
         md: "flex",
       }}
-      overflowX="hidden"
+      overflow="hidden"
     >
       <Box
         w="70%"
-        h="260px"
-        minH="260px"
+        css={{
+          "@media (max-height: 700px)": {
+            height: "200px",
+          },
+          "@media (min-height: 701px)": {
+            height: "260px",
+          },
+        }}
         border="1px solid white"
         borderRadius="12px"
         p="16px"
@@ -48,8 +52,14 @@ const VybeHighlights = () => {
       </Box>
       <Box
         w="70%"
-        h="260px"
-        minH="260px"
+        css={{
+          "@media (max-height: 700px)": {
+            height: "200px",
+          },
+          "@media (min-height: 701px)": {
+            height: "260px",
+          },
+        }}
         border="1px solid white"
         borderRadius="12px"
         p="16px"

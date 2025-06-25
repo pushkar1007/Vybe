@@ -56,24 +56,22 @@ const SideMenu = () => {
     <Stack
       bg="brand.500"
       w={{
-        base: "0px", // hidden
-        md: "130px", // small sidebar on tablets
-        lg: "200px", // normal sidebar
-        lgx: "280px", // wide on mid-desktops
-        xl: "350px", // full on large desktops
+        base: "0px",
+        md: "130px",
+        lg: "200px",
+        lgx: "280px",
+        xl: "350px",
       }}
       display={{
         base: "none",
         md: "flex",
-        lg: "flex",
       }}
-      minH="calc(100vh - 115px)"
-      maxH="calc(100vh - 115px)"
+      h="full"
       alignItems="end"
       position="sticky"
       top="115px"
       py={4}
-      overflow="auto"
+      overflow="hidden"
     >
       <Box
         mr={{

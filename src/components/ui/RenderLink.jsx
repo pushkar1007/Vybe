@@ -5,7 +5,14 @@ const RenderLink = ({ text, icon }) => {
     <HStack
       key={text}
       px="4"
-      my="5"
+      css={{
+        "@media (max-height: 650px)": {
+          marginY: "10px",
+        },
+        "@media (min-height: 651px)": {
+          marginY: "20px",
+        },
+      }}
       border="1px solid transparent"
       h="40px"
       _hover={{

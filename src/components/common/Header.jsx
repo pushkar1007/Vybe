@@ -19,6 +19,7 @@ const Header = () => {
       position="sticky"
       minH="115px"
       maxH="115px"
+      w="full"
     >
       <Stack display={{ base: "block", md: "none" }}>
         <HamburgerMenu />

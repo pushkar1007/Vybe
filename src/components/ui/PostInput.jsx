@@ -19,7 +19,7 @@ const PostInput = () => {
   };
 
   return (
-    <HStack w="100%" alignItems="flex-start" gap={4} p={4} borderBottom="1px solid" borderColor="brand.100">
+    <HStack w="100%" alignItems="flex-start" gap={4} p={4} borderBottom="1px solid" borderColor="brand.500">
       <Box w="50px" h="50px" rounded="full" border="1px solid black">
         <ProfileIcon />
       </Box>

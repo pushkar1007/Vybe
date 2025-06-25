@@ -1,4 +1,4 @@
-import { Box, HStack } from "@chakra-ui/react";
+import { Box, HStack, VStack } from "@chakra-ui/react";
 import Header from "./components/common/Header";
 import SideMenu from "./components/common/SideMenu";
 import { Routes, Route, useLocation, Navigate } from "react-router-dom";
@@ -43,88 +43,111 @@ function App() {
 
   return (
     <>
-      <Header />
-      <HStack
-        alignItems="normal"
-        justifyContent="space-between"
-        h="calc(100vh -115px)"
-        spacing={0}
-        w="100%"
-        overflow="hidden"
-      >
-        <Box
-          flexShrink={0}
-          w={{
-            base: "0px", // hidden
-            md: "130px", // small sidebar on tablets
-            lg: "200px", // normal sidebar
-            lgx: "280px", // wide on mid-desktops
-            xl: "350px", // full on large desktops
-          }}
+      <VStack h="100vh" gap="0">
+        <Header />
+        <HStack
+          alignItems="start"
+          justifyContent="space-between"
+          h="full"
+          spacing={0}
+          w="100%"
+          overflow="hidden"
         >
-          <SideMenu />
-        </Box>
-        <Box flex="1" minW="0" overflow="auto">
-          <Routes>
-            <Route
-              path="/"
-              element={
-                <ProtectedRoute>
-                  <Home />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/notifications"
-              element={
-                <ProtectedRoute>
-                  <Notifications />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/explore"
-              element={
-                <ProtectedRoute>
-                  <Explore />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/vybuds"
-              element={
-                <ProtectedRoute>
-                  <VyBuds />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/vybcircles"
-              element={
-                <ProtectedRoute>
-                  <VybCircles />
-                </ProtectedRoute>
-              }
-            />
-            <Route path="/profile" element={<Profile />} />
-          </Routes>
-        </Box>
-        {!shouldHideVybeHighlights && (
           <Box
             flexShrink={0}
             w={{
               base: "0px",
-              md: "200px",
-              lg: "220px",
+              md: "130px",
+              lg: "200px",
               lgx: "280px",
-              xl: "360px",
+              xl: "350px",
             }}
-            display={{ base: "none", md: "block" }}
+            display={{
+              base: "none",
+              md: "block",
+            }}
+            h="full"
           >
-            <VybeHighlights />
+            <SideMenu />
           </Box>
-        )}
-      </HStack>
+          <Box
+            flex="1"
+            minW="0"
+            h="full"
+            overflowY="auto"
+            overflowX="hidden"
+            css={{
+              "&::-webkit-scrollbar": {
+                display: "none",
+              },
+              "&": {
+                scrollbarWidth: "none", 
+                msOverflowStyle: "none", 
+              },
+            }}
+          >
+            <Routes>
+              <Route
+                path="/"
+                element={
+                  <ProtectedRoute>
+                    <Home />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/notifications"
+                element={
+                  <ProtectedRoute>
+                    <Notifications />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/explore"
+                element={
+                  <ProtectedRoute>
+                    <Explore />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/vybuds"
+                element={
+                  <ProtectedRoute>
+                    <VyBuds />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/vybcircles"
+                element={
+                  <ProtectedRoute>
+                    <VybCircles />
+                  </ProtectedRoute>
+                }
+              />
+              <Route path="/profile" element={<Profile />} />
+            </Routes>
+          </Box>
+          {!shouldHideVybeHighlights && (
+            <Box
+              flexShrink={0}
+              w={{
+                base: "0px",
+                md: "200px",
+                lg: "220px",
+                lgx: "280px",
+                xl: "360px",
+              }}
+              display={{ base: "none", md: "block" }}
+              h="full"
+            >
+              <VybeHighlights />
+            </Box>
+          )}
+        </HStack>
+      </VStack>
     </>
   );
 }
