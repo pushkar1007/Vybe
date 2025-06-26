@@ -49,7 +49,7 @@ function App() {
           alignItems="start"
           justifyContent="space-between"
           h="full"
-          spacing={0}
+          gap={0}
           w="100%"
           overflow="hidden"
         >
