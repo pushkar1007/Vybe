@@ -50,6 +50,7 @@ const AuthForm = ({ mode }) => {
                 const user = await Firebase.createUser({
                   email: values.email,
                   password: values.password,
+                  username: values.username,
                 });
 
                 if (user?.success === false) {

@@ -11,6 +11,7 @@ import {
 import { FaArrowLeftLong } from "react-icons/fa6";
 import { useNavigate } from "react-router-dom";
 import SpinnerBtn from "./SpinnerBtn";
+import { useAuth } from "@/context/AuthContext";
 
 const UserDeatils = () => {
   const navigate = useNavigate();
@@ -18,6 +19,8 @@ const UserDeatils = () => {
   const handleClick = () => {
     navigate("/");
   };
+
+  const { user } = useAuth();
 
   return (
     <Stack position="relative" gap={0}>
@@ -38,7 +41,7 @@ const UserDeatils = () => {
           cursor="pointer"
         />
         <Stack gap={0} m={0}>
-          <Heading m={0}>user12</Heading>
+          <Heading m={0}>{user?.displayName || "Unknown User"}</Heading>
           <Text fontSize="sm">12 Posts</Text>
         </Stack>
       </HStack>
@@ -60,7 +63,11 @@ const UserDeatils = () => {
         top="180px"
         left="20px"
       >
-        <Image as={ProfileIcon} />
+        {user?.photoURL ? (
+          <Image src={user.photoURL} alt="Profile" boxSize="100px" />
+        ) : (
+          <Image as={ProfileIcon} />
+        )}
       </Box>
       <HStack
         borderBottom="1px solid"
@@ -70,9 +77,9 @@ const UserDeatils = () => {
       >
         <Stack mt="50px" gap="10px">
           <Stack gap={0}>
-            <Heading>user12</Heading>
+            <Heading>{user?.displayName || "Unknown User"}</Heading>
             <Text color="brand.100" lineHeight={1}>
-              @user12345
+              @{user?.email?.split("@")[0] || "user"}
             </Text>
           </Stack>
           <Text>Description.....</Text>

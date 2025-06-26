@@ -11,8 +11,13 @@ export const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(Firebase.auth, (currentUser) => {
-      setUser(currentUser);
+    const unsubscribe = onAuthStateChanged(Firebase.auth, async (currentUser) => {
+      if (currentUser) {
+        await currentUser.reload(); // force refresh from Firebase
+        setUser({ ...currentUser }); // force new object to trigger re-render
+      } else {
+        setUser(null);
+      }
       setLoading(false);
     });
     return () => unsubscribe();

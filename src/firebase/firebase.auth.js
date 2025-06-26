@@ -6,6 +6,7 @@ import {
   validatePassword,
   signOut,
   signInWithEmailAndPassword,
+  updateProfile,
 } from "firebase/auth";
 import { firebaseConfig } from "./config.js";
 
@@ -32,7 +33,7 @@ class Firebase {
     }
   }
 
-  async createUser({ email, password }) {
+  async createUser({ email, password, username }) {
     try {
       const response = await createUserWithEmailAndPassword(
         this.auth,
@@ -46,6 +47,10 @@ class Firebase {
             providerId: null,      
             operationType: "signIn" 
         } */
+        await updateProfile(response.user, {
+          displayName: username,
+        });
+        await response.user.reload();
         await this.loginUser({ email, password }); //if account created successfully login the user
         return response.user;
       }
