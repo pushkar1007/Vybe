@@ -9,6 +9,7 @@ import RenderLink from "../ui/RenderLink";
 import SpinnerBtn from "../ui/SpinnerBtn";
 import { Link } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
+import PostDialogue from "../ui/PostDialogue";
 
 const SideMenu = () => {
   const sideMenuLinks = [
@@ -88,29 +89,7 @@ const SideMenu = () => {
           </Link>
         ))}
       </Box>
-      <SpinnerBtn
-        text="Post"
-        fontSize="16px"
-        fontWeight="bold"
-        rounded="full"
-        height="40px"
-        width={{
-          base: "138px",
-          md: "90px",
-          lg: "120px",
-          lgx: "120px",
-          xl: "138px",
-        }}
-        mr={{
-          base: "50px",
-          md: "10px",
-          lg: "40px",
-          lgx: "40px",
-          xl: "50px",
-        }}
-        type="button"
-        onClick={handlePostClick}
-      />
+      <PostDialogue />
       <SpinnerBtn
         text="Logout"
         mt="12px"
