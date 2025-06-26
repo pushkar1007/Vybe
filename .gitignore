@@ -12,6 +12,7 @@ dist
 dist-ssr
 *.local
 /.env
+redux
 
 # Editor directories and files
 .vscode/*
