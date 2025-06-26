@@ -8,9 +8,12 @@ import { IoLockClosedOutline } from "react-icons/io5";
 import SpinnerBtn from "./SpinnerBtn";
 import Firebase from "@/firebase/firebase.auth";
 import { toast } from "react-toastify";
+import { useAuth } from "@/context/AuthContext";
 
 const AuthForm = ({ mode }) => {
   const isSignup = mode === "signup";
+
+  const { refreshUser } = useAuth();
 
   const initialValues = {
     username: "",
@@ -56,6 +59,7 @@ const AuthForm = ({ mode }) => {
                 if (user?.success === false) {
                   toast.error("Signup failed: " + user.error);
                 } else {
+                  await refreshUser();
                   toast.success("Signup successful!");
                 }
 

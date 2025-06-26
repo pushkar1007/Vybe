@@ -23,6 +23,13 @@ export const AuthProvider = ({ children }) => {
     return () => unsubscribe();
   }, []);
 
+  const refreshUser = async () => {
+    if (Firebase.auth.currentUser) {
+      await Firebase.auth.currentUser.reload();
+      setUser({ ...Firebase.auth.currentUser }); // Trigger re-render with updated data
+    }
+  };
+
   const value = {
     user,
     loginUser: Firebase.loginUser.bind(Firebase),
@@ -30,6 +37,7 @@ export const AuthProvider = ({ children }) => {
     logoutUser: Firebase.logoutUser.bind(Firebase),
     isEmailVerified: Firebase.isEmailVerified.bind(Firebase),
     verifyEmail: Firebase.verifyEmail.bind(Firebase),
+    refreshUser,
   };
 
   return (
