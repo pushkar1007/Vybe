@@ -6,6 +6,8 @@ import { ChakraProvider } from "@chakra-ui/react";
 import system from "./theme/config";
 import { BrowserRouter } from "react-router-dom";
 import { AuthProvider } from "./context/AuthContext";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 createRoot(document.getElementById("root")).render(
   <StrictMode>
@@ -13,6 +15,7 @@ createRoot(document.getElementById("root")).render(
       <BrowserRouter>
         <AuthProvider>
           <App />
+          <ToastContainer position="top-center" autoClose={3000}/>
         </AuthProvider>
       </BrowserRouter>
     </ChakraProvider>

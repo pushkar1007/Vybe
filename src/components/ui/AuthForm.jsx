@@ -7,8 +7,9 @@ import { AiOutlineMail } from "react-icons/ai";
 import { IoLockClosedOutline } from "react-icons/io5";
 import SpinnerBtn from "./SpinnerBtn";
 import Firebase from "@/firebase/firebase.auth";
+import { toast } from "react-toastify";
 
-const AuthForm = ({ mode, onSubmit }) => {
+const AuthForm = ({ mode }) => {
   const isSignup = mode === "signup";
 
   const initialValues = {
@@ -45,18 +46,33 @@ const AuthForm = ({ mode, onSubmit }) => {
         validationSchema={validationSchema}
         onSubmit={
           isSignup
-            ? async (values) => {
+            ? async (values, { setSubmitting }) => {
                 const user = await Firebase.createUser({
                   email: values.email,
                   password: values.password,
                 });
+
+                if (user?.success === false) {
+                  toast.error("Signup failed: " + user.error);
+                } else {
+                  toast.success("Signup successful!");
+                }
+
+                setSubmitting(false);
               }
-            : async (values) => {
-              console.log("abc");
+            : async (values, { setSubmitting }) => {
                 const user = await Firebase.loginUser({
                   email: values.email,
                   password: values.password,
                 });
+
+                if (user?.success === false) {
+                  toast.error("Login failed: " + user.error);
+                } else {
+                  toast.success("Login successful!");
+                }
+
+                setSubmitting(false);
               }
         }
       >
