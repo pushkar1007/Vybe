@@ -1,5 +1,12 @@
 import { initializeApp } from "firebase/app";
-import { getFirestore, doc, updateDoc, arrayUnion, arrayRemove } from "firebase/firestore";
+import {
+  getFirestore,
+  doc,
+  updateDoc,
+  arrayUnion,
+  arrayRemove,
+  deleteDoc,
+} from "firebase/firestore";
 import { firebaseConfig } from "./config.js";
 
 class Firebase {
@@ -11,7 +18,8 @@ class Firebase {
     this.db = getFirestore(app);
   }
 
-  async createUser({ id, username, email }) {
+  //creating a user
+  async createUser({ username, email }, id) {
     try {
       const docRef = await setDoc(
         doc(this.db, "users", id), //the setDoc method is used to create a document by taking a document refrence(the first args) and an object which represent the field values(the second args)
@@ -28,23 +36,54 @@ class Firebase {
           likedPosts: [],
           createdPosts: [],
           vybuds: [],
-          vybecricles: [],
+          vybecircles: [],
           comments: [],
           blockedUsers: [],
         },
       );
+      const userRef = await updateDoc(docRef, {
+        userId: id,
+      });
+      return userRef;
     } catch (error) {
       const errorCode = error.code;
       const errorMessage = error.message;
       // ❌ Handle error
-      console.error(
-        "Error in creating user: ",
-        errorCode,
-        errorMessage,
-      );
+      console.error("Error in creating user: ", errorCode, errorMessage);
     }
   }
 
+  //delete user
+  async deleteUser(user) {
+    try {
+      const userRef = doc(this.db, "users", user.id);
+      await deleteDoc(userRef);
+    } catch (error) {
+      const errorCode = error.code;
+      const errorMessage = error.message;
+      // ❌ Handle error
+      console.error("Error in deleting user account:", errorCode, errorMessage);
+    }
+  }
+
+  //get user data
+  async getUserData(userId) {
+    try {
+      const userRef = doc(this.db, "users", userId);
+      const snap = await getDoc(userRef);
+      if (snap.exists()) {
+        return { id: snap.id, ...snap.data() }; //the snap id here is the document id
+      } else {
+        return null;
+      }
+    } catch (error) {
+      const errorCode = error.code;
+      const errorMessage = error.message;
+      // ❌ Handle error
+      console.error("Error in fetching user details:", errorCode, errorMessage);
+    }
+  }
+  
   //updates user credentials like dob, bio, avatar etc
   async updateUserCredentials(fieldName, fieldValue, currentUser) {
     try {
@@ -75,16 +114,12 @@ class Firebase {
       const errorCode = error.code;
       const errorMessage = error.message;
       // ❌ Handle error
-      console.error(
-        "Error updating user creds:",
-        errorCode,
-        errorMessage,
-      );
+      console.error("Error updating user creds:", errorCode, errorMessage);
     }
   }
 
   // updates a post reference to createdPosts
-  async addCreatedPost(postId,currentUser) {
+  async addCreatedPost(postId, currentUser) {
     try {
       if (!currentUser) {
         throw new Error("User not authenticated.");
@@ -112,8 +147,35 @@ class Firebase {
     }
   }
 
+  // deletes a post reference from createdPosts
+  async deleteCreatedPost(postId, currentUser) {
+    try {
+      if (!currentUser) {
+        throw new Error("User not authenticated.");
+      }
+
+      // Get references
+      const userRef = doc(db, "users", currentUser.uid);
+      const postRef = doc(db, "posts", postId); // This is your DocumentReference
+
+      // Update the array field atomically
+      await updateDoc(userRef, {
+        createdPosts: arrayRemove(postRef),
+      });
+    } catch (error) {
+      const errorCode = error.code;
+      const errorMessage = error.message;
+      // ❌ Handle error
+      console.error(
+        "Error in deleting created posts from user db:",
+        errorCode,
+        errorMessage,
+      );
+    }
+  }
+
   // updates a post reference to likedPosts
-  async likePost(postId,currentUser) {
+  async likePost(postId, currentUser) {
     try {
       if (!currentUser) {
         throw new Error("User not authenticated.");
@@ -159,7 +221,7 @@ class Firebase {
       const errorMessage = error.message;
       // ❌ Handle error
       console.error(
-        "Error in adding removing liked posts from user db:",
+        "Error in removing liked posts from user db:",
         errorCode,
         errorMessage,
       );
@@ -167,7 +229,7 @@ class Firebase {
   }
 
   // adds a comment reference to comments array
-  async addCommentRef(commentId,currentUser) {
+  async addCommentRef(commentId, currentUser) {
     try {
       if (!currentUser) {
         throw new Error("User not authenticated.");
@@ -175,13 +237,39 @@ class Firebase {
 
       // Get references
       const userRef = doc(db, "users", currentUser.uid);
-      const commentRef = doc(db, "posts", commentId); // This is your DocumentReference
+      const commentRef = doc(db, "comments", commentId); // This is your DocumentReference
 
       // Update the array field atomically
       await updateDoc(userRef, {
-        likedPosts: arrayRemove(commentRef),
+        comments: arrayUnion(commentRef),
       });
+    } catch (error) {
+      const errorCode = error.code;
+      const errorMessage = error.message;
+      // ❌ Handle error
+      console.error(
+        "Error in adding comment refrence to user db:",
+        errorCode,
+        errorMessage,
+      );
+    }
+  }
 
+  // removes a comment reference to comments array
+  async removeCommentRef(commentId, currentUser) {
+    try {
+      if (!currentUser) {
+        throw new Error("User not authenticated.");
+      }
+
+      // Get references
+      const userRef = doc(db, "users", currentUser.uid);
+      const commentRef = doc(db, "comments", commentId); // This is your DocumentReference
+
+      // Update the array field atomically
+      await updateDoc(userRef, {
+        comments: arrayRemove(commentRef),
+      });
     } catch (error) {
       const errorCode = error.code;
       const errorMessage = error.message;
@@ -195,7 +283,7 @@ class Firebase {
   }
 
   // adds a vybud
-  async addVybud(userId,currentUser) {
+  async addVybud(userId, currentUser) {
     try {
       if (!currentUser) {
         throw new Error("User not authenticated.");
@@ -203,7 +291,7 @@ class Firebase {
 
       // Get references
       const userRef = doc(db, "users", currentUser.uid);
-      const vybudRef = doc(db, "posts", userId); // This is your DocumentReference
+      const vybudRef = doc(db, "vybuds", userId); // This is your DocumentReference
 
       // Update the array field atomically
       await updateDoc(userRef, {
@@ -222,7 +310,7 @@ class Firebase {
   }
 
   //removes a vybud
-  async removeVyBud(userId,currentUser) {
+  async removeVyBud(userId, currentUser) {
     try {
       if (!currentUser) {
         throw new Error("User not authenticated.");
@@ -230,7 +318,7 @@ class Firebase {
 
       // Get references
       const userRef = doc(db, "users", currentUser.uid);
-      const vybudRef = doc(db, "posts", userId); // This is your DocumentReference
+      const vybudRef = doc(db, "vybuds", userId); // This is your DocumentReference
 
       // Update the array field atomically
       await updateDoc(userRef, {
@@ -249,19 +337,19 @@ class Firebase {
   }
 
   //adding a vybeCircle
-  async addVybeCircle(vybeCircleId, currentUser){
-       try {
+  async addVybeCircle(vybeCircleId, currentUser) {
+    try {
       if (!currentUser) {
         throw new Error("User not authenticated.");
       }
 
       // Get references
       const userRef = doc(db, "users", currentUser.uid);
-      const vybeCircleRef = doc(db, "posts", userId); // This is your DocumentReference
+      const vybeCircleRef = doc(db, "vybecircles", vybeCircleId); // This is your DocumentReference
 
       // Update the array field atomically
       await updateDoc(userRef, {
-        vybuds: arrayUnion(vybeCircleRef),
+        vybecircles: arrayUnion(vybeCircleRef),
       });
     } catch (error) {
       const errorCode = error.code;
@@ -276,19 +364,19 @@ class Firebase {
   }
 
   //removing a vybeCircle
-  async removeVybeCircle(vybeCircleId, currentUser){
-       try {
+  async removeVybeCircle(vybeCircleId, currentUser) {
+    try {
       if (!currentUser) {
         throw new Error("User not authenticated.");
       }
 
       // Get references
       const userRef = doc(db, "users", currentUser.uid);
-      const vybeCircleRef = doc(db, "posts", userId); // This is your DocumentReference
+      const vybeCircleRef = doc(db, "vybecircles", vybeCircleId); // This is your DocumentReference
 
       // Update the array field atomically
       await updateDoc(userRef, {
-        vybuds: arrayRemove(vybeCircleRef),
+        vybecircles: arrayRemove(vybeCircleRef),
       });
     } catch (error) {
       const errorCode = error.code;
@@ -301,4 +389,65 @@ class Firebase {
       );
     }
   }
+
+  //adding a blocked user
+  async addBlockedUser(userId, currentUser) {
+    try {
+      if (!currentUser) {
+        throw new Error("User not authenticated.");
+      }
+
+      // Get references
+      const currentUserRef = doc(db, "users", currentUser.uid);
+      const blockedUserRef = doc(db, "users", userId); // This is your DocumentReference
+
+      // Update the array field atomically
+      await updateDoc(currentUserRef, {
+        blockedUsers: arrayUnion(blockedUserRef),
+      });
+    } catch (error) {
+      const errorCode = error.code;
+      const errorMessage = error.message;
+      // ❌ Handle error
+      console.error(
+        "Error in adding blocked user to user db:",
+        errorCode,
+        errorMessage,
+      );
+    }
+  }
+
+  //removing a blocked user
+  async removeBlockedUser(userId, currentUser) {
+    try {
+      if (!currentUser) {
+        throw new Error("User not authenticated.");
+      }
+
+      // Get references
+      const currentUserRef = doc(db, "users", currentUser.uid);
+      const blockedUserRef = doc(db, "users", userId); // This is your DocumentReference
+
+      // Update the array field atomically
+      await updateDoc(currentUserRef, {
+        blockedUsers: arrayRemove(blockedUserRef),
+      });
+    } catch (error) {
+      const errorCode = error.code;
+      const errorMessage = error.message;
+      // ❌ Handle error
+      console.error(
+        "Error in removing blocked user to user db:",
+        errorCode,
+        errorMessage,
+      );
+    }
+  }
+
+  
 }
+
+export default new Firebase();
+
+//the current user param is meant to be the get from auth as each user id is set to the unique uid generated by the auth of firebase hence the use of currentUser.uid
+//this uid is individually also stored as userId inside each userDb hence wherever userId is mentioned , pass the userId directly
