@@ -6,7 +6,11 @@ import { PiShareFat } from "react-icons/pi";
 const Post = () => {
   return (
     <HStack
-      p={4}
+      py={4}
+      px={{
+        base: 1,
+        md: 4,
+      }}
       gap={4}
       borderBottom="1px solid"
       borderColor="brand.500"

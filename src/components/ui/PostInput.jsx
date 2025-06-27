@@ -51,7 +51,11 @@ const PostInput = () => {
       w="100%"
       alignItems="flex-start"
       gap={4}
-      p={4}
+      py={4}
+      px={{
+        base: 1,
+        md: 4,
+      }}
       borderBottom="1px solid"
       borderColor="brand.500"
     >
