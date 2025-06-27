@@ -2,10 +2,12 @@ import { initializeApp } from "firebase/app";
 import {
   getFirestore,
   doc,
+  setDoc,
   updateDoc,
   arrayUnion,
   arrayRemove,
   deleteDoc,
+  getDoc,
 } from "firebase/firestore";
 import { firebaseConfig } from "./config.js";
 
@@ -15,7 +17,7 @@ class Firebase {
 
   constructor() {
     this.app = initializeApp(firebaseConfig);
-    this.db = getFirestore(app);
+    this.db = getFirestore(this.app);
   }
 
   //creating a user
@@ -93,7 +95,7 @@ class Firebase {
       }
 
       // List of allowed string fields to update
-      const allowedFields = ["handleName", "bio", "DOB", "avatar", "banner"]; // you can modify this
+      const allowedFields = ["handlename", "username", "bio", "DOB", "avatar", "banner"]; // you can modify this
 
       if (!allowedFields.includes(fieldName)) {
         throw new Error(
@@ -105,7 +107,7 @@ class Firebase {
         throw new Error("User not authenticated.");
       }
 
-      const userRef = doc(db, "users", currentUser.uid); // getting the refrence to the user document since we are using the authId as the user document id
+      const userRef = doc(this.db, "users", currentUser.uid); // getting the refrence to the user document since we are using the authId as the user document id
 
       await updateDoc(userRef, {
         [fieldName]: fieldValue,

@@ -25,7 +25,7 @@ const SignUp = () => {
   };
 
   return (
-    <Stack alignItems="center" justifyContent="center" h="100vh" w="100vw">
+    <Stack alignItems="center" justifyContent="center" h="100vh" w="100vw" bgImage="url(./images/bg-3.png)" bgSize="cover" >
       <AuthForm mode="signup"/>
     </Stack>
   );

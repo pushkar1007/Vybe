@@ -9,6 +9,7 @@ import {
   updateProfile,
 } from "firebase/auth";
 import { firebaseConfig } from "./config.js";
+import firebaseUserdb from "./firebase.userdb.js";
 
 class Firebase {
   app;
@@ -51,6 +52,13 @@ class Firebase {
           displayName: username,
         });
         await response.user.reload();
+        await firebaseUserdb.createUser(
+          {
+            username,
+            email,
+          },
+          response.user.uid,
+        );
         await this.loginUser({ email, password }); //if account created successfully login the user
         return response.user;
       }

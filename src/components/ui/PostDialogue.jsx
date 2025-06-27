@@ -9,7 +9,6 @@ import {
   Stack,
   Text,
 } from "@chakra-ui/react";
-import { BeatLoader } from "react-spinners";
 import PostSelect from "./PostSelect";
 import TextareaAutosize from "react-textarea-autosize";
 import { useState } from "react";
@@ -40,7 +39,6 @@ const PostDialogue = () => {
     <Dialog.Root closeOnInteractOutside={false}>
       <Dialog.Trigger asChild>
         <Button
-          spinner={<BeatLoader size={8} color="black" />}
           bg="brand.400"
           color="brand.200"
           boxShadow="4px 8px 4px rgba(0,0,0,0.1)"
@@ -105,7 +103,6 @@ const PostDialogue = () => {
                         className="vybe-textarea"
                         name="post"
                         placeholder="What's Vybe for Today?"
-                        color="white"
                         value={value}
                         onChange={handleChange}
                         style={{
@@ -117,7 +114,7 @@ const PostDialogue = () => {
                           borderRadius: "8px",
                           fontFamily: "inherit",
                           background: "transparent",
-                          color: "brand.400",
+                          color: "white",
                           outline: "none",
                         }}
                         minRows={4}
@@ -164,7 +161,15 @@ const PostDialogue = () => {
               </Dialog.ActionTrigger>
             </Dialog.Footer>
             <Dialog.CloseTrigger asChild>
-              <CloseButton size="lg" color="brand.400" />
+              <CloseButton
+                size="lg"
+                color="brand.400"
+                _hover={{
+                  bg: "whiteAlpha.300",
+                  border: "1px solid white",
+                }}
+                rounded="full"
+              />
             </Dialog.CloseTrigger>
           </Dialog.Content>
         </Dialog.Positioner>

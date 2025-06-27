@@ -1,4 +1,4 @@
-import { Heading, VStack, Text } from "@chakra-ui/react";
+import { Heading, VStack, Text, Box } from "@chakra-ui/react";
 import { Formik, Form } from "formik";
 import * as Yup from "yup";
 import InputTab from "./InputTab";
@@ -9,6 +9,7 @@ import SpinnerBtn from "./SpinnerBtn";
 import Firebase from "@/firebase/firebase.auth";
 import { toast } from "react-toastify";
 import { useAuth } from "@/context/AuthContext";
+import firebaseUserdb from "@/firebase/firebase.userdb";
 
 const AuthForm = ({ mode }) => {
   const isSignup = mode === "signup";
@@ -33,138 +34,156 @@ const AuthForm = ({ mode }) => {
 
   return (
     <VStack
-      bg="brand.500"
+      bg="rgba(255, 255, 255, 0.123)"
+      backdropFilter="blur(20px)"
+      sx={{
+        WebkitBackdropFilter: "blur(12px)", // for Safari support
+      }}
+      border="1px solid white"
       w="40%"
       h="70%"
       rounded="24px"
       boxShadow="12px 12px 6px rgba(0,0,0,0.1)"
       px={10}
       py={14}
+      justifyContent="space-evenly"
+      overflow="hidden"
     >
-      <Heading fontSize="48px" fontWeight="bold" mb={4} color="brand.400">
-        {isSignup ? "Sign Up" : "Login"}
-      </Heading>
-      <Formik
-        initialValues={initialValues}
-        validationSchema={validationSchema}
-        onSubmit={
-          isSignup
-            ? async (values, { setSubmitting }) => {
-                const user = await Firebase.createUser({
-                  email: values.email,
-                  password: values.password,
-                  username: values.username,
-                });
+      <Box>
+        <Heading fontSize="48px" fontWeight="bold" mb={4} color={isSignup ? "brand.200" : "brand.400"}>
+          {isSignup ? "Create Account" : "Login"}
+        </Heading>
+      </Box>
+      <Box>
+        <Formik
+          initialValues={initialValues}
+          validationSchema={validationSchema}
+          onSubmit={
+            isSignup
+              ? async (values, { setSubmitting }) => {
+                  const user = await Firebase.createUser({
+                    email: values.email,
+                    password: values.password,
+                    username: values.username,
+                  });
 
-                if (user?.success === false) {
-                  toast.error("Signup failed: " + user.error);
-                } else {
-                  await refreshUser();
-                  toast.success("Signup successful!");
+                  if (user?.success === false) {
+                    toast.error("Signup failed: " + user.error);
+                  } else {
+                    await firebaseUserdb.createUser(
+                      {
+                        username: values.username,
+                        email: values.email,
+                      },
+                      user.uid
+                    )
+                    await refreshUser();
+                    toast.success("Signup successful!");
+                  }
+
+                  setSubmitting(false);
                 }
+              : async (values, { setSubmitting }) => {
+                  const user = await Firebase.loginUser({
+                    email: values.email,
+                    password: values.password,
+                  });
 
-                setSubmitting(false);
-              }
-            : async (values, { setSubmitting }) => {
-                const user = await Firebase.loginUser({
-                  email: values.email,
-                  password: values.password,
-                });
+                  if (user?.success === false) {
+                    toast.error("Login failed: " + user.error);
+                  } else {
+                    toast.success("Login successful!");
+                  }
 
-                if (user?.success === false) {
-                  toast.error("Login failed: " + user.error);
-                } else {
-                  toast.success("Login successful!");
+                  setSubmitting(false);
                 }
+          }
+        >
+          {({ errors, touched, isSubmitting, getFieldProps }) => (
+            <Form
+              style={{
+                width: "100%",
+                display: "flex",
+                alignItems: "flex-start",
+                justifyContent: "center",
+                height: "100%",
+              }}
+            >
+              <VStack gap="30px" mt="20px">
+                {isSignup && (
+                  <>
+                    <InputTab
+                      {...getFieldProps("username")}
+                      type="text"
+                      placeholder="Enter username..."
+                      startElement={<LuUserRound color="black" />}
+                    />
+                    {errors.username && touched.username && (
+                      <Text
+                        color="brand.200"
+                        fontSize="sm"
+                        mt="-7"
+                        alignSelf="start"
+                        ml="2"
+                      >
+                        {errors.username}
+                      </Text>
+                    )}
+                  </>
+                )}
 
-                setSubmitting(false);
-              }
-        }
-      >
-        {({ errors, touched, isSubmitting, getFieldProps }) => (
-          <Form
-            style={{
-              width: "100%",
-              display: "flex",
-              alignItems: "flex-start",
-              justifyContent: "center",
-              height: "100%",
-            }}
-          >
-            <VStack gap="30px" mt="20px">
-              {isSignup && (
-                <>
-                  <InputTab
-                    {...getFieldProps("username")}
-                    type="text"
-                    placeholder="Enter username..."
-                    startElement={<LuUserRound color="black" />}
-                  />
-                  {errors.username && touched.username && (
-                    <Text
-                      color="brand.200"
-                      fontSize="sm"
-                      mt="-7"
-                      alignSelf="start"
-                      ml="2"
-                    >
-                      {errors.username}
-                    </Text>
-                  )}
-                </>
-              )}
+                <InputTab
+                  {...getFieldProps("email")}
+                  type="email"
+                  placeholder="Enter your email..."
+                  startElement={<AiOutlineMail color="black" />}
+                />
+                {errors.email && touched.email && (
+                  <Text
+                    color="brand.200"
+                    fontSize="sm"
+                    mt="-7"
+                    alignSelf="start"
+                    ml="2"
+                  >
+                    {errors.email}
+                  </Text>
+                )}
 
-              <InputTab
-                {...getFieldProps("email")}
-                type="email"
-                placeholder="Enter your email..."
-                startElement={<AiOutlineMail color="black" />}
-              />
-              {errors.email && touched.email && (
-                <Text
-                  color="brand.200"
-                  fontSize="sm"
-                  mt="-7"
-                  alignSelf="start"
-                  ml="2"
-                >
-                  {errors.email}
-                </Text>
-              )}
+                <InputTab
+                  {...getFieldProps("password")}
+                  type="password"
+                  placeholder="Enter your password..."
+                  startElement={<IoLockClosedOutline color="black" />}
+                />
+                {errors.password && touched.password && (
+                  <Text
+                    color="brand.200"
+                    fontSize="sm"
+                    mt="-7"
+                    alignSelf="start"
+                    ml="2"
+                  >
+                    {errors.password}
+                  </Text>
+                )}
 
-              <InputTab
-                {...getFieldProps("password")}
-                type="password"
-                placeholder="Enter your password..."
-                startElement={<IoLockClosedOutline color="black" />}
-              />
-              {errors.password && touched.password && (
-                <Text
-                  color="brand.200"
-                  fontSize="sm"
-                  mt="-7"
-                  alignSelf="start"
-                  ml="2"
-                >
-                  {errors.password}
-                </Text>
-              )}
-
-              <SpinnerBtn
-                type="submit"
-                text={isSignup ? "Sign Up" : "Login"}
-                w="300px"
-                h="62px"
-                rounded="20px"
-                fontSize="26px"
-                fontWeight="bold"
-                isLoading={isSubmitting}
-                isDisabled={isSubmitting}
-              />
-            </VStack>
-          </Form>
-        )}
-      </Formik>
+                <SpinnerBtn
+                  type="submit"
+                  text={isSignup ? "Sign Up" : "Login"}
+                  w="300px"
+                  h="62px"
+                  rounded="20px"
+                  fontSize="26px"
+                  fontWeight="bold"
+                  isLoading={isSubmitting}
+                  isDisabled={isSubmitting}
+                />
+              </VStack>
+            </Form>
+          )}
+        </Formik>
+      </Box>
     </VStack>
   );
 };

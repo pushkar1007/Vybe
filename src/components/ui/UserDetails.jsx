@@ -12,6 +12,7 @@ import { FaArrowLeftLong } from "react-icons/fa6";
 import { useNavigate } from "react-router-dom";
 import SpinnerBtn from "./SpinnerBtn";
 import { useAuth } from "@/context/AuthContext";
+import EditProfileDialogue from "./EditProfileDialogue";
 
 const UserDeatils = () => {
   const navigate = useNavigate();
@@ -20,7 +21,7 @@ const UserDeatils = () => {
     navigate("/");
   };
 
-  const { user } = useAuth();
+  const { user, userData } = useAuth();
 
   return (
     <Stack position="relative" gap={0}>
@@ -41,7 +42,11 @@ const UserDeatils = () => {
           cursor="pointer"
         />
         <Stack gap={0} m={0}>
-          <Heading m={0}>{user?.displayName || "Unknown User"}</Heading>
+          <Heading m={0}>
+            {userData?.handlename ||
+              user?.email?.split("@")[0] ||
+              "Unknown User"}
+          </Heading>
           <Text fontSize="sm">12 Posts</Text>
         </Stack>
       </HStack>
@@ -52,7 +57,17 @@ const UserDeatils = () => {
         h="160px"
         borderBottom="1px solid"
         borderColor="brand.500"
-      ></Box>
+      >
+        {userData?.banner && (
+          <Image
+            src={userData.banner}
+            alt="Banner"
+            h="100%"
+            w="100%"
+            objectFit="cover"
+          />
+        )}
+      </Box>
       <Box
         border="1px solid #000000"
         rounded="full"
@@ -63,8 +78,8 @@ const UserDeatils = () => {
         top="180px"
         left="20px"
       >
-        {user?.photoURL ? (
-          <Image src={user.photoURL} alt="Profile" boxSize="100px" />
+        {userData?.avatar ? (
+          <Image src={userData.avatar} alt="Profile" boxSize="100px" />
         ) : (
           <Image as={ProfileIcon} />
         )}
@@ -77,18 +92,18 @@ const UserDeatils = () => {
       >
         <Stack mt="50px" gap="10px">
           <Stack gap={0}>
-            <Heading>{user?.displayName || "Unknown User"}</Heading>
+            <Heading>
+              {userData?.handlename ||
+                user?.email?.split("@")[0] ||
+                "Unknown User"}
+            </Heading>
             <Text color="brand.100" lineHeight={1}>
-              @{user?.email?.split("@")[0] || "user"}
+              @{userData?.username || user?.email?.split("@")[0]}
             </Text>
           </Stack>
-          <Text>Description.....</Text>
+          <Text>{userData?.bio || "No bio added yet..."}</Text>
         </Stack>
-        <SpinnerBtn
-          text="Edit Profile"
-          border="1px solid #EF5D60"
-          rounded="full"
-        />
+        <EditProfileDialogue />
       </HStack>
     </Stack>
   );
