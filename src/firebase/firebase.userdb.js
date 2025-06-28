@@ -128,8 +128,8 @@ class Firebase {
       }
 
       // Get references
-      const userRef = doc(db, "users", currentUser.uid);
-      const postRef = doc(db, "posts", postId); // This is your DocumentReference
+      const userRef = doc(this.db, "users", currentUser.uid);
+      const postRef = doc(this.db, "posts", postId); // This is your DocumentReference
 
       // Update the array field atomically
       await updateDoc(userRef, {
@@ -157,8 +157,8 @@ class Firebase {
       }
 
       // Get references
-      const userRef = doc(db, "users", currentUser.uid);
-      const postRef = doc(db, "posts", postId); // This is your DocumentReference
+      const userRef = doc(this.db, "users", currentUser.uid);
+      const postRef = doc(this.db, "posts", postId); // This is your DocumentReference
 
       // Update the array field atomically
       await updateDoc(userRef, {
@@ -184,8 +184,8 @@ class Firebase {
       }
 
       // Get references
-      const userRef = doc(db, "users", currentUser.uid);
-      const postRef = doc(db, "posts", postId); // This is your DocumentReference
+      const userRef = doc(this.db, "users", currentUser.uid);
+      const postRef = doc(this.db, "posts", postId); // This is your DocumentReference
 
       // Update the array field atomically
       await updateDoc(userRef, {
@@ -211,8 +211,8 @@ class Firebase {
       }
 
       // Get references
-      const userRef = doc(db, "users", currentUser.uid);
-      const postRef = doc(db, "posts", postId); // This is your DocumentReference
+      const userRef = doc(this.db, "users", currentUser.uid);
+      const postRef = doc(this.db, "posts", postId); // This is your DocumentReference
 
       // Update the array field atomically
       await updateDoc(userRef, {
@@ -238,8 +238,8 @@ class Firebase {
       }
 
       // Get references
-      const userRef = doc(db, "users", currentUser.uid);
-      const commentRef = doc(db, "comments", commentId); // This is your DocumentReference
+      const userRef = doc(this.db, "users", currentUser.uid);
+      const commentRef = doc(this.db, "comments", commentId); // This is your DocumentReference
 
       // Update the array field atomically
       await updateDoc(userRef, {
@@ -265,8 +265,8 @@ class Firebase {
       }
 
       // Get references
-      const userRef = doc(db, "users", currentUser.uid);
-      const commentRef = doc(db, "comments", commentId); // This is your DocumentReference
+      const userRef = doc(this.db, "users", currentUser.uid);
+      const commentRef = doc(this.db, "comments", commentId); // This is your DocumentReference
 
       // Update the array field atomically
       await updateDoc(userRef, {
@@ -292,8 +292,8 @@ class Firebase {
       }
 
       // Get references
-      const userRef = doc(db, "users", currentUser.uid);
-      const vybudRef = doc(db, "vybuds", userId); // This is your DocumentReference
+      const userRef = doc(this.db, "users", currentUser.uid);
+      const vybudRef = doc(this.db, "vybuds", userId); // This is your DocumentReference
 
       // Update the array field atomically
       await updateDoc(userRef, {
@@ -319,8 +319,8 @@ class Firebase {
       }
 
       // Get references
-      const userRef = doc(db, "users", currentUser.uid);
-      const vybudRef = doc(db, "vybuds", userId); // This is your DocumentReference
+      const userRef = doc(this.db, "users", currentUser.uid);
+      const vybudRef = doc(this.db, "vybuds", userId); // This is your DocumentReference
 
       // Update the array field atomically
       await updateDoc(userRef, {
@@ -346,8 +346,8 @@ class Firebase {
       }
 
       // Get references
-      const userRef = doc(db, "users", currentUser.uid);
-      const vybeCircleRef = doc(db, "vybecircles", vybeCircleId); // This is your DocumentReference
+      const userRef = doc(this.db, "users", currentUser.uid);
+      const vybeCircleRef = doc(this.db, "vybecircles", vybeCircleId); // This is your DocumentReference
 
       // Update the array field atomically
       await updateDoc(userRef, {
@@ -373,8 +373,8 @@ class Firebase {
       }
 
       // Get references
-      const userRef = doc(db, "users", currentUser.uid);
-      const vybeCircleRef = doc(db, "vybecircles", vybeCircleId); // This is your DocumentReference
+      const userRef = doc(this.db, "users", currentUser.uid);
+      const vybeCircleRef = doc(this.db, "vybecircles", vybeCircleId); // This is your DocumentReference
 
       // Update the array field atomically
       await updateDoc(userRef, {
@@ -400,8 +400,8 @@ class Firebase {
       }
 
       // Get references
-      const currentUserRef = doc(db, "users", currentUser.uid);
-      const blockedUserRef = doc(db, "users", userId); // This is your DocumentReference
+      const currentUserRef = doc(this.db, "users", currentUser.uid);
+      const blockedUserRef = doc(this.db, "users", userId); // This is your DocumentReference
 
       // Update the array field atomically
       await updateDoc(currentUserRef, {
@@ -427,8 +427,8 @@ class Firebase {
       }
 
       // Get references
-      const currentUserRef = doc(db, "users", currentUser.uid);
-      const blockedUserRef = doc(db, "users", userId); // This is your DocumentReference
+      const currentUserRef = doc(this.db, "users", currentUser.uid);
+      const blockedUserRef = doc(this.db, "users", userId); // This is your DocumentReference
 
       // Update the array field atomically
       await updateDoc(currentUserRef, {

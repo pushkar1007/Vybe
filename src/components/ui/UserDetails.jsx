@@ -47,7 +47,10 @@ const UserDeatils = () => {
               user?.email?.split("@")[0] ||
               "Unknown User"}
           </Heading>
-          <Text fontSize="sm">12 Posts</Text>
+          <Text fontSize="sm">
+            {userData?.createdPosts?.length ?? 0} Post
+            {userData?.createdPosts?.length === 1 ? "" : "s"}
+          </Text>
         </Stack>
       </HStack>
       {/* <Image bg="brand.100" w="full" /> */}
@@ -79,7 +82,12 @@ const UserDeatils = () => {
         left="20px"
       >
         {userData?.avatar ? (
-          <Image src={userData.avatar} alt="Profile" boxSize="100px" rounded="full" />
+          <Image
+            src={userData.avatar}
+            alt="Profile"
+            boxSize="100px"
+            rounded="full"
+          />
         ) : (
           <Image as={ProfileIcon} />
         )}
