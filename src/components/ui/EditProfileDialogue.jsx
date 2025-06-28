@@ -9,14 +9,17 @@ import {
   Text,
   Input,
   Field,
+  Icon,
 } from "@chakra-ui/react";
 import SpinnerBtn from "./SpinnerBtn";
 import { useAuth } from "@/context/AuthContext";
 import ProfileIcon from "../icons/ProfileIcon";
 import ProfileInput from "./ProfileInput";
-import TextareaAutosize from "react-textarea-autosize";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import firebaseUserdb from "@/firebase/firebase.userdb";
+import BioInput from "./BioInput";
+import { MdOutlineAddAPhoto } from "react-icons/md";
+import { uploadImage } from "@/utils/uploadImage";
 
 const MAX_CHAR_LIMIT = 550;
 
@@ -26,6 +29,25 @@ const EditProfileDialogue = () => {
   const [username, setUsername] = useState(userData?.username || "");
   const [dob, setDob] = useState(userData?.dob || "");
   const [bio, setBio] = useState(userData?.bio || "");
+
+  const avatarInputRef = useRef(null); 
+  const bannerInputRef = useRef(null); 
+  const [uploading, setUploading] = useState(false);
+
+  const handleImageUpload = async (e, type) => {
+    const file = e.target.files[0];
+    if (!file || !user) return;
+
+    setUploading(true);
+    try {
+      const imageUrl = await uploadImage(file);
+      await firebaseUserdb.updateUserCredentials(type, imageUrl, user);
+      await refreshUser();
+    } catch (err) {
+      console.error("Cloudinary upload failed:", err.message);
+    }
+    setUploading(false);
+  };
 
   const handleChange = (e) => {
     const newValue = e.target.value;
@@ -78,13 +100,27 @@ const EditProfileDialogue = () => {
         <Dialog.Backdrop />
         <Dialog.Positioner>
           <Dialog.Content bg="brand.500">
-            <Dialog.Header justifyContent="space-between" px={16} my={4}>
+            <Dialog.Header justifyContent="space-between" px={7} my={4}>
               <Dialog.Title fontSize="2xl" color="brand.400">
                 Edit Profile
               </Dialog.Title>
             </Dialog.Header>
             <Dialog.Body p={0}>
               <Stack position="relative">
+                <input
+                  type="file"
+                  accept="image/*"
+                  style={{ display: "none" }}
+                  ref={avatarInputRef}
+                  onChange={(e) => handleImageUpload(e, "avatar")}
+                />
+                <input
+                  type="file"
+                  accept="image/*"
+                  style={{ display: "none" }}
+                  ref={bannerInputRef}
+                  onChange={(e) => handleImageUpload(e, "banner")}
+                />
                 <Box
                   bg="brand.300"
                   w="full"
@@ -101,6 +137,30 @@ const EditProfileDialogue = () => {
                       objectFit="cover"
                     />
                   )}
+                  <Box
+                    _hover={{
+                      bg: "rgba(239, 93, 95, 0.111)",
+                    }}
+                    w="50px"
+                    h="50px"
+                    position="absolute"
+                    left="43%"
+                    top="7.5%"
+                    display="flex"
+                    alignItems="center"
+                    justifyContent="center"
+                    rounded="full"
+                    cursor="pointer"
+                    onClick={() => bannerInputRef.current?.click()}
+                  >
+                    <Icon
+                      as={MdOutlineAddAPhoto}
+                      position="absolute"
+                      color="brand.500"
+                      w="30px"
+                      h="30px"
+                    />
+                  </Box>
                 </Box>
                 <Box
                   border="1px solid #000000"
@@ -121,6 +181,30 @@ const EditProfileDialogue = () => {
                   ) : (
                     <Image as={ProfileIcon} />
                   )}
+                  <Box
+                    _hover={{
+                      bg: "rgba(239, 93, 95, 0.111)",
+                    }}
+                    w="50px"
+                    h="50px"
+                    position="absolute"
+                    left="23px"
+                    top="23px"
+                    display="flex"
+                    alignItems="center"
+                    justifyContent="center"
+                    rounded="full"
+                    cursor="pointer"
+                    onClick={() => avatarInputRef.current?.click()}
+                  >
+                    <Icon
+                      as={MdOutlineAddAPhoto}
+                      position="absolute"
+                      color="brand.500"
+                      w="30px"
+                      h="30px"
+                    />
+                  </Box>
                 </Box>
                 <Stack mt="50px" p={4} position="relative" gap="15px">
                   <ProfileInput
@@ -135,56 +219,7 @@ const EditProfileDialogue = () => {
                     onChange={(e) => setUsername(e.target.value)}
                     w="82px"
                   />
-                  <Box position="relative">
-                    <Text
-                      position="absolute"
-                      color="brand.400"
-                      left="30px"
-                      top="-10px"
-                      bg="brand.500"
-                      zIndex="1"
-                      h="11px"
-                      w="32px"
-                      display="flex"
-                      justifyContent="center"
-                    >
-                      Bio
-                    </Text>
-                    <TextareaAutosize
-                      className="bio"
-                      name="bio"
-                      color="white"
-                      value={bio}
-                      onChange={handleChange}
-                      style={{
-                        width: "100%",
-                        resize: "none",
-                        fontSize: "16px",
-                        padding: "12px",
-                        borderRadius: "8px",
-                        fontFamily: "inherit",
-                        background: "rgba(255,255,255,0.1)",
-                        color: "white",
-                        border: "1px solid white",
-                        outline: "none",
-                      }}
-                      minRows={4}
-                      maxRows={20}
-                    />
-                    <Text
-                      fontSize="xs"
-                      color={
-                        bio.length >= MAX_CHAR_LIMIT ? "red.500" : "brand.400"
-                      }
-                      position="absolute"
-                      bottom="6px"
-                      right="10px"
-                      zIndex="1"
-                      pointerEvents="none"
-                    >
-                      {bio.length}/{MAX_CHAR_LIMIT}
-                    </Text>
-                  </Box>
+                  <BioInput bio={bio} handleChange={handleChange} />
                   <Field.Root>
                     <Field.Label
                       position="absolute"
