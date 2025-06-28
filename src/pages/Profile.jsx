@@ -6,7 +6,7 @@ import Post from "@/components/ui/Post";
 import UserDetails from "@/components/ui/UserDetails";
 
 const Profile = () => {
-  const { userData } = useAuth();
+  const { userData, refreshUser } = useAuth();
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -32,6 +32,7 @@ const Profile = () => {
           .sort((a, b) => Number(b.createdAt) - Number(a.createdAt)); // Sort latest first
 
         setPosts(fetchedPosts);
+        refreshUser();
       } catch (err) {
         console.error("Error fetching created posts:", err);
       } finally {
