@@ -79,7 +79,7 @@ const UserDeatils = () => {
         left="20px"
       >
         {userData?.avatar ? (
-          <Image src={userData.avatar} alt="Profile" boxSize="100px" />
+          <Image src={userData.avatar} alt="Profile" boxSize="100px" rounded="full" />
         ) : (
           <Image as={ProfileIcon} />
         )}

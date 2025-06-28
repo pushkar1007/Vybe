@@ -6,7 +6,6 @@ import {
   Stack,
   Box,
   Image,
-  Text,
   Input,
   Field,
   Icon,
@@ -15,7 +14,7 @@ import SpinnerBtn from "./SpinnerBtn";
 import { useAuth } from "@/context/AuthContext";
 import ProfileIcon from "../icons/ProfileIcon";
 import ProfileInput from "./ProfileInput";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import firebaseUserdb from "@/firebase/firebase.userdb";
 import BioInput from "./BioInput";
 import { MdOutlineAddAPhoto } from "react-icons/md";
@@ -27,11 +26,11 @@ const EditProfileDialogue = () => {
   const { user, userData, refreshUser } = useAuth();
   const [name, setName] = useState(userData?.handlename || "");
   const [username, setUsername] = useState(userData?.username || "");
-  const [dob, setDob] = useState(userData?.dob || "");
+  const [dob, setDob] = useState("");
   const [bio, setBio] = useState(userData?.bio || "");
 
-  const avatarInputRef = useRef(null); 
-  const bannerInputRef = useRef(null); 
+  const avatarInputRef = useRef(null);
+  const bannerInputRef = useRef(null);
   const [uploading, setUploading] = useState(false);
 
   const handleImageUpload = async (e, type) => {
@@ -48,6 +47,12 @@ const EditProfileDialogue = () => {
     }
     setUploading(false);
   };
+
+  useEffect(() => {
+    if (userData?.DOB) {
+      setDob(userData.DOB);
+    }
+  }, [userData?.DOB]);
 
   const handleChange = (e) => {
     const newValue = e.target.value;
@@ -177,6 +182,7 @@ const EditProfileDialogue = () => {
                       src={userData.avatar}
                       alt="Profile"
                       boxSize="100px"
+                      rounded="full"
                     />
                   ) : (
                     <Image as={ProfileIcon} />
@@ -239,7 +245,7 @@ const EditProfileDialogue = () => {
                       type="date"
                       value={dob}
                       onChange={(e) => setDob(e.target.value)}
-                      placeholder={dob ? "" : userData?.DOB || "dd-mm-yyyy"}
+                      placeholder={dob || "dd-mm-yyyy"}
                       bg="whiteAlpha.200"
                       color={"brand.400"}
                       w="200px"
