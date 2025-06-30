@@ -4,7 +4,6 @@ import {
   HStack,
   Stack,
   Text,
-  Input,
   Image,
 } from "@chakra-ui/react";
 import ProfileIcon from "../icons/ProfileIcon";
