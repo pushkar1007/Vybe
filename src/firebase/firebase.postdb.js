@@ -9,6 +9,10 @@ import {
   deleteDoc,
   doc,
   getDoc,
+  getDocs,
+  onSnapshot,
+  query,
+  orderBy
 } from "firebase/firestore";
 import { firebaseConfig } from "./config.js";
 
@@ -18,7 +22,7 @@ class Firebase {
 
   constructor() {
     this.app = initializeApp(firebaseConfig);
-    this.db = getFirestore(app);
+    this.db = getFirestore(this.app);
   }
 
   async createPost({ content, image }, currentUser) {
@@ -32,8 +36,8 @@ class Firebase {
         createdAt: String(Date.now()),
         updatedAt: null,
       });
-      const post = await updateDoc(postRef, { postId: postRef.id });
-      return post;
+      await updateDoc(postRef, { postId: postRef.id });
+      return postRef;
     } catch (error) {
       const errorCode = error.code;
       const errorMessage = error.message;
@@ -90,10 +94,49 @@ class Firebase {
     }
   }
 
+  async getAllPosts() {
+    try {
+      const querySnapshot = await getDocs(collection(this.db, "posts"));
+      return querySnapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
+    } catch (error) {
+      const errorCode = error.code;
+      const errorMessage = error.message;
+      console.log("Error fetching all posts:", errorCode, errorMessage);
+      return [];
+    }
+  }
+
+  listenToPosts(callback) {
+    try {
+      const postsQuery = query(
+        collection(this.db, "posts"),
+        orderBy("createdAt", "desc"),
+      );
+
+      const unsubscribe = onSnapshot(postsQuery, (snapshot) => {
+        const posts = snapshot.docs.map((doc) => ({
+          id: doc.id,
+          ...doc.data(),
+        }));
+        callback(posts);
+      });
+
+      return unsubscribe; // to stop listening when component unmounts
+    } catch (error) {
+      const errorCode = error.code;
+      const errorMessage = error.message;
+      console.error("Error listening to posts:", errorCode, errorMessage);
+      return () => {};
+    }
+  }
+
   async likePost(postId, userId) {
     try {
       const postRef = doc(this.db, "posts", postId);
-      const userRef = doc(this.db,"users",userId)
+      const userRef = doc(this.db, "users", userId);
       await updateDoc(postRef, {
         likes: arrayUnion(userRef),
       });
@@ -107,7 +150,7 @@ class Firebase {
   async unlikePost(postId, userId) {
     try {
       const postRef = doc(this.db, "posts", postId);
-      const userRef = doc(this.db,"users",userId)
+      const userRef = doc(this.db, "users", userId);
       await updateDoc(postRef, {
         likes: arrayRemove(userRef),
       });
@@ -121,7 +164,7 @@ class Firebase {
   async addComment(postId, commentId) {
     try {
       const postRef = doc(this.db, "posts", postId);
-      const commentRef = doc(this.db,"comments",commentId)
+      const commentRef = doc(this.db, "comments", commentId);
       await updateDoc(postRef, {
         comments: arrayUnion(commentRef),
       });
@@ -135,17 +178,20 @@ class Firebase {
   async removeComment(postId, commentId) {
     try {
       const postRef = doc(this.db, "posts", postId);
-      const commentRef = doc(this.db,"comments",commentId)
+      const commentRef = doc(this.db, "comments", commentId);
       await updateDoc(postRef, {
         comments: arrayUnion(commentRef),
       });
     } catch (error) {
       const errorCode = error.code;
       const errorMessage = error.message;
-      console.error("Error removing comment from  post :", errorCode, errorMessage);
+      console.error(
+        "Error removing comment from  post :",
+        errorCode,
+        errorMessage,
+      );
     }
   }
-  
 }
 
 export default new Firebase();

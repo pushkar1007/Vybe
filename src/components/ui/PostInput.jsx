@@ -1,4 +1,11 @@
-import { Box, Field, HStack, Stack, Text, Input } from "@chakra-ui/react";
+import {
+  Box,
+  Field,
+  HStack,
+  Stack,
+  Text,
+  Image,
+} from "@chakra-ui/react";
 import ProfileIcon from "../icons/ProfileIcon";
 import TextareaAutosize from "react-textarea-autosize";
 import { useState, useRef } from "react";
@@ -6,15 +13,23 @@ import SpinnerBtn from "./SpinnerBtn";
 import { LuImage } from "react-icons/lu";
 import { HiOutlineEmojiHappy } from "react-icons/hi";
 import EmojiPicker from "emoji-picker-react";
+import { uploadImage } from "@/utils/uploadImage";
+import { useAuth } from "@/context/AuthContext";
+import firebaseUserdb from "@/firebase/firebase.userdb";
+import firebasePostdb from "@/firebase/firebase.postdb";
+import { toast } from "react-toastify";
 
 const MAX_CHAR_LIMIT = 550;
 
 const PostInput = () => {
   const [value, setValue] = useState("");
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
-  const [image, setImage] = useState(null);
+  const [imagePreview, setImagePreview] = useState(null);
+  const [imageFile, setImageFile] = useState(null);
+  const [loading, setLoading] = useState(false);
   const textareaRef = useRef(null);
   const fileInputRef = useRef(null);
+  const { user, userData } = useAuth();
 
   const handleChange = (e) => {
     const newValue = e.target.value;
@@ -30,7 +45,6 @@ const PostInput = () => {
     const newText = text.slice(0, cursorPos) + emoji + text.slice(cursorPos);
     setValue(newText);
 
-    // Maintain cursor position
     setTimeout(() => {
       textareaRef.current.focus();
       textareaRef.current.selectionEnd = cursorPos + emoji.length;
@@ -43,7 +57,38 @@ const PostInput = () => {
 
   const handleImageChange = (e) => {
     const file = e.target.files[0];
-    if (file) setImage(URL.createObjectURL(file));
+    if (file) {
+      setImagePreview(URL.createObjectURL(file));
+      setImageFile(file);
+    }
+  };
+
+  const handlePost = async () => {
+    if (!user || (!value.trim() && !imageFile)) return;
+    setLoading(true);
+
+    try {
+      let imageUrl = "";
+      if (imageFile) {
+        imageUrl = await uploadImage(imageFile);
+      }
+      const postRef = await firebasePostdb.createPost(
+        { content: value.trim(), image: imageUrl },
+        user,
+      );
+      if (postRef) {
+        await firebaseUserdb.addCreatedPost(postRef.id, user);
+        setValue("");
+        setImagePreview(null);
+        setImageFile(null);
+        setShowEmojiPicker(false);
+        toast.success("Post added Successfully!");
+      }
+    } catch (err) {
+      console.error("Failed to Post", err);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -59,9 +104,26 @@ const PostInput = () => {
       borderBottom="1px solid"
       borderColor="brand.500"
     >
-      <Box w="50px" h="50px" rounded="full" border="1px solid black">
-        <ProfileIcon />
-      </Box>
+      {userData?.avatar ? (
+        <Image
+          src={userData?.avatar}
+          alt="User Avatar"
+          w="50px"
+          h="50px"
+          rounded="full"
+          objectFit="cover"
+        />
+      ) : (
+        <Box
+          w="50px"
+          h="50px"
+          rounded="full"
+          overflow="hidden"
+          border="1px solid black"
+        >
+          <ProfileIcon />
+        </Box>
+      )}
       <Stack flex="1">
         <Field.Root w="100%" position="relative">
           <Box position="relative" w="100%">
@@ -97,10 +159,10 @@ const PostInput = () => {
           </Box>
         </Field.Root>
 
-        {image && (
+        {imagePreview && (
           <Box mt={2}>
             <img
-              src={image}
+              src={imagePreview}
               alt="uploaded"
               style={{ maxHeight: "100%", borderRadius: "8px", width: "100%" }}
             />
@@ -140,12 +202,12 @@ const PostInput = () => {
             bg="brand.500"
             color="white"
             w="150px"
+            onClick={handlePost}
           />
           {showEmojiPicker && (
             <Box
               position="absolute"
               top="35px"
-              // left="50%"
               transform="translateX(-15%)"
               zIndex="1000"
             >

@@ -1,75 +1,114 @@
-import { Heading, HStack, Icon, Image, Stack, Text } from "@chakra-ui/react";
+import { useEffect, useState } from "react";
+import {
+  Heading,
+  HStack,
+  Icon,
+  Image,
+  Stack,
+  Text,
+  Spinner,
+} from "@chakra-ui/react";
 import { IoMdHeartEmpty } from "react-icons/io";
 import { FaRegComment } from "react-icons/fa";
 import { PiShareFat } from "react-icons/pi";
+import { formatDistanceToNow } from "date-fns";
+import firebaseUserdb from "@/firebase/firebase.userdb";
 
-const Post = () => {
+const Post = ({ post }) => {
+  const { content, image, likes, comments, createdBy, createdAt } = post;
+  const [creator, setCreator] = useState(null);
+
+  const formattedTime = createdAt
+    ? formatDistanceToNow(new Date(Number(createdAt)), { addSuffix: true })
+    : "";
+
+  useEffect(() => {
+    const fetchCreator = async () => {
+      if (typeof createdBy === "string") {
+        const data = await firebaseUserdb.getUserData(createdBy);
+        setCreator(data);
+      } else {
+        setCreator(createdBy); // already full object
+      }
+    };
+
+    fetchCreator();
+  }, [createdBy]);
+
+  if (!creator) {
+    return <Spinner />;
+  }
+
   return (
     <HStack
       py={4}
-      px={{
-        base: 1,
-        md: 4,
-      }}
+      px={{ base: 1, md: 4 }}
       gap={4}
       borderBottom="1px solid"
       borderColor="brand.500"
       alignItems="start"
     >
       <Image
-        src="./images/profilepic.png"
+        src={creator.avatar || "/images/profilepic.png"}
         h="50px"
         w="50px"
         alt="profile-picture"
+        rounded="full"
       />
-      <Stack>
-        <HStack justify="space-between">
-          <HStack gap={0}>
+      <Stack flex={1}>
+        <HStack justify="space-between" w="100%">
+          <HStack gap={2} maxW="70%">
             <Heading
+              fontSize="md"
               whiteSpace="nowrap"
               overflow="hidden"
               textOverflow="ellipsis"
-              maxW={{
-                base: "100px",
-                md: "135px",
-                lg: "170px",
-              }}
             >
-              user1222222222222222222222222222222222222222222222222222222222222222222
+              {creator.handlename || "Anonymous"}
             </Heading>
             <Text
+              fontSize="sm"
+              color="gray.500"
               whiteSpace="nowrap"
               overflow="hidden"
               textOverflow="ellipsis"
-              maxW={{
-                base: "100px",
-                md: "135px",
-                lg: "170px",
-              }}
+              maxW="130px"
             >
-              @user12345555555555555555555555555555555555555555555555555555555555555555555
+              @{creator.username || "user"}
             </Text>
           </HStack>
-          <Text whiteSpace="nowrap">2h ago</Text>
+          <Text fontSize="sm" color="gray.500" whiteSpace="nowrap">
+            {formattedTime}
+          </Text>
         </HStack>
-        <Text>
-          Lorem ipsum dolor sit amet, consectetur adipisicing elit. Quam
-          explicabo cupiditate libero voluptas qui, tempore perspiciatis debitis
-          quas, quod incidunt deleniti aliquam? Porro, neque nam hic incidunt
-          corrupti aperiam doloremque.
+
+        <Text fontSize="md" whiteSpace="pre-wrap">
+          {content}
         </Text>
+
+        {image && (
+          <Image
+            src={image}
+            alt="post image"
+            borderRadius="lg"
+            maxH="400px"
+            objectFit="cover"
+            mt={2}
+          />
+        )}
+
         <HStack justifyContent="space-between" color="brand.500">
           <HStack gap={1}>
             <Icon as={IoMdHeartEmpty} h="24px" w="24px" cursor="pointer" />
-            <Text>1</Text>
+            <Text>{likes?.length || 0}</Text>
           </HStack>
           <HStack gap={1.5}>
             <Icon as={FaRegComment} h="20px" w="20px" cursor="pointer" />
-            <Text>1</Text>
+            <Text>{comments?.length || 0}</Text>
           </HStack>
           <HStack gap={1}>
             <Icon as={PiShareFat} h="22px" w="22px" cursor="pointer" />
-            <Text>1</Text>
+            <Text>Share</Text>
           </HStack>
         </HStack>
       </Stack>
