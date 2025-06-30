@@ -1,12 +1,36 @@
-import { HStack, Icon, Stack } from "@chakra-ui/react";
+import { Box, HStack, Icon, Stack } from "@chakra-ui/react";
 import LogoIcon from "../icons/LogoIcon";
 import InputTab from "../ui/InputTab";
 import ProfileMenu from "../ui/ProfileMenu";
 import { Link } from "react-router-dom";
 import { LuSearch } from "react-icons/lu";
 import HamburgerMenu from "./HamburgerMenu";
+import { collection, onSnapshot } from "firebase/firestore";
+import firebaseUserdb from "@/firebase/firebase.userdb";
+import { useState } from "react";
+import Search from "../ui/Search";
 
 const Header = () => {
+  const [users, setUsers] = useState(null);
+
+  const searchUsers = (e) => {
+    const value = e.target.value;
+    const usersRef = collection(firebaseUserdb.db, "users");
+    onSnapshot(usersRef, (snapshot) => {
+      const usersList = snapshot.docs.map((doc) => {
+        return {
+          id: doc.id,
+          ...doc.data(),
+        };
+      });
+      const search = usersList.filter((user) =>
+        user.username.toLowerCase().includes(value.toLowerCase()),
+      );
+      setUsers(search);
+      return search;
+    });
+  };
+
   return (
     <HStack
       bg="brand.500"
@@ -24,23 +48,31 @@ const Header = () => {
       <Stack display={{ base: "block", md: "none" }}>
         <HamburgerMenu />
       </Stack>
-      <Link to="/">
-        <Icon
-          as={LogoIcon}
-          h="63px"
-          w="100px"
-          color="brand.300"
-          ml={{
-            base: "10px",
-            lg: "120px",
-          }}
-          cursor="pointer"
-          display={{
-            base: "none",
-            md: "block",
-          }}
-        />
-      </Link>
+      <Box
+        position="relative"
+        ml={{
+          base: "10px",
+          md: "0px",
+          lg: "0px",
+          xl: "100px"
+        }}
+        top="-25px"
+      >
+        <Link to="/">
+          <Icon
+            as={LogoIcon}
+            h="63px"
+            w="100px"
+            color="brand.300"
+            cursor="pointer"
+            display={{
+              base: "none",
+              md: "block",
+            }}
+            position="absolute"
+          />
+        </Link>
+      </Box>
       <HStack
         gap={{
           base: "20px",
@@ -52,17 +84,9 @@ const Header = () => {
           md: "8px",
         }}
         alignItems="end"
+        position="relative"
       >
-        <InputTab
-          startElement={<LuSearch color="white" size="18px" />}
-          placeholder="Wanna Vybe?"
-          w="fit-content"
-          maxW={{
-            base: "150px",
-            md: "200px",
-            lg: "260px",
-          }}
-        />
+        <Search />
         <ProfileMenu />
       </HStack>
     </HStack>

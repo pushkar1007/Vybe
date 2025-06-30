@@ -12,6 +12,9 @@ import { useAuth } from "../../context/AuthContext";
 import PostDialogue from "../ui/PostDialogue";
 
 const SideMenu = () => {
+
+  const { user } = useAuth();
+
   const sideMenuLinks = [
     {
       icon: AiFillHome,
@@ -41,7 +44,7 @@ const SideMenu = () => {
     {
       icon: TbUserFilled,
       text: "Profile",
-      link: "/profile",
+      link: `/profile/${user?.uid}`,
     },
   ];
 
@@ -50,8 +53,6 @@ const SideMenu = () => {
   const handleLogoutClick = async () => {
     await logoutUser();
   };
-
-  const handlePostClick = () => {};
 
   return (
     <Stack
