@@ -18,7 +18,7 @@ const UserDetails = ({ userData, isOwner }) => {
   const navigate = useNavigate();
 
   const handleClick = () => {
-    navigate(-1);
+    navigate("/");
   };
 
   return (
