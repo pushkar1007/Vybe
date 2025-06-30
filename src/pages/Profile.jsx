@@ -1,14 +1,37 @@
 import { useEffect, useState } from "react";
 import { Stack, Spinner } from "@chakra-ui/react";
-import { getDoc } from "firebase/firestore";
+import { doc, getDoc } from "firebase/firestore";
+import { useParams } from "react-router-dom";
 import { useAuth } from "@/context/AuthContext";
+import firebaseUserdb from "@/firebase/firebase.userdb";
 import Post from "@/components/ui/Post";
 import UserDetails from "@/components/ui/UserDetails";
 
 const Profile = () => {
-  const { userData, refreshUser } = useAuth();
+  const { uid } = useParams();
+  const { user: currentUser } = useAuth();
+  const [userData, setUserData] = useState(null);
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchUser = async () => {
+      if (!uid) return;
+      try {
+        const userRef = doc(firebaseUserdb.db, "users", uid);
+        const userSnap = await getDoc(userRef);
+        if (userSnap.exists()) {
+          setUserData({ id: userSnap.id, ...userSnap.data() });
+        } else {
+          setUserData(null);
+        }
+      } catch (err) {
+        console.error("Error fetching user:", err);
+      }
+    };
+
+    fetchUser();
+  }, [uid]);
 
   useEffect(() => {
     const fetchCreatedPosts = async () => {
@@ -29,10 +52,9 @@ const Profile = () => {
             id: doc.id,
             ...doc.data(),
           }))
-          .sort((a, b) => Number(b.createdAt) - Number(a.createdAt)); // Sort latest first
+          .sort((a, b) => Number(b.createdAt) - Number(a.createdAt));
 
         setPosts(fetchedPosts);
-        refreshUser();
       } catch (err) {
         console.error("Error fetching created posts:", err);
       } finally {
@@ -45,7 +67,9 @@ const Profile = () => {
 
   return (
     <Stack>
-      <UserDetails />
+      {userData && (
+        <UserDetails userData={userData} isOwner={uid === currentUser?.uid} />
+      )}
       {loading ? (
         <Spinner alignSelf="center" mt={6} size="lg" />
       ) : (

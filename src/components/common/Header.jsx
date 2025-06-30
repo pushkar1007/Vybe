@@ -52,7 +52,9 @@ const Header = () => {
         position="relative"
         ml={{
           base: "10px",
-          lg: "100px",
+          md: "0px",
+          lg: "0px",
+          xl: "100px"
         }}
         top="-25px"
       >

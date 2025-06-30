@@ -13,7 +13,6 @@ const Search = () => {
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
-  // Fetch all users once
   useEffect(() => {
     const fetchAllUsers = async () => {
       try {
@@ -32,7 +31,6 @@ const Search = () => {
     fetchAllUsers();
   }, []);
 
-  // Filter users on input
   useEffect(() => {
     if (!input.trim()) {
       setFilteredUsers([]);
@@ -53,7 +51,6 @@ const Search = () => {
     return () => clearTimeout(debounce);
   }, [input, allUsers]);
 
-  // Optional: Close dropdown on outside click
   useEffect(() => {
     const handleClickOutside = (e) => {
       if (!e.target.closest(".search-wrapper")) {
