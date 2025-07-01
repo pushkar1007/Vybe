@@ -85,8 +85,8 @@ function App() {
                 display: "none",
               },
               "&": {
-                scrollbarWidth: "none", 
-                msOverflowStyle: "none", 
+                scrollbarWidth: "none",
+                msOverflowStyle: "none",
               },
             }}
           >
@@ -131,9 +131,20 @@ function App() {
                   </ProtectedRoute>
                 }
               />
-              <Route path="/profile" element={<Profile />} />
+
               <Route path="/chat-button" element={<ChatButton/>} />
-        <Route path="/chat-room/:roomId" element={<ChatRoom />} />
+              <Route path="/chat-room/:roomId" element={<ChatRoom />} />
+
+              <Route
+                path="/profile/:uid"
+                element={
+                  <ProtectedRoute>
+                    <Profile />
+                  </ProtectedRoute>
+                }
+              />
+              <Route path="*" element={<h1>404 - Page Not Found</h1>} />
+
             </Routes>
           </Box>
           {!shouldHideVybeHighlights && (

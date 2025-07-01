@@ -10,18 +10,16 @@ import {
 } from "@chakra-ui/react";
 import { FaArrowLeftLong } from "react-icons/fa6";
 import { useNavigate } from "react-router-dom";
-import SpinnerBtn from "./SpinnerBtn";
-import { useAuth } from "@/context/AuthContext";
 import EditProfileDialogue from "./EditProfileDialogue";
+import SpinnerBtn from "./SpinnerBtn";
+import { IoMdPersonAdd } from "react-icons/io";
 
-const UserDeatils = () => {
+const UserDetails = ({ userData, isOwner }) => {
   const navigate = useNavigate();
 
   const handleClick = () => {
     navigate("/");
   };
-
-  const { user, userData } = useAuth();
 
   return (
     <Stack position="relative" gap={0}>
@@ -42,15 +40,13 @@ const UserDeatils = () => {
           cursor="pointer"
         />
         <Stack gap={0} m={0}>
-          <Heading m={0}>
-            {userData?.handlename ||
-              user?.email?.split("@")[0] ||
-              "Unknown User"}
-          </Heading>
-          <Text fontSize="sm">12 Posts</Text>
+          <Heading m={0}>{userData?.handlename || "Unknown User"}</Heading>
+          <Text fontSize="sm">
+            {userData?.createdPosts?.length ?? 0} Post
+            {userData?.createdPosts?.length === 1 ? "" : "s"}
+          </Text>
         </Stack>
       </HStack>
-      {/* <Image bg="brand.100" w="full" /> */}
       <Box
         bg="brand.300"
         w="full"
@@ -79,11 +75,17 @@ const UserDeatils = () => {
         left="20px"
       >
         {userData?.avatar ? (
-          <Image src={userData.avatar} alt="Profile" boxSize="100px" rounded="full" />
+          <Image
+            src={userData.avatar}
+            alt="Profile"
+            boxSize="100px"
+            rounded="full"
+          />
         ) : (
           <Image as={ProfileIcon} />
         )}
       </Box>
+
       <HStack
         borderBottom="1px solid"
         borderColor="brand.500"
@@ -92,21 +94,34 @@ const UserDeatils = () => {
       >
         <Stack mt="50px" gap="10px">
           <Stack gap={0}>
-            <Heading>
-              {userData?.handlename ||
-                user?.email?.split("@")[0] ||
-                "Unknown User"}
-            </Heading>
+            <Heading>{userData?.handlename || "Unknown User"}</Heading>
             <Text color="brand.100" lineHeight={1}>
-              @{userData?.username || user?.email?.split("@")[0]}
+              @{userData?.username || "unknown"}
             </Text>
           </Stack>
           <Text>{userData?.bio || "No bio added yet..."}</Text>
         </Stack>
-        <EditProfileDialogue />
+
+        {isOwner ? (
+          <EditProfileDialogue />
+        ) : (
+          <Box position="relative">
+            <SpinnerBtn
+              text="Add VyBud"
+              fontSize="16px"
+              fontWeight="bold"
+              rounded="full"
+              height="40px"
+              bg="brand.500"
+              color="white"
+              w="160px"
+              icon={IoMdPersonAdd}
+            />
+          </Box>
+        )}
       </HStack>
     </Stack>
   );
 };
 
-export default UserDeatils;
+export default UserDetails;

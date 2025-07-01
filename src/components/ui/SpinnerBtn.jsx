@@ -1,4 +1,4 @@
-import { Button } from "@chakra-ui/react";
+import { Button, Icon } from "@chakra-ui/react";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { BeatLoader } from "react-spinners";
@@ -10,6 +10,7 @@ const SpinnerBtn = ({
   onClick = null,
   type = "button",
   isLoading = false,
+  icon,
   ...props
 }) => {
   const [loading, setLoading] = useState(false);
@@ -42,6 +43,7 @@ const SpinnerBtn = ({
       {...props}
     >
       {text}
+      {icon ? <Icon as={icon} /> : null}
     </Button>
   );
 };
