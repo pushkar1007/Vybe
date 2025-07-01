@@ -114,16 +114,8 @@ const UserDetails = ({ userData, isOwner }) => {
               height="40px"
               bg="brand.500"
               color="white"
-              w="140px"
-              display="flex"
-              justifyContent="start"
-            />
-            <Icon
-              as={IoMdPersonAdd}
-              color="brand.400"
-              position="absolute"
-              left="110px"
-              top="11px"
+              w="160px"
+              icon={IoMdPersonAdd}
             />
           </Box>
         )}

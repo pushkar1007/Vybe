@@ -67,8 +67,12 @@ const Search = () => {
         startElement={<LuSearch color="white" size="18px" />}
         placeholder="Wanna Vybe?"
         value={input}
+        w={{
+          base: "160px",
+          md: "200px",
+          lg: "260px",
+        }}
         onChange={(e) => setInput(e.target.value)}
-        w="100%"
       />
 
       {input && (

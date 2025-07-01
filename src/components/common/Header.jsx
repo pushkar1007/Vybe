@@ -1,35 +1,11 @@
 import { Box, HStack, Icon, Stack } from "@chakra-ui/react";
 import LogoIcon from "../icons/LogoIcon";
-import InputTab from "../ui/InputTab";
 import ProfileMenu from "../ui/ProfileMenu";
 import { Link } from "react-router-dom";
-import { LuSearch } from "react-icons/lu";
 import HamburgerMenu from "./HamburgerMenu";
-import { collection, onSnapshot } from "firebase/firestore";
-import firebaseUserdb from "@/firebase/firebase.userdb";
-import { useState } from "react";
 import Search from "../ui/Search";
 
 const Header = () => {
-  const [users, setUsers] = useState(null);
-
-  const searchUsers = (e) => {
-    const value = e.target.value;
-    const usersRef = collection(firebaseUserdb.db, "users");
-    onSnapshot(usersRef, (snapshot) => {
-      const usersList = snapshot.docs.map((doc) => {
-        return {
-          id: doc.id,
-          ...doc.data(),
-        };
-      });
-      const search = usersList.filter((user) =>
-        user.username.toLowerCase().includes(value.toLowerCase()),
-      );
-      setUsers(search);
-      return search;
-    });
-  };
 
   return (
     <HStack
@@ -87,7 +63,7 @@ const Header = () => {
         position="relative"
       >
         <Search />
-        <Box cursor="pointer" rounded="full">
+        <Box cursor="pointer" rounded="full" minW="50px" w="50px" h="50px">
           <ProfileMenu />
         </Box>
       </HStack>
