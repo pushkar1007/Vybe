@@ -54,7 +54,7 @@ const Header = () => {
           base: "10px",
           md: "0px",
           lg: "0px",
-          xl: "100px"
+          xl: "100px",
         }}
         top="-25px"
       >
@@ -87,7 +87,9 @@ const Header = () => {
         position="relative"
       >
         <Search />
-        <ProfileMenu />
+        <Box cursor="pointer" rounded="full">
+          <ProfileMenu />
+        </Box>
       </HStack>
     </HStack>
   );

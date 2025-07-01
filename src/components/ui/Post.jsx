@@ -13,10 +13,13 @@ import { FaRegComment } from "react-icons/fa";
 import { PiShareFat } from "react-icons/pi";
 import { formatDistanceToNow } from "date-fns";
 import firebaseUserdb from "@/firebase/firebase.userdb";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "@/context/AuthContext";
 
 const Post = ({ post }) => {
   const { content, image, likes, comments, createdBy, createdAt } = post;
   const [creator, setCreator] = useState(null);
+  const navigate = useNavigate();
 
   const formattedTime = createdAt
     ? formatDistanceToNow(new Date(Number(createdAt)), { addSuffix: true })
@@ -54,6 +57,8 @@ const Post = ({ post }) => {
         w="50px"
         alt="profile-picture"
         rounded="full"
+        cursor="pointer"
+        onClick={() => navigate(`/profile/${creator.id}`)}
       />
       <Stack flex={1}>
         <HStack justify="space-between" w="100%">
@@ -63,6 +68,11 @@ const Post = ({ post }) => {
               whiteSpace="nowrap"
               overflow="hidden"
               textOverflow="ellipsis"
+              _hover={{
+                textDecoration: "underline",
+              }}
+              cursor="pointer"
+              onClick={() => navigate(`/profile/${creator.id}`)}
             >
               {creator.handlename || "Anonymous"}
             </Heading>
@@ -73,6 +83,11 @@ const Post = ({ post }) => {
               overflow="hidden"
               textOverflow="ellipsis"
               maxW="130px"
+              cursor="pointer"
+              _hover={{
+                textDecoration: "underline",
+              }}
+              onClick={() => navigate(`/profile/${creator.id}`)}
             >
               @{creator.username || "user"}
             </Text>
