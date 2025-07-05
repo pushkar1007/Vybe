@@ -14,7 +14,6 @@ import { PiShareFat } from "react-icons/pi";
 import { formatDistanceToNow } from "date-fns";
 import firebaseUserdb from "@/firebase/firebase.userdb";
 import { useNavigate } from "react-router-dom";
-import { useAuth } from "@/context/AuthContext";
 
 const Post = ({ post }) => {
   const { content, image, likes, comments, createdBy, createdAt } = post;

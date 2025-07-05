@@ -1,67 +1,44 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect } from "react";
 import { Box, Button } from "@chakra-ui/react";
-import { useParams } from "react-router-dom";
 import { connection } from "@/firebase/firebase.dmdb";
 import ChatButton from "./ChatButton";
 import { collection, doc, onSnapshot } from "firebase/firestore";
 import isEqual from "lodash/isEqual";
 
-const ConnectionStatus = () => {
-  const param = useParams();
-  const [chatPartner, currentUser] = param.roomId.split("-");
-  const [request, setRequest] = useState(null);
-
-  async function getRequests() {
-    try {
-      const response = await connection.getConnectionReq(
-        chatPartner,
-        currentUser,
-      );
-
-      // If no request found
-      if (!response || response.length === 0) {
-        if (request !== null) setRequest(null);
-        return null;
-      }
-
-      const newReq = response[0];
-
-      // ✅ Compare using lodash's deep comparison
-      if (!isEqual(newReq, request)) {
-        setRequest(newReq);
-      }
-
-      return newReq;
-    } catch (error) {
-      console.error("Error fetching connection request:", error);
-      return null;
-    }
-  }
-
+const ConnectionStatus = ({
+  request,
+  setRequest,
+  currentUser,
+  chatPartner,
+}) => {
   async function autoDeleteReq() {
     try {
-      //console.log(request)//if useEffect is used w/o dependecny, useeffect only runs one time hence after the null state of request has been updated there is nothing to re run this function so it is stuck with the null request value keep in mind useEffect only runs on initial mount of components if no other dependecies are defined
       if (!request) return;
-      const timeDiff = Math.abs(Number(request.createdAt) - Number(Date.now()));
-      if (timeDiff > 6000 && (request.status == 0 || request.status==-1)) {
+      const timeDiff = Math.abs(Number(Date.now()) - Number(request.createdAt));
+      if (timeDiff > 6000 && (request.status === 0 || request.status === -1)) {
         await connection.deleteConnection(request.id);
+        setRequest(null);
       }
     } catch (error) {
-      console.error("Error deleting connection request:", error);
+      console.error("Error auto-deleting connection:", error);
     }
   }
 
   useEffect(() => {
     let unsubscribeDoc;
     let unsubscribeCollection;
-    console.log("hello");
+
     (async () => {
       try {
-        const req = await getRequests();
+        const res = await connection.getConnectionReq(chatPartner, currentUser);
+        if (res && res.length > 0) {
+          const newReq = res[0];
+          if (!isEqual(newReq, request)) {
+            setRequest(newReq);
+          }
 
-        if (req) {
           unsubscribeDoc = onSnapshot(
-            doc(connection.db, "dmReqs", req.id),
+            doc(connection.db, "dmReqs", newReq.id),
             (docSnap) => {
               const updated = { id: docSnap.id, ...docSnap.data() };
               setRequest((prev) => (!isEqual(prev, updated) ? updated : prev));
@@ -80,13 +57,13 @@ const ConnectionStatus = () => {
                 usersInvolved.includes(chatPartner)
               ) {
                 const newReq = { id: change.doc.id, ...data };
-                setRequest((prev) => (!isEqual(prev, newReq) ? newReq : prev));//this line saved my screen from being smashed👍
+                setRequest((prev) => (!isEqual(prev, newReq) ? newReq : prev));
               }
             }
           });
         });
       } catch (error) {
-        console.error("error in fetching request: ", error);
+        console.error("Error in ConnectionStatus snapshot:", error);
       }
     })();
 
@@ -100,33 +77,32 @@ const ConnectionStatus = () => {
     };
   }, [request]);
 
-
   return (
     <Box bg="gray.100" p={4} borderBottom="1px solid #ccc">
       {request == null ? (
         <ChatButton initiator={currentUser} acceptor={chatPartner} />
-      ) : request.initiator == currentUser ? (
+      ) : request.initiator === currentUser ? (
         <div>
-          {request.status == 0
-            ? "the request is pending please wait"
-            : request.status == 1
-              ? "the request has been accepted"
-              : "the request has been rejected"}
+          {request.status === 0
+            ? "The request is pending, please wait..."
+            : request.status === 1
+              ? "The request has been accepted."
+              : "The request has been rejected."}
         </div>
       ) : (
         <div>
-          {request.status == 0 ? (
+          {request.status === 0 ? (
             <div>
-              the request is pending selct your action
+              The request is pending — select your action:
               <Button
-                onClick={() => connection.acceptConnection(request?.id)}
+                onClick={() => connection.acceptConnection(request.id)}
                 bgColor="green"
                 mt={2}
               >
                 Accept
               </Button>
               <Button
-                onClick={() => connection.rejectConnection(request?.id)}
+                onClick={() => connection.rejectConnection(request.id)}
                 bgColor="red"
                 mt={2}
                 ml={2}
@@ -134,10 +110,10 @@ const ConnectionStatus = () => {
                 Reject
               </Button>
             </div>
-          ) : request.status == 1 ? (
-            "you accepted the  request"
+          ) : request.status === 1 ? (
+            "You accepted the request."
           ) : (
-            "you rejected the request"
+            "You rejected the request."
           )}
         </div>
       )}

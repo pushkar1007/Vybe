@@ -14,8 +14,10 @@ import Auth from "./pages/Auth";
 import { useAuth } from "./context/AuthContext";
 import SignUp from "./pages/SignUp";
 import Login from "./pages/Login";
-import ChatRoom from "./pages/dm/chatRoom";
+import ChatRoom from "./pages/dm/ChatRoom";
 import ChatButton from "./components/dm/ChatButton";
+import { useEffect } from "react";
+import { initPresence } from "./firebase/firebase.presence";
 
 function App() {
   const { user } = useAuth();
@@ -44,6 +46,10 @@ function App() {
       </Routes>
     );
   }
+
+  useEffect(() => {
+    initPresence(); 
+  }, []);
 
   return (
     <>

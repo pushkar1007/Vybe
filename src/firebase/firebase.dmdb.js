@@ -14,6 +14,7 @@ import {
   or,
 } from "firebase/firestore";
 import { firebaseConfig } from "./config.js";
+import { onAuthStateChanged } from "firebase/auth";
 
 class FirebaseDmConnection {
   app;

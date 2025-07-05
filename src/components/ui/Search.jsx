@@ -6,7 +6,7 @@ import { useNavigate } from "react-router-dom";
 import { LuSearch } from "react-icons/lu";
 import InputTab from "./InputTab";
 
-const Search = () => {
+const Search = ({...props}) => {
   const [input, setInput] = useState("");
   const [allUsers, setAllUsers] = useState([]);
   const [filteredUsers, setFilteredUsers] = useState([]);
@@ -62,7 +62,16 @@ const Search = () => {
   }, []);
 
   return (
-    <Box className="search-wrapper" position="relative" maxW="300px" w="100%">
+    <Box
+      className="search-wrapper"
+      position="relative"
+      maxW={{
+        base: "160px",
+        md: "200px",
+        lg: "260px",
+      }}
+      w="100%"
+    >
       <InputTab
         startElement={<LuSearch color="white" size="18px" />}
         placeholder="Wanna Vybe?"
@@ -72,6 +81,7 @@ const Search = () => {
           md: "200px",
           lg: "260px",
         }}
+        {...props}
         onChange={(e) => setInput(e.target.value)}
       />
 

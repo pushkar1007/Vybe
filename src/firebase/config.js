@@ -6,4 +6,5 @@ export const firebaseConfig = {
   messagingSenderId: String(import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID),
   appId: String(import.meta.env.VITE_FIREBASE_APP_ID),
   measurementId: String(import.meta.env.VITE_FIREBASE_MEASURMENT_ID),
+  databaseURL: String(import.meta.env.VITE_FIREBASE_DATABASE_URL),
 };
