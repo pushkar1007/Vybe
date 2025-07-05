@@ -4,7 +4,7 @@ import { doc, getDoc } from "firebase/firestore";
 import { useParams } from "react-router-dom";
 import { useAuth } from "@/context/AuthContext";
 import firebaseUserdb from "@/firebase/firebase.userdb";
-import Post from "@/components/ui/Post";
+import Post from "@/components/ui/post/Post";
 import UserDetails from "@/components/ui/UserDetails";
 
 const Profile = () => {

@@ -10,7 +10,7 @@ import {
 } from "@chakra-ui/react";
 import { FaArrowLeftLong } from "react-icons/fa6";
 import { useNavigate } from "react-router-dom";
-import EditProfileDialogue from "./EditProfileDialogue";
+import EditProfileDialogue from "./profile/EditProfileDialogue";
 import SpinnerBtn from "./SpinnerBtn";
 import { IoMdPersonAdd } from "react-icons/io";
 

@@ -12,7 +12,7 @@ import {
 import PostSelect from "./PostSelect";
 import TextareaAutosize from "react-textarea-autosize";
 import { useRef, useState } from "react";
-import SpinnerBtn from "./SpinnerBtn";
+import SpinnerBtn from "../SpinnerBtn";
 import { LuImage } from "react-icons/lu";
 import { HiOutlineEmojiHappy } from "react-icons/hi";
 import { useAuth } from "@/context/AuthContext";
@@ -100,7 +100,7 @@ const PostDialogue = () => {
     setImagePreview(null);
     setImageFile(null);
     setShowEmojiPicker(false);
-  }
+  };
 
   const style = `
     .vybe-textarea::placeholder {

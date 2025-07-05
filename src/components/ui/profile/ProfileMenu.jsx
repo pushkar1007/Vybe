@@ -1,9 +1,8 @@
 import { Box, Icon, Image, Menu, Portal } from "@chakra-ui/react";
-import ProfileIcon from "../icons/ProfileIcon";
+import ProfileIcon from "../../icons/ProfileIcon";
 import { useAuth } from "@/context/AuthContext";
 
 const ProfileMenu = () => {
-
   const { userData } = useAuth();
 
   return (

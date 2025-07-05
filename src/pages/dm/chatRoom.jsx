@@ -1,14 +1,14 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { Box, Flex, Spinner, Stack } from "@chakra-ui/react";
-import ConnectionStatus from "@/components/dm/ConnectionStatus";
-import ChatInput from "@/components/dm/ChatInput";
+import ConnectionStatus from "@/components/ui/dm/ConnectionStatus";
+import ChatInput from "@/components/ui/dm/ChatInput";
 import firebaseUserdb from "@/firebase/firebase.userdb";
 import { connection } from "@/firebase/firebase.dmdb";
 import { useAuth } from "@/context/AuthContext";
 import { getDatabase, ref, onValue } from "firebase/database";
-import ChatList from "@/components/dm/ChatList";
-import ChatHeader from "@/components/dm/ChatHeader";
+import ChatList from "@/components/ui/dm/ChatList";
+import ChatHeader from "@/components/ui/dm/ChatHeader";
 
 const ChatRoom = () => {
   const { roomId } = useParams();

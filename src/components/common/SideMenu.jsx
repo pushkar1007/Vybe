@@ -9,10 +9,9 @@ import RenderLink from "../ui/RenderLink";
 import SpinnerBtn from "../ui/SpinnerBtn";
 import { Link } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
-import PostDialogue from "../ui/PostDialogue";
+import PostDialogue from "../ui/post/PostDialogue";
 
 const SideMenu = () => {
-
   const { user } = useAuth();
 
   const sideMenuLinks = [

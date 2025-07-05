@@ -1,17 +1,11 @@
 import { useEffect, useRef, useState } from "react";
-import {
-  Box,
-  Text,
-  VStack,
-  HStack,
-  Spinner,
-} from "@chakra-ui/react";
+import { Box, Text, VStack, HStack, Spinner } from "@chakra-ui/react";
 import { collection, onSnapshot, orderBy, query } from "firebase/firestore";
 import { connection } from "@/firebase/firebase.dmdb";
 import { useAuth } from "@/context/AuthContext";
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
-import { useColorModeValue } from "../ui/color-mode";
+import { useColorModeValue } from "../color-mode";
 
 dayjs.extend(relativeTime);
 
@@ -80,8 +74,13 @@ const ChatList = ({ reqId }) => {
             borderRadius="lg"
           >
             <VStack spacing={0} align="start">
-              <Text fontSize="md" color={isCurrentUser ? "white" : "black"}>{msg.message}</Text>
-              <Text fontSize="xs" color={isCurrentUser ? "gray.200" : "gray.500"}>
+              <Text fontSize="md" color={isCurrentUser ? "white" : "black"}>
+                {msg.message}
+              </Text>
+              <Text
+                fontSize="xs"
+                color={isCurrentUser ? "gray.200" : "gray.500"}
+              >
                 {msg.createdAt?.seconds
                   ? dayjs.unix(msg.createdAt.seconds).fromNow()
                   : "sending..."}

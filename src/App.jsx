@@ -10,12 +10,12 @@ import VybCircles from "./pages/VybCircles";
 import Profile from "./pages/Profile";
 import VybeHighlights from "./components/common/VybeHighlights";
 import ProtectedRoute from "./components/common/ProtectedRoute";
-import Auth from "./pages/Auth";
+import Auth from "./pages/auth/Auth";
 import { useAuth } from "./context/AuthContext";
-import SignUp from "./pages/SignUp";
-import Login from "./pages/Login";
+import SignUp from "./pages/auth/SignUp";
+import Login from "./pages/auth/Login";
 import ChatRoom from "./pages/dm/ChatRoom";
-import ChatButton from "./components/dm/ChatButton";
+import ChatButton from "./components/ui/dm/ChatButton";
 import { useEffect } from "react";
 import { initPresence } from "./firebase/firebase.presence";
 
@@ -48,7 +48,7 @@ function App() {
   }
 
   useEffect(() => {
-    initPresence(); 
+    initPresence();
   }, []);
 
   return (
@@ -138,7 +138,7 @@ function App() {
                 }
               />
 
-              <Route path="/chat-button" element={<ChatButton/>} />
+              <Route path="/chat-button" element={<ChatButton />} />
               <Route path="/chat-room/:roomId" element={<ChatRoom />} />
 
               <Route
@@ -150,7 +150,6 @@ function App() {
                 }
               />
               <Route path="*" element={<h1>404 - Page Not Found</h1>} />
-
             </Routes>
           </Box>
           {!shouldHideVybeHighlights && (

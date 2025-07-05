@@ -1,5 +1,5 @@
 import SpinnerBtn from "@/components/ui/SpinnerBtn";
-import LogoIcon from "../components/icons/LogoIcon";
+import LogoIcon from "../../components/icons/LogoIcon";
 import { Heading, HStack, Icon, Stack, Text, VStack } from "@chakra-ui/react";
 
 const Auth = () => {
@@ -27,12 +27,7 @@ const Auth = () => {
         borderRightRadius="30px"
         boxShadow="12px 12px 4px rgba(0,0,0,0.1)"
       >
-        <Icon
-          as={LogoIcon}
-          h="120px"
-          w="275px"
-          color="brand.200"
-        />
+        <Icon as={LogoIcon} h="120px" w="275px" color="brand.200" />
       </Stack>
       <VStack p="100px" w="50%" h="100vh">
         <Heading

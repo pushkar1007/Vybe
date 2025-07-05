@@ -1,12 +1,11 @@
 import { Box, HStack, Icon, Stack } from "@chakra-ui/react";
 import LogoIcon from "../icons/LogoIcon";
-import ProfileMenu from "../ui/ProfileMenu";
+import ProfileMenu from "../ui/profile/ProfileMenu";
 import { Link } from "react-router-dom";
 import HamburgerMenu from "./HamburgerMenu";
 import Search from "../ui/Search";
 
 const Header = () => {
-
   return (
     <HStack
       bg="brand.500"

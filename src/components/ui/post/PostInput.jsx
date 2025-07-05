@@ -1,15 +1,8 @@
-import {
-  Box,
-  Field,
-  HStack,
-  Stack,
-  Text,
-  Image,
-} from "@chakra-ui/react";
-import ProfileIcon from "../icons/ProfileIcon";
+import { Box, Field, HStack, Stack, Text, Image } from "@chakra-ui/react";
+import ProfileIcon from "../../icons/ProfileIcon";
 import TextareaAutosize from "react-textarea-autosize";
 import { useState, useRef } from "react";
-import SpinnerBtn from "./SpinnerBtn";
+import SpinnerBtn from "../SpinnerBtn";
 import { LuImage } from "react-icons/lu";
 import { HiOutlineEmojiHappy } from "react-icons/hi";
 import EmojiPicker from "emoji-picker-react";

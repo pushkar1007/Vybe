@@ -1,7 +1,7 @@
 import { Stack } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
-import firebasePostDB from "../../firebase/firebase.postdb";
-import firebaseUserDB from "../../firebase/firebase.userdb";
+import firebasePostDB from "../../../firebase/firebase.postdb";
+import firebaseUserDB from "../../../firebase/firebase.userdb";
 import Post from "./Post";
 import PostInput from "./PostInput";
 

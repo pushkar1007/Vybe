@@ -1,10 +1,9 @@
 import { useNavigate } from "react-router-dom";
-import { connection } from "../../firebase/firebase.dmdb";
+import { connection } from "../../../firebase/firebase.dmdb";
 import { useAuth } from "@/context/AuthContext";
 import { Button } from "@chakra-ui/react";
 
-export default function ChatButton({initiator,acceptor}) {
-
+export default function ChatButton({ initiator, acceptor }) {
   const submitHandler = async () => {
     try {
       await connection.createConnectionReq(initiator, acceptor);
@@ -29,4 +28,4 @@ export default function ChatButton({initiator,acceptor}) {
 
 //this component is just made for prototyping
 //the production concept is as follows:
-//whenever a user opens the chat-room , a check will be implemented to see 
+//whenever a user opens the chat-room , a check will be implemented to see
