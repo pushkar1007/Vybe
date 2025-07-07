@@ -21,6 +21,7 @@ import { uploadImage } from "@/utils/uploadImage";
 import { toast } from "react-toastify";
 import firebaseUserdb from "@/firebase/firebase.userdb";
 import firebasePostdb from "@/firebase/firebase.postdb";
+import ProfileIcon from "@/components/icons/ProfileIcon";
 
 const MAX_CHAR_LIMIT = 550;
 

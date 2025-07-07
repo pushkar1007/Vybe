@@ -10,15 +10,22 @@ import {
 } from "@chakra-ui/react";
 import { FaArrowLeftLong } from "react-icons/fa6";
 import { useNavigate } from "react-router-dom";
-import EditProfileDialogue from "./profile/EditProfileDialogue";
-import SpinnerBtn from "./SpinnerBtn";
+import EditProfileDialogue from "./EditProfileDialogue";
+import SpinnerBtn from "../SpinnerBtn";
 import { IoMdPersonAdd } from "react-icons/io";
+import { RxEnvelopeClosed } from "react-icons/rx";
+import { useAuth } from "@/context/AuthContext";
 
 const UserDetails = ({ userData, isOwner }) => {
   const navigate = useNavigate();
+  const { user } = useAuth();
 
   const handleClick = () => {
     navigate("/");
+  };
+
+  const handleDmClick = () => {
+    navigate(`/chat-room/${user.uid}-${userData.id}`);
   };
 
   return (
@@ -103,21 +110,37 @@ const UserDetails = ({ userData, isOwner }) => {
         </Stack>
 
         {isOwner ? (
-          <EditProfileDialogue />
+          <HStack>
+            <EditProfileDialogue />
+          </HStack>
         ) : (
-          <Box position="relative">
-            <SpinnerBtn
-              text="Add VyBud"
-              fontSize="16px"
-              fontWeight="bold"
-              rounded="full"
-              height="40px"
-              bg="brand.500"
-              color="white"
-              w="160px"
-              icon={IoMdPersonAdd}
-            />
-          </Box>
+          <HStack>
+            <Box
+              border="1px solid #EF5D60"
+              boxSize="40px"
+              rounded="12px"
+              display="flex"
+              alignItems="center"
+              justifyContent="center"
+              boxShadow="4px 8px 4px rgba(0,0,0,0.1)"
+              cursor="pointer"
+              onClick={handleDmClick}
+            >
+              <Icon as={RxEnvelopeClosed} />
+            </Box>
+            <Box position="relative">
+              <SpinnerBtn
+                text="Add VyBud"
+                fontSize="16px"
+                fontWeight="bold"
+                rounded="full"
+                height="40px"
+                border="1px solid #EF5D60"
+                w="160px"
+                icon={IoMdPersonAdd}
+              />
+            </Box>
+          </HStack>
         )}
       </HStack>
     </Stack>

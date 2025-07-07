@@ -14,7 +14,6 @@ import {
   or,
 } from "firebase/firestore";
 import { firebaseConfig } from "./config.js";
-import { onAuthStateChanged } from "firebase/auth";
 
 class FirebaseDmConnection {
   app;
@@ -102,68 +101,55 @@ class FirebaseDmConnection {
   async getConnectionReq(senderId, receiverId) {
     try {
       const dmReqsRef = collection(this.db, "dmReqs");
+      const snapshot = await getDocs(dmReqsRef);
+      if (snapshot.empty) return null;
 
-      // Query for either A → B OR B → A
-      const q = query(
-        dmReqsRef,
-        or(
-          // A sent to B
-          where("initiator", "==", senderId),
-          where("acceptor", "==", receiverId),
-          // OR B sent to A
-          where("initiator", "==", receiverId),
-          where("acceptor", "==", senderId),
-        ),
-      );
+      const filtered = snapshot.docs
+        .map((doc) => ({ id: doc.id, ...doc.data() }))
+        .filter(
+          (data) =>
+            (data.initiator === senderId && data.acceptor === receiverId) ||
+            (data.initiator === receiverId && data.acceptor === senderId),
+        );
 
-      const snapshot = await getDocs(q);
-
-      if (snapshot.empty) {
-        return null;
-      }
-
-      // Return all matching docs (in case there are multiple)
-      return snapshot.docs.map((docSnap) => ({
-        id: docSnap.id,
-        ...docSnap.data(),
-      }));
+      return filtered.length > 0 ? filtered : null;
     } catch (error) {
-      console.error(
-        "Error checking bidirectional DM connection:",
-        error.code,
-        error.message,
-      );
+      console.error("Error getting connection req:", error);
       return null;
     }
   }
 
-  async acceptConnection(reqId) {
+  async acceptConnection(reqId, refreshUser) {
     try {
       const reqRef = doc(this.db, "dmReqs", reqId);
       await updateDoc(reqRef, {
         status: 1, // 1 means accepted
       });
+
+      if (refreshUser) await refreshUser();
     } catch (error) {
       console.error("Error accepting request:", error.code, error.message);
     }
   }
 
-  async rejectConnection(reqId) {
+  async rejectConnection(reqId, refreshUser) {
     try {
       const reqRef = doc(this.db, "dmReqs", reqId);
       await updateDoc(reqRef, {
         status: -1, // -1 means rejected
       });
+
+      if (refreshUser) await refreshUser();
       console.log("Connection request rejected.");
     } catch (error) {
       console.error("Error rejecting request:", error.code, error.message);
     }
   }
 
-  async deleteConnection(reqId){
+  async deleteConnection(reqId) {
     try {
       const reqRef = doc(this.db, "dmReqs", reqId);
-      await deleteDoc(reqRef)
+      await deleteDoc(reqRef);
     } catch (error) {
       console.error("Error deleting request:", error.code, error.message);
     }

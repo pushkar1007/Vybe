@@ -3,7 +3,6 @@ import { Box, Button } from "@chakra-ui/react";
 import { connection } from "@/firebase/firebase.dmdb";
 import ChatButton from "./ChatButton";
 import { collection, doc, onSnapshot } from "firebase/firestore";
-import isEqual from "lodash/isEqual";
 
 const ConnectionStatus = ({
   request,
@@ -15,7 +14,7 @@ const ConnectionStatus = ({
     try {
       if (!request) return;
       const timeDiff = Math.abs(Number(Date.now()) - Number(request.createdAt));
-      if (timeDiff > 6000 && (request.status === 0 || request.status === -1)) {
+      if (timeDiff > 60000 && (request.status === 0 || request.status === -1)) {
         await connection.deleteConnection(request.id);
         setRequest(null);
       }
@@ -28,20 +27,19 @@ const ConnectionStatus = ({
     let unsubscribeDoc;
     let unsubscribeCollection;
 
-    (async () => {
+    const fetchConnection = async () => {
       try {
         const res = await connection.getConnectionReq(chatPartner, currentUser);
         if (res && res.length > 0) {
           const newReq = res[0];
-          if (!isEqual(newReq, request)) {
-            setRequest(newReq);
-          }
+          setRequest(newReq);
 
           unsubscribeDoc = onSnapshot(
             doc(connection.db, "dmReqs", newReq.id),
             (docSnap) => {
               const updated = { id: docSnap.id, ...docSnap.data() };
-              setRequest((prev) => (!isEqual(prev, updated) ? updated : prev));
+              setRequest(null);
+              setRequest(updated);
             },
           );
         }
@@ -57,7 +55,8 @@ const ConnectionStatus = ({
                 usersInvolved.includes(chatPartner)
               ) {
                 const newReq = { id: change.doc.id, ...data };
-                setRequest((prev) => (!isEqual(prev, newReq) ? newReq : prev));
+                setRequest(null);
+                setRequest(newReq);
               }
             }
           });
@@ -65,17 +64,17 @@ const ConnectionStatus = ({
       } catch (error) {
         console.error("Error in ConnectionStatus snapshot:", error);
       }
-    })();
+    };
 
-    if (request) {
-      autoDeleteReq();
-    }
+    fetchConnection();
+
+    if (request) autoDeleteReq();
 
     return () => {
       if (unsubscribeDoc) unsubscribeDoc();
       if (unsubscribeCollection) unsubscribeCollection();
     };
-  }, [request]);
+  }, [chatPartner, currentUser]);
 
   return (
     <Box bg="gray.100" p={4} borderBottom="1px solid #ccc">

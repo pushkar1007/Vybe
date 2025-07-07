@@ -1,8 +1,10 @@
 import { Box, Heading, HStack, Icon, Image, Stack } from "@chakra-ui/react";
 import { IoIosArrowBack } from "react-icons/io";
 import ProfileIcon from "../../icons/ProfileIcon";
+import { useNavigate } from "react-router-dom";
 
 const ChatHeader = ({ chatPartnerData, presence }) => {
+  const navigate = useNavigate();
   const formatLastSeen = (timestamp) => {
     if (!timestamp) return "Unknown";
     const date = new Date(timestamp);
@@ -21,8 +23,12 @@ const ChatHeader = ({ chatPartnerData, presence }) => {
       align="center"
       borderBottom="1px solid"
       borderColor="brand.500"
+      position="sticky"
+      top="0"
+      zIndex="1000"
+      bg="brand.400"
     >
-      <Icon as={IoIosArrowBack} boxSize={6} />
+      <Icon as={IoIosArrowBack} boxSize={6} cursor="pointer" onClick={() => navigate(-1)} />
       {chatPartnerData.avatar ? (
         <Image
           src={chatPartnerData.avatar}
@@ -51,7 +57,7 @@ const ChatHeader = ({ chatPartnerData, presence }) => {
                 : "Offline"}
           </Box>
         </HStack>
-      </Stack>
+      </Stack>     
     </HStack>
   );
 };

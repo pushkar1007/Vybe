@@ -5,7 +5,7 @@ import { useParams } from "react-router-dom";
 import { useAuth } from "@/context/AuthContext";
 import firebaseUserdb from "@/firebase/firebase.userdb";
 import Post from "@/components/ui/post/Post";
-import UserDetails from "@/components/ui/UserDetails";
+import UserDetails from "@/components/ui/profile/UserDetails";
 
 const Profile = () => {
   const { uid } = useParams();

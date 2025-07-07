@@ -1,14 +1,16 @@
-import { useNavigate } from "react-router-dom";
-import { connection } from "../../../firebase/firebase.dmdb";
-import { useAuth } from "@/context/AuthContext";
 import { Button } from "@chakra-ui/react";
+import { connection } from "@/firebase/firebase.dmdb";
+import { toast } from "react-toastify";
 
 export default function ChatButton({ initiator, acceptor }) {
+
   const submitHandler = async () => {
     try {
       await connection.createConnectionReq(initiator, acceptor);
+      toast.success("Send Chat Request Succesfully!")
     } catch (error) {
-      console.log(error);
+      console.error(error);
+      toast.error("Failed to send Request!");
     }
   };
 
@@ -21,11 +23,7 @@ export default function ChatButton({ initiator, acceptor }) {
       px={6}
       py={4}
     >
-      send chat request!
+      Send Chat Request
     </Button>
   );
 }
-
-//this component is just made for prototyping
-//the production concept is as follows:
-//whenever a user opens the chat-room , a check will be implemented to see
