@@ -12,9 +12,10 @@ import {
   getDocs,
   onSnapshot,
   query,
-  orderBy
+  orderBy,
 } from "firebase/firestore";
 import { firebaseConfig } from "./config.js";
+import { array } from "yup";
 
 class Firebase {
   app;
@@ -180,7 +181,7 @@ class Firebase {
       const postRef = doc(this.db, "posts", postId);
       const commentRef = doc(this.db, "comments", commentId);
       await updateDoc(postRef, {
-        comments: arrayUnion(commentRef),
+        comments: arrayRemove(commentRef),
       });
     } catch (error) {
       const errorCode = error.code;
