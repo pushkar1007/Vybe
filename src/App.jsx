@@ -24,7 +24,11 @@ function App() {
   const location = useLocation();
 
   const hideVybeHighlights = ["/explore"];
+  const hideHeader = ["/vybuds"];
   const shouldHideVybeHighlights = hideVybeHighlights.includes(
+    location.pathname,
+  );
+  const shouldHideHeader = hideHeader.includes(
     location.pathname,
   );
 
@@ -41,7 +45,6 @@ function App() {
         <Route path="/signup" element={<SignUp />} />
         <Route path="/login" element={<Login />} />
         <Route path="*" element={<Navigate to="/auth" replace />} />
-        <Route path="/chat-button" element={<ChatButton />} />
         <Route path="/chat-room" element={<ChatRoom />} />
       </Routes>
     );
@@ -54,7 +57,7 @@ function App() {
   return (
     <>
       <VStack h="100vh" gap="0">
-        <Header />
+        {!shouldHideHeader && <Header />}
         <HStack
           alignItems="start"
           justifyContent="space-between"
@@ -78,7 +81,7 @@ function App() {
             }}
             h="full"
           >
-            <SideMenu />
+            <SideMenu shouldHideHeader={shouldHideHeader} />
           </Box>
           <Box
             flex="1"
@@ -138,7 +141,6 @@ function App() {
                 }
               />
 
-              <Route path="/chat-button" element={<ChatButton />} />
               <Route path="/chat-room/:roomId" element={<ChatRoom />} />
 
               <Route

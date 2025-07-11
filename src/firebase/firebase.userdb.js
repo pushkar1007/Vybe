@@ -297,7 +297,7 @@ class Firebase {
 
       // Update the array field atomically
       await updateDoc(userRef, {
-        vybuds: arrayUnion(vybudRef),
+        vybuds: arrayUnion(userId),
       });
     } catch (error) {
       const errorCode = error.code;

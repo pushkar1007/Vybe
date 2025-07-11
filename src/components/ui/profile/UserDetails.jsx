@@ -15,6 +15,8 @@ import SpinnerBtn from "../SpinnerBtn";
 import { IoMdPersonAdd } from "react-icons/io";
 import { RxEnvelopeClosed } from "react-icons/rx";
 import { useAuth } from "@/context/AuthContext";
+import firebaseUserdb from "@/firebase/firebase.userdb";
+import { toast } from "react-toastify";
 
 const UserDetails = ({ userData, isOwner }) => {
   const navigate = useNavigate();
@@ -27,6 +29,17 @@ const UserDetails = ({ userData, isOwner }) => {
   const handleDmClick = () => {
     navigate(`/chat-room/${user.uid}-${userData.id}`);
   };
+
+  const handleVyBudClick = async () => {
+    try {
+      console.log(userData.id);
+      console.log(user.uid);
+      await firebaseUserdb.addVybud(userData.id, user);
+      toast.success("Added as VyBud succesfully");
+    } catch (error) {
+      console.error("Failed to add VyBud");
+    }
+  }
 
   return (
     <Stack position="relative" gap={0}>
@@ -138,6 +151,7 @@ const UserDetails = ({ userData, isOwner }) => {
                 border="1px solid #EF5D60"
                 w="160px"
                 icon={IoMdPersonAdd}
+                onClick={handleVyBudClick}
               />
             </Box>
           </HStack>

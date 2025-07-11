@@ -61,7 +61,7 @@ const HamburgerMenu = () => {
   return (
     <Drawer.Root placement="start" closeOnInteractOutside={false}>
       <Drawer.Trigger asChild>
-        <Icon as={MobileLogoIcon} size="2xl" color="brand.300" />
+        <Icon as={MobileLogoIcon} h="50px" w="60px" color="brand.300" />
       </Drawer.Trigger>
       <Portal>
         <Drawer.Backdrop />
