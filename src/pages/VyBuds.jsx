@@ -2,9 +2,9 @@ import VyBudCard from "@/components/ui/vybuds/VyBudCard";
 import VyBudsHeader from "@/components/ui/vybuds/VyBudsHeader";
 import { useAuth } from "@/context/AuthContext";
 import firebaseUserdb from "@/firebase/firebase.userdb";
-import { Spinner, Stack, Text } from "@chakra-ui/react";
+import { Heading, Spinner, Stack } from "@chakra-ui/react";
 import { doc, getDoc } from "firebase/firestore";
-import { useEffect, useState } from "react";
+import { use, useEffect, useState } from "react";
 
 const VyBuds = () => {
   const [vybuds, setVybuds] = useState([]);
@@ -66,17 +66,25 @@ const VyBuds = () => {
 
   return (
     <Stack h="full" w="full">
-      <VyBudsHeader />
+      <VyBudsHeader userData={userData} />
       {loading ? (
         <Stack h="full" w="full" justify="center" align="center">
           <Spinner size="xl" />
         </Stack>
       ) : vybuds.length === 0 ? (
-        <Text alignSelf="center" justifySelf="center">
+        <Heading alignSelf="center" justifySelf="center">
           No VyBuds yet!
-        </Text>
+        </Heading>
       ) : (
-        vybuds.map((vybud) => <VyBudCard key={vybud.id} vybud={vybud} />)
+        vybuds.map((vybud) => (
+          <VyBudCard
+            key={vybud.id}
+            vybud={vybud}
+            onRemove={(id) =>
+              setVybuds((prev) => prev.filter((v) => v.id !== id))
+            }
+          />
+        ))
       )}
     </Stack>
   );

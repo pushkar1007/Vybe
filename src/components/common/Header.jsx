@@ -61,7 +61,7 @@ const Header = () => {
         alignItems="end"
         position="relative"
       >
-        <Search />
+        <Search scope="all" />
         <Box cursor="pointer" rounded="full" minW="50px" w="50px" h="50px">
           <ProfileMenu />
         </Box>

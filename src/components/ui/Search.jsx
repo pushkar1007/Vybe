@@ -6,30 +6,38 @@ import { useNavigate } from "react-router-dom";
 import { LuSearch } from "react-icons/lu";
 import InputTab from "./InputTab";
 
-const Search = ({...props}) => {
+const Search = ({ scope = "all", vybuds = [], ...props }) => {
   const [input, setInput] = useState("");
   const [allUsers, setAllUsers] = useState([]);
   const [filteredUsers, setFilteredUsers] = useState([]);
-  const [loading, setLoading] = useState(false);
+  const [fetchingUsers, setFetchingUsers] = useState(false);
+  const [searching, setSearching] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
-    const fetchAllUsers = async () => {
+    const fetchUsers = async () => {
+      setFetchingUsers(true);
       try {
-        const usersRef = collection(firebaseUserdb.db, "users");
-        const snapshot = await getDocs(usersRef);
-        const users = snapshot.docs.map((doc) => ({
+        const snapshot = await getDocs(collection(firebaseUserdb.db, "users"));
+        let users = snapshot.docs.map((doc) => ({
           id: doc.id,
           ...doc.data(),
         }));
+
+        if (scope === "vybuds" && vybuds.length > 0) {
+          users = users.filter((user) => vybuds.includes(user.id));
+        }
+
         setAllUsers(users);
       } catch (error) {
-        console.error("Failed to fetch users:", error);
+        console.error("Error fetching users:", error);
+      } finally {
+        setFetchingUsers(false);
       }
     };
 
-    fetchAllUsers();
-  }, []);
+    fetchUsers();
+  }, [scope, JSON.stringify(vybuds)]); 
 
   useEffect(() => {
     if (!input.trim()) {
@@ -37,18 +45,18 @@ const Search = ({...props}) => {
       return;
     }
 
-    setLoading(true);
-    const debounce = setTimeout(() => {
-      const results = allUsers.filter(
+    setSearching(true);
+    const timeout = setTimeout(() => {
+      const result = allUsers.filter(
         (user) =>
-          user.username?.toLowerCase().includes(input.toLowerCase()) ||
-          user.handlename?.toLowerCase().includes(input.toLowerCase()),
+          user?.username?.toLowerCase().includes(input.toLowerCase()) ||
+          user?.handlename?.toLowerCase().includes(input.toLowerCase()),
       );
-      setFilteredUsers(results);
-      setLoading(false);
+      setFilteredUsers(result);
+      setSearching(false);
     }, 200);
 
-    return () => clearTimeout(debounce);
+    return () => clearTimeout(timeout);
   }, [input, allUsers]);
 
   useEffect(() => {
@@ -65,24 +73,16 @@ const Search = ({...props}) => {
     <Box
       className="search-wrapper"
       position="relative"
-      maxW={{
-        base: "160px",
-        md: "200px",
-        lg: "260px",
-      }}
+      maxW={{ base: "160px", md: "200px", lg: "260px" }}
       w="100%"
     >
       <InputTab
         startElement={<LuSearch color="white" size="18px" />}
         placeholder="Wanna Vybe?"
         value={input}
-        w={{
-          base: "160px",
-          md: "200px",
-          lg: "260px",
-        }}
-        {...props}
+        w={{ base: "160px", md: "200px", lg: "260px" }}
         onChange={(e) => setInput(e.target.value)}
+        {...props}
       />
 
       {input && (
@@ -99,7 +99,7 @@ const Search = ({...props}) => {
           maxH="300px"
           overflowY="auto"
         >
-          {loading ? (
+          {fetchingUsers || searching ? (
             <Spinner size="sm" p={4} />
           ) : filteredUsers.length === 0 ? (
             <Text px={4} py={2} color="gray.400">

@@ -13,10 +13,12 @@ import { HiUserRemove } from "react-icons/hi";
 import { useEffect, useState } from "react";
 import { getDatabase, onValue, ref } from "firebase/database";
 import { useAuth } from "@/context/AuthContext";
-import { Navigate, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+import firebaseUserdb from "@/firebase/firebase.userdb";
+import { toast } from "react-toastify";
 
-const VyBudCard = ({ vybud }) => {
-  const { user } = useAuth();
+const VyBudCard = ({ vybud, onRemove }) => {
+  const { user, refreshUser } = useAuth();
   const navigate = useNavigate();
   const [presence, setPresence] = useState({ online: null, lastSeen: null });
 
@@ -56,6 +58,18 @@ const VyBudCard = ({ vybud }) => {
     navigate(`/chat-room/${user.uid}-${vybud.id}`);
   };
 
+  const handleRemoveVybud = async () => {
+    try {
+      await firebaseUserdb.removeVyBud(vybud.id, user);
+      toast.success("Removed VyBud successfully");
+      await refreshUser();
+      onRemove?.(vybud.id);
+    } catch (error) {
+      console.error("Error removing VyBud:", error);
+      toast.error("Failed to remove VyBud");
+    }
+  };
+
   return (
     <HStack
       w="95%"
@@ -76,6 +90,8 @@ const VyBudCard = ({ vybud }) => {
             alt="Profile"
             boxSize="40px"
             rounded="full"
+            cursor="pointer"
+            onClick={() => navigate(`/profile/${vybud.id}`)}
           />
         ) : (
           <Box
@@ -87,6 +103,8 @@ const VyBudCard = ({ vybud }) => {
             border="1px solid black"
             alignItems="center"
             justifyContent="center"
+            cursor="pointer"
+            onClick={() => navigate(`/profile/${vybud.id}`)}
           >
             <Image as={ProfileIcon} boxSize="40px" />
           </Box>
@@ -94,8 +112,20 @@ const VyBudCard = ({ vybud }) => {
 
         <Stack gap={0}>
           <HStack>
-            <Heading>{vybud.handlename}</Heading>
-            <Text>@{vybud.username}</Text>
+            <Heading
+              _hover={{ textDecoration: "underline" }}
+              cursor="pointer"
+              onClick={() => navigate(`/profile/${vybud.id}`)}
+            >
+              {vybud.handlename}
+            </Heading>
+            <Text
+              _hover={{ textDecoration: "underline" }}
+              cursor="pointer"
+              onClick={() => navigate(`/profile/${vybud.id}`)}
+            >
+              @{vybud.username}
+            </Text>
           </HStack>
           <HStack align="center">
             <Box
@@ -141,6 +171,7 @@ const VyBudCard = ({ vybud }) => {
           justifyContent="center"
           boxShadow="4px 8px 4px rgba(0,0,0,0.1)"
           cursor="pointer"
+          onClick={handleRemoveVybud}
         >
           <Icon as={HiUserRemove} boxSize="20px" />
         </Box>

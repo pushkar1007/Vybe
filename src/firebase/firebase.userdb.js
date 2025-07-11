@@ -85,7 +85,7 @@ class Firebase {
       console.error("Error in fetching user details:", errorCode, errorMessage);
     }
   }
-  
+
   //updates user credentials like dob, bio, avatar etc
   async updateUserCredentials(fieldName, fieldValue, currentUser) {
     try {
@@ -95,7 +95,14 @@ class Firebase {
       }
 
       // List of allowed string fields to update
-      const allowedFields = ["handlename", "username", "bio", "DOB", "avatar", "banner"]; // you can modify this
+      const allowedFields = [
+        "handlename",
+        "username",
+        "bio",
+        "DOB",
+        "avatar",
+        "banner",
+      ]; // you can modify this
 
       if (!allowedFields.includes(fieldName)) {
         throw new Error(
@@ -318,20 +325,18 @@ class Firebase {
         throw new Error("User not authenticated.");
       }
 
-      // Get references
+      // Reference to current user's document
       const userRef = doc(this.db, "users", currentUser.uid);
-      const vybudRef = doc(this.db, "vybuds", userId); // This is your DocumentReference
 
-      // Update the array field atomically
+      // Remove the UID from vybuds array
       await updateDoc(userRef, {
-        vybuds: arrayRemove(vybudRef),
+        vybuds: arrayRemove(userId),
       });
     } catch (error) {
       const errorCode = error.code;
       const errorMessage = error.message;
-      // ❌ Handle error
       console.error(
-        "Error in removing vybud to user db:",
+        "Error in removing vybud from user db:",
         errorCode,
         errorMessage,
       );
@@ -445,8 +450,6 @@ class Firebase {
       );
     }
   }
-
-  
 }
 
 export default new Firebase();

@@ -17,10 +17,40 @@ import { RxEnvelopeClosed } from "react-icons/rx";
 import { useAuth } from "@/context/AuthContext";
 import firebaseUserdb from "@/firebase/firebase.userdb";
 import { toast } from "react-toastify";
+import { useEffect, useState } from "react";
+import { doc, getDoc } from "firebase/firestore";
+import { HiUserRemove } from "react-icons/hi";
 
 const UserDetails = ({ userData, isOwner }) => {
   const navigate = useNavigate();
   const { user } = useAuth();
+
+  const [isVybud, setIsVybud] = useState(false);
+  const [currentUserData, setCurrentUserData] = useState(null);
+
+  useEffect(() => {
+    const fetchCurrentUserData = async () => {
+      if (!user?.uid) return;
+      try {
+        const ref = doc(firebaseUserdb.db, "users", user.uid);
+        const snap = await getDoc(ref);
+        if (snap.exists()) {
+          setCurrentUserData({ id: snap.id, ...snap.data() });
+        }
+      } catch (error) {
+        console.error("Failed to fetch current user data", error);
+      }
+    };
+
+    fetchCurrentUserData();
+  }, [user]);
+
+  useEffect(() => {
+    if (currentUserData && userData) {
+      const isInVybuds = currentUserData.vybuds?.includes(userData.id);
+      setIsVybud(isInVybuds);
+    }
+  }, [currentUserData, userData]);
 
   const handleClick = () => {
     navigate("/");
@@ -32,14 +62,24 @@ const UserDetails = ({ userData, isOwner }) => {
 
   const handleVyBudClick = async () => {
     try {
-      console.log(userData.id);
-      console.log(user.uid);
       await firebaseUserdb.addVybud(userData.id, user);
-      toast.success("Added as VyBud succesfully");
+      toast.success("Added as VyBud successfully");
+      setIsVybud(true);
     } catch (error) {
       console.error("Failed to add VyBud");
     }
-  }
+  };
+
+  const handleRemoveVybudClick = async () => {
+    try {
+      await firebaseUserdb.removeVyBud(userData.id, user);
+      toast.success("Removed from VyBuds");
+      setIsVybud(false);
+    } catch (error) {
+      console.error("Failed to remove VyBud", error);
+      toast.error("Something went wrong");
+    }
+  };
 
   return (
     <Stack position="relative" gap={0}>
@@ -143,15 +183,15 @@ const UserDetails = ({ userData, isOwner }) => {
             </Box>
             <Box position="relative">
               <SpinnerBtn
-                text="Add VyBud"
+                text={isVybud ? "Remove VyBud" : "Add VyBud"}
                 fontSize="16px"
                 fontWeight="bold"
                 rounded="full"
                 height="40px"
                 border="1px solid #EF5D60"
-                w="160px"
-                icon={IoMdPersonAdd}
-                onClick={handleVyBudClick}
+                w={isVybud ? "180px" : "160px"}
+                icon={isVybud ? HiUserRemove : IoMdPersonAdd}
+                onClick={isVybud ? handleRemoveVybudClick : handleVyBudClick}
               />
             </Box>
           </HStack>

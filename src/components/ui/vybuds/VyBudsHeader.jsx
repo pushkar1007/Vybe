@@ -4,7 +4,7 @@ import { LuSearch } from "react-icons/lu";
 import { FaArrowLeftLong } from "react-icons/fa6";
 import { useNavigate } from "react-router-dom";
 
-const VyBudsHeader = () => {
+const VyBudsHeader = ({ userData }) => {
 
   const navigate = useNavigate();
   const handleClick = () => {
@@ -13,11 +13,21 @@ const VyBudsHeader = () => {
 
   return (
     <HStack w="full" borderBottom="1px solid" borderColor="brand.500" gap={0}>
-      <Box m={4} alignSelf="start" display={{
-        base: "block",
-        md: "none",
-      }}>
-        <Icon as={FaArrowLeftLong} boxSize="20px" color="brand.200" cursor="pointer" onClick={handleClick} />
+      <Box
+        m={4}
+        alignSelf="start"
+        display={{
+          base: "block",
+          md: "none",
+        }}
+      >
+        <Icon
+          as={FaArrowLeftLong}
+          boxSize="20px"
+          color="brand.200"
+          cursor="pointer"
+          onClick={handleClick}
+        />
       </Box>
       <HStack
         mx={2}
@@ -32,6 +42,8 @@ const VyBudsHeader = () => {
           VyBuds
         </Heading>
         <Search
+          scope="vybuds"
+          vybuds={userData?.vybuds || []}
           border="1px solid #EF5D60"
           _placeholder={{
             color: "#EF5D60",
