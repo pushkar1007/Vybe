@@ -19,16 +19,17 @@ class Firebase {
     this.db = getFirestore(this.app);
   }
 
-  async createComment( content ) {
+  async createComment( content,user ) {
     try {
       const commentRef = await addDoc(collection(this.db, "comments"), {
         content,
         likes: 0,
         createdAt: Date.now(),
         updatedAt: null,
+        creaatedBy: user,
       });
-      const comment = await updateDoc(commentRef, { commentId: commentRef.id });
-      return comment;
+      await updateDoc(commentRef, { commentId: commentRef.id });
+      return commentRef;
     } catch (error) {
       const errorCode = error.code;
       const errorMessage = error.message;
@@ -41,7 +42,7 @@ class Firebase {
       const commentRef = doc(this.db, "comments", commentId);
       const snap = await getDoc(commentRef);
       if (snap.exists()) {
-        return { id: snap.id, ...snap.data };
+        return { id: snap.id, ...snap.data() };
       } else {
         return null;
       }

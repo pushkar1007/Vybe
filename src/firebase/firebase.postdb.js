@@ -83,7 +83,7 @@ class Firebase {
       const postRef = doc(this.db, "posts", postId);
       const snap = await getDoc(postRef);
       if (snap.exists()) {
-        return { id: snap.id, ...snap.data };
+        return { id: snap.id, ...snap.data() };
       } else {
         return null;
       }
