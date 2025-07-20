@@ -46,7 +46,6 @@ const Post = ({ post }) => {
     }
   }, [currentPath, post.postId]);
 
-
   const formattedTime = createdAt
     ? formatDistanceToNow(new Date(Number(createdAt)), { addSuffix: true })
     : "";
@@ -76,7 +75,7 @@ const Post = ({ post }) => {
     });
 
     setHasLiked(liked);
-    setLikeCount(likes.length); 
+    setLikeCount(likes.length);
   }, [likes, user]);
 
   const handleLikeToggle = async () => {
@@ -92,7 +91,6 @@ const Post = ({ post }) => {
         await firebaseUserdb.likePost(postId, user);
         await firebasePostdb.likePost(postId, user.uid);
       }
-
     } catch (err) {
       console.error("Like toggle failed:", err);
     } finally {
@@ -112,10 +110,10 @@ const Post = ({ post }) => {
       borderBottom="1px solid"
       borderColor="brand.500"
       alignItems="start"
-      onClick={()=>{
+      onClick={() => {
         if (openPostInterface) {
           navigate(`/post/${post.postId}`);
-        };
+        }
       }}
     >
       <Image
@@ -125,7 +123,10 @@ const Post = ({ post }) => {
         alt="profile-picture"
         rounded="full"
         cursor="pointer"
-        onClick={() => navigate(`/profile/${creator.id}`)}
+        onClick={(e) => {
+          e.stopPropagation();
+          navigate(`/profile/${creator.id}`);
+        }}
       />
       <Stack flex={1}>
         <HStack justifyContent="space-between" w="100%">
@@ -137,7 +138,10 @@ const Post = ({ post }) => {
               textOverflow="ellipsis"
               _hover={{ textDecoration: "underline" }}
               cursor="pointer"
-              onClick={() => navigate(`/profile/${creator.id}`)}
+              onClick={(e) => {
+                e.stopPropagation();
+                navigate(`/profile/${creator.id}`);
+              }}
             >
               {creator.handlename || "Anonymous"}
             </Heading>
@@ -150,7 +154,10 @@ const Post = ({ post }) => {
               maxW="130px"
               cursor="pointer"
               _hover={{ textDecoration: "underline" }}
-              onClick={() => navigate(`/profile/${creator.id}`)}
+              onClick={(e) => {
+                e.stopPropagation();
+                navigate(`/profile/${creator.id}`);
+              }}
             >
               @{creator.username || "user"}
             </Text>
@@ -183,7 +190,10 @@ const Post = ({ post }) => {
               w="24px"
               cursor="pointer"
               color="brand.500"
-              onClick={handleLikeToggle}
+              onClick={(e) => {
+                e.stopPropagation();
+                handleLikeToggle();
+              }}
             />
             <Text>{likeCount}</Text>
           </HStack>

@@ -16,7 +16,7 @@ import ProfileIcon from "../../icons/ProfileIcon";
 import ProfileInput from "./ProfileInput";
 import { useEffect, useRef, useState } from "react";
 import firebaseUserdb from "@/firebase/firebase.userdb";
-import BioInput from "../BioInput";
+import BioInput from "./BioInput";
 import { MdOutlineAddAPhoto } from "react-icons/md";
 import { uploadImage } from "@/utils/uploadImage";
 
