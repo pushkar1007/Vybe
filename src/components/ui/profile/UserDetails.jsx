@@ -160,7 +160,7 @@ const UserDetails = ({ userData, isOwner }) => {
           cursor="pointer"
         />
         <Stack gap={0} m={0}>
-          <Heading m={0}>{userData?.handlename || "Unknown User"}</Heading>
+          <Heading m={0}>{userData?.handlename || "Anonymous"}</Heading>
           <Text fontSize="sm">
             {userData?.createdPosts?.length ?? 0} Post
             {userData?.createdPosts?.length === 1 ? "" : "s"}
@@ -216,7 +216,7 @@ const UserDetails = ({ userData, isOwner }) => {
       >
         <Stack mt="50px" gap="10px">
           <Stack gap={0}>
-            <Heading>{userData?.handlename || "Unknown User"}</Heading>
+            <Heading>{userData?.handlename || "Anonymous"}</Heading>
             <Text color="brand.100" lineHeight={1}>
               @{userData?.username || "unknown"}
             </Text>

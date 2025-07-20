@@ -14,7 +14,7 @@ import { PiShareFat } from "react-icons/pi";
 import { formatDistanceToNow } from "date-fns";
 import firebaseUserdb from "@/firebase/firebase.userdb";
 import firebasePostdb from "@/firebase/firebase.postdb";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "@/context/AuthContext";
 
 const Post = ({ post }) => {
@@ -32,8 +32,20 @@ const Post = ({ post }) => {
   const [hasLiked, setHasLiked] = useState(false);
   const [likeCount, setLikeCount] = useState(likes?.length || 0);
   const [isLiking, setIsLiking] = useState(false);
+  const [openPostInterface, setOpenPostInterface] = useState(true);
   const { user } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
+  const currentPath = location.pathname;
+
+  useEffect(() => {
+    if (currentPath === `/post/${post.postId}`) {
+      setOpenPostInterface(false);
+    } else {
+      setOpenPostInterface(true);
+    }
+  }, [currentPath, post.postId]);
+
 
   const formattedTime = createdAt
     ? formatDistanceToNow(new Date(Number(createdAt)), { addSuffix: true })
@@ -101,7 +113,9 @@ const Post = ({ post }) => {
       borderColor="brand.500"
       alignItems="start"
       onClick={()=>{
-        navigate(`/post/${post.postId}`);
+        if (openPostInterface) {
+          navigate(`/post/${post.postId}`);
+        };
       }}
     >
       <Image
