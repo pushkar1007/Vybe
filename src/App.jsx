@@ -17,6 +17,7 @@ import Login from "./pages/auth/Login";
 import ChatRoom from "./pages/dm/ChatRoom";
 import { useEffect } from "react";
 import { initPresence } from "./firebase/firebase.presence";
+import {PostInterface} from "./components/ui/post/PostInterface";
 
 function App() {
   const { user } = useAuth();
@@ -147,6 +148,15 @@ function App() {
                 element={
                   <ProtectedRoute>
                     <Profile />
+                  </ProtectedRoute>
+                }
+              />
+
+              <Route
+                path="/post/:postId"
+                element={
+                  <ProtectedRoute>
+                    <PostInterface />
                   </ProtectedRoute>
                 }
               />

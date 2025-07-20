@@ -100,6 +100,9 @@ const Post = ({ post }) => {
       borderBottom="1px solid"
       borderColor="brand.500"
       alignItems="start"
+      onClick={()=>{
+        navigate(`/post/${post.postId}`);
+      }}
     >
       <Image
         src={creator.avatar || "/images/profilepic.png"}
