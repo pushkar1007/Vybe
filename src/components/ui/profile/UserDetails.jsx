@@ -18,14 +18,16 @@ import { useAuth } from "@/context/AuthContext";
 import firebaseUserdb from "@/firebase/firebase.userdb";
 import { toast } from "react-toastify";
 import { useEffect, useState } from "react";
-import { doc, getDoc } from "firebase/firestore";
+import { deleteDoc, doc, getDoc } from "firebase/firestore";
 import { HiUserRemove } from "react-icons/hi";
+import { vybudreq } from "@/firebase/firebase.vybudreq";
 
 const UserDetails = ({ userData, isOwner }) => {
   const navigate = useNavigate();
   const { user } = useAuth();
 
   const [isVybud, setIsVybud] = useState(false);
+  const [requestSent, setRequestSent] = useState(false);
   const [currentUserData, setCurrentUserData] = useState(null);
 
   useEffect(() => {
@@ -52,6 +54,32 @@ const UserDetails = ({ userData, isOwner }) => {
     }
   }, [currentUserData, userData]);
 
+  useEffect(() => {
+    const checkRequest = async () => {
+      if (!user?.uid || !userData?.id || user.uid === userData.id) return;
+
+      try {
+        const reqId = `${user.uid}_${userData.id}`;
+        const ref = doc(firebaseUserdb.db, "vybudReqs", reqId);
+        const snap = await getDoc(ref);
+
+        if (snap.exists()) {
+          const status = snap.data().status;
+          if (status === 0) {
+            setRequestSent(true); 
+          } else if (status === 1) {
+            setIsVybud(true); 
+          }
+        } else {
+          setRequestSent(false);
+        }
+      } catch (err) {
+        console.error("Error checking request", err);
+      }
+    };
+    checkRequest();
+  }, [user, userData]);
+
   const handleClick = () => {
     navigate("/");
   };
@@ -62,21 +90,53 @@ const UserDetails = ({ userData, isOwner }) => {
 
   const handleVyBudClick = async () => {
     try {
-      await firebaseUserdb.addVybud(userData.id, user);
-      toast.success("Added as VyBud successfully");
-      setIsVybud(true);
+      const reqId = `${user.uid}_${userData.id}`;
+      const ref = doc(firebaseUserdb.db, "vybudReqs", reqId);
+      const snap = await getDoc(ref);
+
+      if (snap.exists()) {
+        const status = snap.data().status;
+        if (status === 0) {
+          setRequestSent(true);
+          return toast.info("Request already sent.");
+        } else if (status === 1) {
+          setIsVybud(true);
+          return toast.info("You are already Vybuds.");
+        }
+      }
+
+      await vybudreq.createVybudRequest(
+        user.uid,
+        userData.id,
+        currentUserData.handlename,
+      );
+      toast.success("VyBud request sent!");
+      setRequestSent(true);
     } catch (error) {
-      console.error("Failed to add VyBud");
+      console.error("Failed to send VyBud request", error);
+      toast.error("Could not send VyBud request");
     }
   };
 
   const handleRemoveVybudClick = async () => {
     try {
+      console.log("Removing Vybud from:", userData.id, user.uid);
+
       await firebaseUserdb.removeVyBud(userData.id, user);
+      await firebaseUserdb.removeVyBud(user.uid, userData);
+
+      const reqId = `${user.uid}_${userData.id}`;
+      const ref = doc(firebaseUserdb.db, "vybudReqs", reqId);
+      await deleteDoc(ref);
+
       toast.success("Removed from VyBuds");
       setIsVybud(false);
+      setRequestSent(false);
     } catch (error) {
-      console.error("Failed to remove VyBud", error);
+      console.error(
+        "Failed to remove VyBud",
+        error?.stack || error?.message || error,
+      );
       toast.error("Something went wrong");
     }
   };
@@ -107,6 +167,7 @@ const UserDetails = ({ userData, isOwner }) => {
           </Text>
         </Stack>
       </HStack>
+
       <Box
         bg="brand.300"
         w="full"
@@ -124,6 +185,7 @@ const UserDetails = ({ userData, isOwner }) => {
           />
         )}
       </Box>
+
       <Box
         border="1px solid #000000"
         rounded="full"
@@ -183,14 +245,27 @@ const UserDetails = ({ userData, isOwner }) => {
             </Box>
             <Box position="relative">
               <SpinnerBtn
-                text={isVybud ? "Remove VyBud" : "Add VyBud"}
+                text={
+                  requestSent
+                    ? "Request Sent"
+                    : isVybud
+                      ? "Remove VyBud"
+                      : "Add VyBud"
+                }
+                isDisabled={requestSent}
                 fontSize="16px"
                 fontWeight="bold"
                 rounded="full"
                 height="40px"
                 border="1px solid #EF5D60"
-                w={isVybud ? "180px" : "160px"}
-                icon={isVybud ? HiUserRemove : IoMdPersonAdd}
+                w={isVybud || requestSent ? "180px" : "160px"}
+                icon={
+                  requestSent
+                    ? RxEnvelopeClosed
+                    : isVybud
+                      ? HiUserRemove
+                      : IoMdPersonAdd
+                }
                 onClick={isVybud ? handleRemoveVybudClick : handleVyBudClick}
               />
             </Box>

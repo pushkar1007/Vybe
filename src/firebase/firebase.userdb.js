@@ -282,7 +282,7 @@ class Firebase {
     } catch (error) {
       const errorCode = error.code;
       const errorMessage = error.message;
-      // ❌ Handle error
+      //Handle error
       console.error(
         "Error in adding removing liked posts from user db:",
         errorCode,
@@ -292,28 +292,25 @@ class Firebase {
   }
 
   // adds a vybud
-  async addVybud(userId, currentUser) {
+  async addVybud(userIdToAdd, currentUser) {
     try {
-      if (!currentUser) {
-        throw new Error("User not authenticated.");
+      if (!currentUser || !currentUser.id) {
+        throw new Error("User not authenticated or invalid user object.");
       }
 
-      // Get references
-      const userRef = doc(this.db, "users", currentUser.uid);
-      const vybudRef = doc(this.db, "vybuds", userId); // This is your DocumentReference
+      const userRef = doc(this.db, "users", currentUser.id);
 
-      // Update the array field atomically
       await updateDoc(userRef, {
-        vybuds: arrayUnion(userId),
+        vybuds: arrayUnion(userIdToAdd),
       });
+
+      console.log(
+        `✅ Successfully added vybud ${userIdToAdd} to ${currentUser.id}`,
+      );
     } catch (error) {
-      const errorCode = error.code;
-      const errorMessage = error.message;
-      // ❌ Handle error
       console.error(
-        "Error in adding vybud to user db:",
-        errorCode,
-        errorMessage,
+        "❌ Error in addVybud():",
+        error.stack || error.message || error,
       );
     }
   }
@@ -321,25 +318,29 @@ class Firebase {
   //removes a vybud
   async removeVyBud(userId, currentUser) {
     try {
-      if (!currentUser) {
-        throw new Error("User not authenticated.");
+      if (!currentUser || (!currentUser.uid && !currentUser.id)) {
+        throw new Error("Invalid currentUser object.");
       }
 
-      // Reference to current user's document
-      const userRef = doc(this.db, "users", currentUser.uid);
+      if (!userId) {
+        throw new Error("User ID to remove is undefined.");
+      }
 
-      // Remove the UID from vybuds array
+      const userRef = doc(this.db, "users", currentUser.uid || currentUser.id);
+
       await updateDoc(userRef, {
         vybuds: arrayRemove(userId),
       });
-    } catch (error) {
-      const errorCode = error.code;
-      const errorMessage = error.message;
-      console.error(
-        "Error in removing vybud from user db:",
-        errorCode,
-        errorMessage,
+
+      console.log(
+        `✅ Successfully removed ${userId} from ${currentUser.uid || currentUser.id}'s vybuds.`,
       );
+    } catch (error) {
+      console.error(
+        "🔥 Error in removeVyBud():",
+        error?.stack || error?.message || error,
+      );
+      throw error; // 👈 Rethrow so the calling function can catch it
     }
   }
 

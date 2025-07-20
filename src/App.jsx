@@ -15,7 +15,6 @@ import { useAuth } from "./context/AuthContext";
 import SignUp from "./pages/auth/SignUp";
 import Login from "./pages/auth/Login";
 import ChatRoom from "./pages/dm/ChatRoom";
-import ChatButton from "./components/ui/dm/ChatButton";
 import { useEffect } from "react";
 import { initPresence } from "./firebase/firebase.presence";
 

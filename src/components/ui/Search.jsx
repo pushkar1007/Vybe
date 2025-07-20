@@ -27,7 +27,9 @@ const Search = ({ scope = "all", vybuds = [], ...props }) => {
         if (scope === "vybuds" && vybuds.length > 0) {
           users = users.filter((user) => vybuds.includes(user.id));
         }
-
+        else if (scope === "vybuds" && vybuds.length === 0) {
+          users = users.filter((user) => vybuds.includes(user.id));
+        }
         setAllUsers(users);
       } catch (error) {
         console.error("Error fetching users:", error);

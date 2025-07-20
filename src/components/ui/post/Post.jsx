@@ -4,20 +4,35 @@ import {
   HStack,
   Icon,
   Image,
+  Spinner,
   Stack,
   Text,
-  Spinner,
 } from "@chakra-ui/react";
-import { IoMdHeartEmpty } from "react-icons/io";
+import { IoMdHeart, IoMdHeartEmpty } from "react-icons/io";
 import { FaRegComment } from "react-icons/fa";
 import { PiShareFat } from "react-icons/pi";
 import { formatDistanceToNow } from "date-fns";
 import firebaseUserdb from "@/firebase/firebase.userdb";
+import firebasePostdb from "@/firebase/firebase.postdb";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "@/context/AuthContext";
 
 const Post = ({ post }) => {
-  const { content, image, likes, comments, createdBy, createdAt } = post;
+  const {
+    content,
+    image,
+    likes,
+    comments,
+    createdBy,
+    createdAt,
+    id: postId,
+  } = post;
+
   const [creator, setCreator] = useState(null);
+  const [hasLiked, setHasLiked] = useState(false);
+  const [likeCount, setLikeCount] = useState(likes?.length || 0);
+  const [isLiking, setIsLiking] = useState(false);
+  const { user } = useAuth();
   const navigate = useNavigate();
 
   const formattedTime = createdAt
@@ -30,12 +45,48 @@ const Post = ({ post }) => {
         const data = await firebaseUserdb.getUserData(createdBy);
         setCreator(data);
       } else {
-        setCreator(createdBy); // already full object
+        setCreator(createdBy);
       }
     };
 
     fetchCreator();
   }, [createdBy]);
+
+  useEffect(() => {
+    if (!user || !likes) return;
+
+    const liked = likes.some((likeRef) => {
+      if (likeRef?.path) {
+        const refUid = likeRef.path.split("/").pop();
+        return refUid === user.uid;
+      }
+      return false;
+    });
+
+    setHasLiked(liked);
+    setLikeCount(likes.length); 
+  }, [likes, user]);
+
+  const handleLikeToggle = async () => {
+    if (!user || isLiking) return;
+
+    setIsLiking(true);
+
+    try {
+      if (hasLiked) {
+        await firebaseUserdb.unlikePost(postId, user);
+        await firebasePostdb.unlikePost(postId, user.uid);
+      } else {
+        await firebaseUserdb.likePost(postId, user);
+        await firebasePostdb.likePost(postId, user.uid);
+      }
+
+    } catch (err) {
+      console.error("Like toggle failed:", err);
+    } finally {
+      setIsLiking(false);
+    }
+  };
 
   if (!creator) {
     return <Spinner />;
@@ -60,16 +111,14 @@ const Post = ({ post }) => {
         onClick={() => navigate(`/profile/${creator.id}`)}
       />
       <Stack flex={1}>
-        <HStack justify="space-between" w="100%">
+        <HStack justifyContent="space-between" w="100%">
           <HStack gap={2} maxW="70%">
             <Heading
               fontSize="md"
               whiteSpace="nowrap"
               overflow="hidden"
               textOverflow="ellipsis"
-              _hover={{
-                textDecoration: "underline",
-              }}
+              _hover={{ textDecoration: "underline" }}
               cursor="pointer"
               onClick={() => navigate(`/profile/${creator.id}`)}
             >
@@ -83,9 +132,7 @@ const Post = ({ post }) => {
               textOverflow="ellipsis"
               maxW="130px"
               cursor="pointer"
-              _hover={{
-                textDecoration: "underline",
-              }}
+              _hover={{ textDecoration: "underline" }}
               onClick={() => navigate(`/profile/${creator.id}`)}
             >
               @{creator.username || "user"}
@@ -113,8 +160,15 @@ const Post = ({ post }) => {
 
         <HStack justifyContent="space-between" color="brand.500">
           <HStack gap={1}>
-            <Icon as={IoMdHeartEmpty} h="24px" w="24px" cursor="pointer" />
-            <Text>{likes?.length || 0}</Text>
+            <Icon
+              as={hasLiked ? IoMdHeart : IoMdHeartEmpty}
+              h="24px"
+              w="24px"
+              cursor="pointer"
+              color="brand.500"
+              onClick={handleLikeToggle}
+            />
+            <Text>{likeCount}</Text>
           </HStack>
           <HStack gap={1.5}>
             <Icon as={FaRegComment} h="20px" w="20px" cursor="pointer" />
