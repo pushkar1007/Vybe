@@ -1,6 +1,7 @@
 // uploadImageToCloudinary
 
 export const uploadImage = async (file) => {
+  if(!file) return
   const url = "https://api.cloudinary.com/v1_1/dw1ikwae9/upload";
 
   const formData = new FormData();

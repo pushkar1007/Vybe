@@ -25,14 +25,16 @@ class Firebase {
     this.db = getFirestore(this.app);
   }
 
-  async createVybecircle({ description, logo }, userId) {
+  async createVybecircle({ name, description, logo, banner }, userId) {
     try {
+      console.log({name,description,logo,banner})
       const vybecircleRef = await addDoc(collection(this.db, "vybecircles"), {
         users: [],
         posts: [],
+        name,
         description,
         logo,
-        bannerImage: bannerImage ? bannerImage : "",
+        banner: banner ? banner : "",
         createdBy: userId,
         createdAt: String(Date.now()),
       });
@@ -45,9 +47,15 @@ class Firebase {
     }
   }
 
-  async updateVybecircle({ description, logo, banner }, vybecircleId) {
+  async updateVybecircle({name, description, logo, banner }, vybecircleId) {
     try {
       const vybecircleRef = doc(this.db, "vybecircles", vybecircleId);
+
+      name
+        ? await updateDoc(vybecircleRef, {
+            name,
+          })
+        : null;
 
       description
         ? await updateDoc(vybecircleRef, {
@@ -165,14 +173,10 @@ class Firebase {
       } else {
         return null;
       }
-    }  catch (error) {
+    } catch (error) {
       const errorCode = error.code;
       const errorMessage = error.message;
-      console.error(
-        "Error getting  vybecircle :",
-        errorCode,
-        errorMessage,
-      );
+      console.error("Error getting  vybecircle :", errorCode, errorMessage);
     }
   }
 }
