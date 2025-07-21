@@ -52,6 +52,7 @@ const ChatInput = ({ reqId, senderId }) => {
   return (
     <Box
       p={3}
+      h="65px"
       borderTop="1px solid #EF5D60"
       position="sticky"
       bottom="0"

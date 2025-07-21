@@ -7,7 +7,7 @@ import VyBudsIcon from "../icons/VyBudsIcon";
 import VybCirclesIcon from "../icons/VybCirclesIcon";
 import RenderLink from "../ui/RenderLink";
 import SpinnerBtn from "../ui/SpinnerBtn";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import PostDialogue from "../ui/post/PostDialogue";
 import LogoIcon from "../icons/LogoIcon";
@@ -15,6 +15,7 @@ import MobileLogoIcon from "../icons/MobileLogoIcon";
 
 const SideMenu = ({shouldHideHeader}) => {
   const { user } = useAuth();
+  const navigate = useNavigate();
 
   const sideMenuLinks = [
     {
@@ -96,6 +97,7 @@ const SideMenu = ({shouldHideHeader}) => {
               xl: "70px",
             }}
             mt="10px"
+            onClick={() => navigate('/')}
           />
           <Icon
             as={MobileLogoIcon}

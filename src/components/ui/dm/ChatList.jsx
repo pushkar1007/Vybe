@@ -5,7 +5,7 @@ import { connection } from "@/firebase/firebase.dmdb";
 import { useAuth } from "@/context/AuthContext";
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
-import { useColorModeValue } from "../color-mode";
+import { useColorModeValue } from "../chakra/color-mode";
 
 dayjs.extend(relativeTime);
 

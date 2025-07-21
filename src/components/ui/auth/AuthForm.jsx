@@ -1,11 +1,11 @@
 import { Heading, VStack, Text, Box } from "@chakra-ui/react";
 import { Formik, Form } from "formik";
 import * as Yup from "yup";
-import InputTab from "./InputTab";
+import InputTab from "../InputTab";
 import { LuUserRound } from "react-icons/lu";
 import { AiOutlineMail } from "react-icons/ai";
 import { IoLockClosedOutline } from "react-icons/io5";
-import SpinnerBtn from "./SpinnerBtn";
+import SpinnerBtn from "../SpinnerBtn";
 import Firebase from "@/firebase/firebase.auth";
 import { toast } from "react-toastify";
 import { useAuth } from "@/context/AuthContext";
@@ -50,7 +50,12 @@ const AuthForm = ({ mode }) => {
       overflow="hidden"
     >
       <Box>
-        <Heading fontSize="48px" fontWeight="bold" mb={4} color={isSignup ? "brand.200" : "brand.400"}>
+        <Heading
+          fontSize="48px"
+          fontWeight="bold"
+          mb={4}
+          color={isSignup ? "brand.200" : "brand.400"}
+        >
           {isSignup ? "Create Account" : "Login"}
         </Heading>
       </Box>
@@ -75,8 +80,8 @@ const AuthForm = ({ mode }) => {
                         username: values.username,
                         email: values.email,
                       },
-                      user.uid
-                    )
+                      user.uid,
+                    );
                     await refreshUser();
                     toast.success("Signup successful!");
                   }

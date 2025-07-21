@@ -1,10 +1,9 @@
-import AuthForm from "@/components/ui/AuthForm";
+import AuthForm from "@/components/ui/auth/AuthForm";
 import { Stack } from "@chakra-ui/react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/context/AuthContext";
 
 const SignUp = () => {
-
   const { createUser } = useAuth();
   const navigate = useNavigate();
 
@@ -15,18 +14,25 @@ const SignUp = () => {
       if (user) {
         navigate("/");
       } else {
-        actions.setFieldError("general", "Sign Up failed. Try again.")
+        actions.setFieldError("general", "Sign Up failed. Try again.");
       }
     } catch (error) {
-      actions.setFieldError("general", error.message || "Error during Sign Up")
+      actions.setFieldError("general", error.message || "Error during Sign Up");
     } finally {
       actions.setSubmitting(false);
     }
   };
 
   return (
-    <Stack alignItems="center" justifyContent="center" h="100vh" w="100vw" bgImage="url(./images/bg-3.png)" bgSize="cover" >
-      <AuthForm mode="signup"/>
+    <Stack
+      alignItems="center"
+      justifyContent="center"
+      h="100vh"
+      w="100vw"
+      bgImage="url(./images/bg-3.png)"
+      bgSize="cover"
+    >
+      <AuthForm mode="signup" />
     </Stack>
   );
 };

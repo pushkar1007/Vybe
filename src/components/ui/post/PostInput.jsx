@@ -11,6 +11,7 @@ import { useAuth } from "@/context/AuthContext";
 import firebaseUserdb from "@/firebase/firebase.userdb";
 import firebasePostdb from "@/firebase/firebase.postdb";
 import { toast } from "react-toastify";
+import { useNavigate } from "react-router-dom";
 
 const MAX_CHAR_LIMIT = 550;
 
@@ -23,6 +24,7 @@ const PostInput = () => {
   const textareaRef = useRef(null);
   const fileInputRef = useRef(null);
   const { user, userData } = useAuth();
+  const navigate = useNavigate();
 
   const handleChange = (e) => {
     const newValue = e.target.value;
@@ -105,6 +107,8 @@ const PostInput = () => {
           h="50px"
           rounded="full"
           objectFit="cover"
+          cursor="pointer"
+          onClick={() => navigate(`/profile/${userData.id}`)}
         />
       ) : (
         <Box

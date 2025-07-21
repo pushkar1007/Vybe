@@ -26,7 +26,7 @@ class Firebase {
         likes: 0,
         createdAt: Date.now(),
         updatedAt: null,
-        creaatedBy: user,
+        createdBy: user,
       });
       await updateDoc(commentRef, { commentId: commentRef.id });
       return commentRef;
