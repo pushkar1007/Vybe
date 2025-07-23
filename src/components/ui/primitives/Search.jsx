@@ -26,8 +26,7 @@ const Search = ({ scope = "all", vybuds = [], ...props }) => {
 
         if (scope === "vybuds" && vybuds.length > 0) {
           users = users.filter((user) => vybuds.includes(user.id));
-        }
-        else if (scope === "vybuds" && vybuds.length === 0) {
+        } else if (scope === "vybuds" && vybuds.length === 0) {
           users = users.filter((user) => vybuds.includes(user.id));
         }
         setAllUsers(users);
@@ -39,7 +38,7 @@ const Search = ({ scope = "all", vybuds = [], ...props }) => {
     };
 
     fetchUsers();
-  }, [scope, JSON.stringify(vybuds)]); 
+  }, [scope, JSON.stringify(vybuds)]);
 
   useEffect(() => {
     if (!input.trim()) {

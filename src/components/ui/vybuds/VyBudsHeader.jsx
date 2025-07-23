@@ -1,15 +1,14 @@
 import { Box, Heading, HStack, Icon } from "@chakra-ui/react";
-import Search from "../Search";
+import Search from "../primitives/Search";
 import { LuSearch } from "react-icons/lu";
 import { FaArrowLeftLong } from "react-icons/fa6";
 import { useNavigate } from "react-router-dom";
 
 const VyBudsHeader = ({ userData }) => {
-
   const navigate = useNavigate();
   const handleClick = () => {
     navigate("/");
-  }
+  };
 
   return (
     <HStack w="full" borderBottom="1px solid" borderColor="brand.500" gap={0}>

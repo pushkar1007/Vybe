@@ -11,7 +11,7 @@ import {
 import { FaArrowLeftLong } from "react-icons/fa6";
 import { useNavigate } from "react-router-dom";
 import EditProfileDialogue from "./EditProfileDialogue";
-import SpinnerBtn from "../SpinnerBtn";
+import SpinnerBtn from "../primitives/SpinnerBtn";
 import { IoMdPersonAdd } from "react-icons/io";
 import { RxEnvelopeClosed } from "react-icons/rx";
 import { useAuth } from "@/context/AuthContext";
@@ -21,6 +21,7 @@ import { useEffect, useState } from "react";
 import { deleteDoc, doc, getDoc } from "firebase/firestore";
 import { HiUserRemove } from "react-icons/hi";
 import { vybudreq } from "@/firebase/firebase.vybudreq";
+import { firebaseNotifications } from "@/firebase/firebase.notifications";
 
 const UserDetails = ({ userData, isOwner }) => {
   const navigate = useNavigate();
@@ -66,9 +67,9 @@ const UserDetails = ({ userData, isOwner }) => {
         if (snap.exists()) {
           const status = snap.data().status;
           if (status === 0) {
-            setRequestSent(true); 
+            setRequestSent(true);
           } else if (status === 1) {
-            setIsVybud(true); 
+            setIsVybud(true);
           }
         } else {
           setRequestSent(false);
@@ -128,7 +129,8 @@ const UserDetails = ({ userData, isOwner }) => {
       const reqId = `${user.uid}_${userData.id}`;
       const ref = doc(firebaseUserdb.db, "vybudReqs", reqId);
       await deleteDoc(ref);
-
+      await firebaseNotifications.removeNotification(`vybud_${reqId}`);
+      await firebaseNotifications.removeNotification(`vybud_${reverse(reqId)}`);
       toast.success("Removed from VyBuds");
       setIsVybud(false);
       setRequestSent(false);

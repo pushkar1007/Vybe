@@ -81,9 +81,10 @@ const ChatRoom = () => {
       mx="auto"
       border="1px solid #ccc"
       borderRadius="md"
+      gap={0}
     >
       <ChatHeader chatPartnerData={chatPartnerData} presence={presence} />
-      <Stack h="100%">
+      <Stack h="100%" gap={0}>
         {
           <ConnectionStatus
             key={request?.id ?? "no-req"}
@@ -97,7 +98,11 @@ const ChatRoom = () => {
         {request?.status === 1 && (
           <>
             <ChatList reqId={request.id} />
-            <ChatInput reqId={request.id} senderId={currentUser} />
+            <ChatInput
+              reqId={request.id}
+              senderId={currentUser}
+              chatPartner={chatPartner}
+            />
           </>
         )}
       </Stack>

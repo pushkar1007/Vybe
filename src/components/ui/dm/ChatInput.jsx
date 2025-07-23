@@ -5,12 +5,16 @@ import { addDoc, collection, serverTimestamp } from "firebase/firestore";
 import { connection } from "@/firebase/firebase.dmdb";
 import { HiOutlineEmojiHappy } from "react-icons/hi";
 import EmojiPicker from "emoji-picker-react";
+import { firebaseNotifications } from "@/firebase/firebase.notifications";
+import { useAuth } from "@/context/AuthContext";
 
-const ChatInput = ({ reqId, senderId }) => {
+const ChatInput = ({ reqId, senderId, chatPartner }) => {
   const [message, setMessage] = useState("");
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
   const [loading, setLoading] = useState(false);
   const inputRef = useRef(null);
+  const { userData } = useAuth();
+
 
   const handleEmojiClick = (emojiData) => {
     const emoji = emojiData.emoji;
@@ -35,7 +39,16 @@ const ChatInput = ({ reqId, senderId }) => {
         message: message.trim(),
         createdAt: serverTimestamp(),
       });
-
+      await firebaseNotifications.createNotification({
+        id: `chat_message_${reqId}`,
+        type: `chat_message`,
+        senderId: senderId,
+        receiverId: chatPartner,
+        senderHandle: userData.handlename || "Anonymous",
+        status: "accepted",
+        message: `${userData.handlename} has sent you a chat message`,
+        relatedId: `${chatPartner}-${userData.id}`,
+      });
       setMessage("");
       setShowEmojiPicker(false);
     } catch (error) {

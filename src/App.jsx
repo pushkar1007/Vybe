@@ -141,7 +141,14 @@ function App() {
                 }
               />
 
-              <Route path="/chat-room/:roomId" element={<ChatRoom />} />
+              <Route
+                path="/chat-room/:roomId"
+                element={
+                  <ProtectedRoute>
+                    <ChatRoom />
+                  </ProtectedRoute>
+                }
+              />
 
               <Route
                 path="/profile/:uid"

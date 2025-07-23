@@ -16,6 +16,7 @@ import firebaseUserdb from "@/firebase/firebase.userdb";
 import firebasePostdb from "@/firebase/firebase.postdb";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "@/context/AuthContext";
+import { firebaseNotifications } from "@/firebase/firebase.notifications";
 
 const Post = ({ post }) => {
   const {
@@ -33,7 +34,7 @@ const Post = ({ post }) => {
   const [likeCount, setLikeCount] = useState(likes?.length || 0);
   const [isLiking, setIsLiking] = useState(false);
   const [openPostInterface, setOpenPostInterface] = useState(true);
-  const { user } = useAuth();
+  const { user, userData } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
   const currentPath = location.pathname;
@@ -87,9 +88,20 @@ const Post = ({ post }) => {
       if (hasLiked) {
         await firebaseUserdb.unlikePost(postId, user);
         await firebasePostdb.unlikePost(postId, user.uid);
+        await firebaseNotifications.updateNotificationStatus(`post_like_${postId}_${user.uid}`,"rejected")
       } else {
         await firebaseUserdb.likePost(postId, user);
         await firebasePostdb.likePost(postId, user.uid);
+        await firebaseNotifications.createNotification({
+          id: `post_like_${postId}_${user.uid}`,
+          type: "post_like",
+          senderId: user.uid,
+          receiverId: createdBy.id,
+          senderHandle: userData.handlename || "Anonymous",
+          status: "accepted",
+          message: `${userData.handlename} has liked your Post!`,
+          relatedId: postId,
+        });
       }
     } catch (err) {
       console.error("Like toggle failed:", err);

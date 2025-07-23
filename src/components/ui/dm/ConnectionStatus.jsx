@@ -1,5 +1,5 @@
-import React, { useEffect } from "react";
-import { Box, Button } from "@chakra-ui/react";
+import { useEffect } from "react";
+import { Box, Text } from "@chakra-ui/react";
 import { connection } from "@/firebase/firebase.dmdb";
 import ChatButton from "./ChatButton";
 import { collection, doc, onSnapshot } from "firebase/firestore";
@@ -14,7 +14,7 @@ const ConnectionStatus = ({
     try {
       if (!request) return;
       const timeDiff = Math.abs(Number(Date.now()) - Number(request.createdAt));
-      if (timeDiff > 60000 && (request.status === 0 || request.status === -1)) {
+      if (timeDiff > 6000 && request.status === -1) {
         await connection.deleteConnection(request.id);
         setRequest(null);
       }
@@ -76,46 +76,35 @@ const ConnectionStatus = ({
     };
   }, [chatPartner, currentUser]);
 
+  if (request?.status === 0) {
+    return (
+      <Box
+        bg="gray.100"
+        p={4}
+        borderBottom="1px solid #ccc"
+        display="flex"
+        justifyContent="center"
+        alignItems="center"
+      >
+        <Text>Your Request is Pending!</Text>
+      </Box>
+    );
+  }
+
   return (
-    <Box bg="gray.100" p={4} borderBottom="1px solid #ccc">
+    <Box>
       {request == null ? (
-        <ChatButton initiator={currentUser} acceptor={chatPartner} />
-      ) : request.initiator === currentUser ? (
-        <div>
-          {request.status === 0
-            ? "The request is pending, please wait..."
-            : request.status === 1
-              ? "The request has been accepted."
-              : "The request has been rejected."}
-        </div>
-      ) : (
-        <div>
-          {request.status === 0 ? (
-            <div>
-              The request is pending — select your action:
-              <Button
-                onClick={() => connection.acceptConnection(request.id)}
-                bgColor="green"
-                mt={2}
-              >
-                Accept
-              </Button>
-              <Button
-                onClick={() => connection.rejectConnection(request.id)}
-                bgColor="red"
-                mt={2}
-                ml={2}
-              >
-                Reject
-              </Button>
-            </div>
-          ) : request.status === 1 ? (
-            "You accepted the request."
-          ) : (
-            "You rejected the request."
-          )}
-        </div>
-      )}
+        <Box
+          bg="gray.100"
+          p={4}
+          borderBottom="1px solid #ccc"
+          display="flex"
+          justifyContent="center"
+          alignItems="center"
+        >
+          <ChatButton initiator={currentUser} acceptor={chatPartner} />
+        </Box>
+      ) : null}
     </Box>
   );
 };

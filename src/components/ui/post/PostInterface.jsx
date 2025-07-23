@@ -11,6 +11,7 @@ import { HiOutlineEmojiHappy } from "react-icons/hi";
 import { FiSend } from "react-icons/fi";
 import { isEqual } from "lodash";
 import firebaseCommentsdb from "@/firebase/firebase.commentsdb";
+import { firebaseNotifications } from "@/firebase/firebase.notifications";
 
 
 export const PostInterface = () => {
@@ -22,7 +23,7 @@ export const PostInterface = () => {
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
   const inputRef = useRef(null);
   const { postId } = useParams();
-  const { user } = useAuth();
+  const { user, userData } = useAuth();
   const navigate = useNavigate();
 
   const addCommentToPost = async (postId, commentId) => {
@@ -63,9 +64,20 @@ export const PostInterface = () => {
       const comment = await firebaseCommentsdb.createComment(
         inputRef.current.value,
         user.uid,
+        postId,
       );
       await addCommentToPost(postId, comment.id);
       await getComments(post?.comments);
+      await firebaseNotifications.createNotification({
+        id: `post_comment_${comment.id}_${user.id}`,
+        type: "post_comment",
+        senderId: user.uid,
+        receiverId: post.createdBy,
+        senderHandle: userData.handlename || "Anonymous",
+        status: "accepted",
+        message: `${userData.handlename} has commented on your Post!`,
+        relatedId: comment.id,
+      });
       setMyComment("");
       setShowEmojiPicker(false);
     } catch (error) {
@@ -106,16 +118,14 @@ export const PostInterface = () => {
   }, [post?.comments]);
 
   useEffect(() => {
-    (async () => {
-      try {
-        const postData = await firebasePostdb.getPostData(postId);
-        setPost(postData);
-        setLoading(false);
-      } catch (error) {
-        console.log("Error fetching post: ", error);
-      }
-    })();
-  }, []);
+    const unsubscribe = firebasePostdb.listenToPost(postId, (updatedPost) => {
+      setPost(updatedPost);
+      setLoading(false);
+    });
+
+    return () => unsubscribe(); 
+  }, [postId]);
+
 
   return loading ? (
     <>Loading....</>

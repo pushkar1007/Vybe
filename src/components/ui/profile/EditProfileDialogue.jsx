@@ -10,7 +10,7 @@ import {
   Field,
   Icon,
 } from "@chakra-ui/react";
-import SpinnerBtn from "../SpinnerBtn";
+import SpinnerBtn from "../primitives/SpinnerBtn";
 import { useAuth } from "@/context/AuthContext";
 import ProfileIcon from "../../icons/ProfileIcon";
 import ProfileInput from "./ProfileInput";

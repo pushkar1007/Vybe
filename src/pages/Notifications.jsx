@@ -1,12 +1,11 @@
 import { Box, Heading } from "@chakra-ui/react";
 import NotificationsList from "@/components/ui/notifications/NotificationsList";
+import NotificationHeader from "@/components/ui/notifications/NotificationHeader";
 
 const Notifications = () => {
   return (
-    <Box p={4}>
-      <Heading size="lg" mb={4}>
-        Notifications
-      </Heading>
+    <Box >
+      <NotificationHeader />
       <NotificationsList />
     </Box>
   );

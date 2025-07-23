@@ -7,7 +7,7 @@ import { LuSearch } from "react-icons/lu";
 import { MdNotifications } from "react-icons/md";
 import { AiFillHome } from "react-icons/ai";
 import { Link } from "react-router-dom";
-import RenderLink from "../ui/RenderLink";
+import RenderLink from "../ui/primitives/RenderLink";
 import { useRef } from "react";
 
 const HamburgerMenu = () => {
@@ -50,14 +50,14 @@ const HamburgerMenu = () => {
     },
   ];
 
-    const menuRef = useRef(null);
-    
-    const handleClose = () => {
-        if (Drawer.ref) {
-            menuRef.current.close();
-        }
+  const menuRef = useRef(null);
+
+  const handleClose = () => {
+    if (Drawer.ref) {
+      menuRef.current.close();
     }
-    
+  };
+
   return (
     <Drawer.Root placement="start" closeOnInteractOutside={false}>
       <Drawer.Trigger asChild>
@@ -70,14 +70,22 @@ const HamburgerMenu = () => {
             <Drawer.Body mt="60px">
               <Box>
                 {navLinks.map((navLink) => (
-                  <Link to={navLink.link} key={navLink.key} onClick={handleClose}>
+                  <Link
+                    to={navLink.link}
+                    key={navLink.key}
+                    onClick={handleClose}
+                  >
                     <RenderLink text={navLink.text} icon={navLink.icon} />
                   </Link>
                 ))}
               </Box>
             </Drawer.Body>
             <Drawer.CloseTrigger asChild>
-              <CloseButton size="xl" color="brand.400" _hover={{bg: "transparent"}} />
+              <CloseButton
+                size="xl"
+                color="brand.400"
+                _hover={{ bg: "transparent" }}
+              />
             </Drawer.CloseTrigger>
           </Drawer.Content>
         </Drawer.Positioner>

@@ -71,7 +71,7 @@ class FirebaseVybudReq {
   }
 
   //Reject a request + update notification
-  async rejectVybudRequest(reqId, initiatorUid, receiverUid) {
+  async rejectVybudRequest(reqId, receiverUid) {
     await updateDoc(doc(this.db, "vybudReqs", reqId), { status: -1 });
 
     const receiverUser = await firebaseUserdb.getUserData(receiverUid);
