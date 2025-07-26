@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import { Box, Flex, Spinner, Stack } from "@chakra-ui/react";
+import { Flex, Spinner, Stack } from "@chakra-ui/react";
 import ChatInput from "@/components/ui/dm/ChatInput";
 import ChatList from "@/components/ui/dm/ChatList";
 import ChatHeader from "@/components/ui/dm/ChatHeader";
