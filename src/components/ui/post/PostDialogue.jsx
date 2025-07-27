@@ -34,7 +34,10 @@ const PostDialogue = () => {
   const textareaRef = useRef(null);
   const fileInputRef = useRef(null);
   const { user, userData } = useAuth();
-
+  const [target, setTarget] = useState({
+    targetId: userData.id,
+    targetType: "user",
+  });
   const handleChange = (e) => {
     const newValue = e.target.value;
     if (newValue.length <= MAX_CHAR_LIMIT) {
@@ -77,7 +80,7 @@ const PostDialogue = () => {
         imageUrl = await uploadImage(imageFile);
       }
       const postRef = await firebasePostdb.createPost(
-        { content: value.trim(), image: imageUrl },
+        { content: value.trim(), image: imageUrl, ...target },
         user,
       );
       if (postRef) {
@@ -186,7 +189,7 @@ const PostDialogue = () => {
                     </Box>
                   )}
                   <Stack flex="1">
-                    <PostSelect />
+                    <PostSelect targetSetter={setTarget} />
                     <Box position="relative" w="100%">
                       <TextareaAutosize
                         className="vybe-textarea"

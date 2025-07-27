@@ -27,7 +27,7 @@ class Firebase {
 
   async createVybecircle({ name, description, logo, banner }, userId) {
     try {
-      console.log({name,description,logo,banner})
+      console.log({ name, description, logo, banner });
       const vybecircleRef = await addDoc(collection(this.db, "vybecircles"), {
         users: [],
         posts: [],
@@ -47,7 +47,7 @@ class Firebase {
     }
   }
 
-  async updateVybecircle({name, description, logo, banner }, vybecircleId) {
+  async updateVybecircle({ name, description, logo, banner }, vybecircleId) {
     try {
       const vybecircleRef = doc(this.db, "vybecircles", vybecircleId);
 
@@ -169,7 +169,7 @@ class Firebase {
       const vybecircleRef = doc(this.db, "vybecircles", vybecircleId);
       const snap = await getDoc(vybecircleRef);
       if (snap.exists()) {
-        return { id: snap.id, ...snap.data };
+        return { id: snap.id, ...snap.data() };
       } else {
         return null;
       }

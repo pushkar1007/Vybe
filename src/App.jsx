@@ -18,6 +18,8 @@ import ChatRoom from "./pages/dm/ChatRoom";
 import { useEffect } from "react";
 import { initPresence } from "./firebase/firebase.presence";
 import {PostInterface} from "./components/ui/post/PostInterface";
+import { VybeCircleHome } from "./components/ui/vybecircle/VybeCircleHome";
+import MigratePosts from "./pages/admin/Migrate";
 
 function App() {
   const { user } = useAuth();
@@ -140,7 +142,17 @@ function App() {
                   </ProtectedRoute>
                 }
               />
+              <Route path="/vybcircles/:vybecircleId" element={
+                  <ProtectedRoute>
+                    <VybeCircleHome/>
+                  </ProtectedRoute>
+                }/>
 
+                <Route path="/admin/migrate" element={
+                  <ProtectedRoute>
+                    <MigratePosts/>
+                  </ProtectedRoute>
+                }/>
               <Route path="/chat-room/:roomId" element={<ChatRoom />} />
 
               <Route

@@ -5,7 +5,7 @@ import {
   Button,
   Input,
   Textarea,
-   CloseButton,
+  CloseButton,
   VStack,
   Text,
 } from "@chakra-ui/react";
@@ -13,21 +13,36 @@ import firebaseVybecirclesdb from "@/firebase/firebase.vybecirclesdb";
 import { Formik, Field, Form } from "formik";
 import { uploadImage } from "@/utils/uploadImage";
 import * as Yup from "yup";
-import { isBoolean } from "lodash";
-import { useEffect } from "react";
+import firebaseUserdb from "@/firebase/firebase.userdb";
 
-export const VybeCircleDialog = ({user}) => {
-
-  const initialValues = {
-    name: "",
-    description: "",
-    logo: null,
-    banner: null,
-  };
+//this is the dialog used in creating a vybe circle and  in editing also in the future
+export const VybeCircleDialog = ({
+  user,
+  text = "",
+  styling = {},
+  vybeCircleData,
+}) => {
+  const initialValues = vybeCircleData
+    ? {
+        name: vybeCircleData.name,
+        description: vybeCircleData.description,
+        logo: vybeCircleData.logo,
+        banner: vybeCircleData.banner,
+      }
+    : {
+        name: "",
+        description: "",
+        logo: null,
+        banner: null,
+      };
 
   const validationSchema = Yup.object({
-    name: Yup.string().min(5,"the name must be atllease 5 characters long").required("name Required"),
-    description: Yup.string().min(10,"the name must be atllease 5 characters long").required("description Required"),
+    name: Yup.string()
+      .min(5, "the name must be atllease 5 characters long")
+      .required("name Required"),
+    description: Yup.string()
+      .min(10, "the name must be atllease 5 characters long")
+      .required("description Required"),
     logo: Yup.mixed().required("logo Required"),
     banner: Yup.mixed().nullable().notRequired(),
   });
@@ -39,22 +54,31 @@ export const VybeCircleDialog = ({user}) => {
     }
   `;
 
-    const handleClose = () => {
-  };
-
-
-
   const handleSubmit = async (values) => {
     try {
-        const userId = user.uid
-        console.log(values)
-        console.log(typeof values.logo)
-        values.logo = await uploadImage(values.logo)
-        values.banner = await uploadImage(values.banner)
-        console.log(values)
-        await firebaseVybecirclesdb.createVybecircle(values,userId)
+      if (!vybeCircleData) {
+        const userId = user.uid;
+        values.logo = await uploadImage(values.logo);
+        values.banner = await uploadImage(values.banner);
+        const vybeCircledata = await firebaseVybecirclesdb.createVybecircle(
+          values,
+          userId,
+        );
+        await firebaseVybecirclesdb.addUser(userId, vybeCircledata.id);
+        await firebaseUserdb.addVybeCircle(vybeCircledata.id, user);
+      } else {
+        if (typeof values.logo != "string" && values.logo) {
+          values.logo = await uploadImage(values.logo);
+        }
+        if (typeof values.banner != "string" && values.banner) {
+          values.banner = await uploadImage(values.banner);
+        }
+        //if the user has uploaded a file then the link must be generated
+        await firebaseVybecirclesdb.updateVybecircle(values, vybeCircleData.id);
+        console.log(values, vybeCircleData.id);
+      }
     } catch (error) {
-        console.error("error creating vybeCircle",error)
+      console.error("error creating vybeCircle", error);
     }
   };
 
@@ -63,30 +87,14 @@ export const VybeCircleDialog = ({user}) => {
       <Dialog.Root closeOnInteractOutside={false}>
         <Dialog.Trigger asChild>
           <Button
-            bg="brand.400"
-            color="brand.200"
-            boxShadow="4px 8px 4px rgba(0,0,0,0.1)"
-            mt="12px"
-            fontSize="16px"
-            fontWeight="bold"
-            rounded="full"
-            height="4opx"
-            width={{
-              base: "138px",
-              md: "90px",
-              lg: "120px",
-              lgx: "120px",
-              xl: "138px",
-            }}
-            mr={{
-              base: "50px",
-              md: "10px",
-              lg: "40px",
-              lgx: "40px",
-              xl: "50px",
-            }}
+            w={"100%"}
+            p={"4px"}
+            bg={"white"}
+            color={"black"}
+            outlineStyle={"none"}
+            {...styling}
           >
-            Create
+            {text}
           </Button>
         </Dialog.Trigger>
         <Portal>
@@ -106,7 +114,7 @@ export const VybeCircleDialog = ({user}) => {
                 rounded={4}
               >
                 <Dialog.Header mb={6} fontSize="2xl" textAlign="center">
-                  Create a VybeCircle
+                  {text} VybeCircle
                 </Dialog.Header>
 
                 <Dialog.Body>
@@ -155,45 +163,59 @@ export const VybeCircleDialog = ({user}) => {
                           </Field>
 
                           <Box w="100%">
-                            <Input
-                              type="file"
-                              accept="image/*"
-                              bg="white"
-                              color="#EF5D60"
-                              pt={1}
-                              onChange={(event) =>
-                                setFieldValue(
-                                  "logo",
-                                  event.currentTarget.files[0],
-                                )
-                              }
-                            />
-                            {touched.logo && errors.logo && (
-                              <Text fontSize="sm" color="white" mt={1}>
-                                {errors.logo}
-                              </Text>
-                            )}
+                            {vybeCircleData?.logo ? (
+                              <img
+                                width="64px"
+                                height="64px"
+                                src={`${vybeCircleData.logo}`}
+                              />
+                            ) : null}
+                            <>
+                              <Input
+                                type="file"
+                                accept="image/*"
+                                bg="white"
+                                color="#EF5D60"
+                                pt={1}
+                                onChange={(event) =>
+                                  setFieldValue(
+                                    "logo",
+                                    event.currentTarget.files[0],
+                                  )
+                                }
+                              />
+                              {touched.logo && errors.logo && (
+                                <Text fontSize="sm" color="white" mt={1}>
+                                  {errors.logo}
+                                </Text>
+                              )}
+                            </>
                           </Box>
 
                           <Box w="100%">
-                            <Input
-                              type="file"
-                              accept="image/*"
-                              bg="white"
-                              color="#EF5D60"
-                              pt={1}
-                              onChange={(event) =>
-                                setFieldValue(
-                                  "banner",
-                                  event.currentTarget.files[0],
-                                )
-                              }
-                            />
-                            {touched.banner && errors.banner && (
-                              <Text fontSize="sm" color="white" mt={1}>
-                                {errors.banner}
-                              </Text>
-                            )}
+                            {vybeCircleData?.banner ? (
+                              <img src={`${vybeCircleData.banner}`} />
+                            ) : null}
+                            <>
+                              <Input
+                                type="file"
+                                accept="image/*"
+                                bg="white"
+                                color="#EF5D60"
+                                pt={1}
+                                onChange={(event) =>
+                                  setFieldValue(
+                                    "banner",
+                                    event.currentTarget.files[0],
+                                  )
+                                }
+                              />
+                              {touched.banner && errors.banner && (
+                                <Text fontSize="sm" color="white" mt={1}>
+                                  {errors.banner}
+                                </Text>
+                              )}
+                            </>
                           </Box>
 
                           <Button
@@ -202,7 +224,7 @@ export const VybeCircleDialog = ({user}) => {
                             bg="white"
                             _hover={{ bg: "#fefefe" }}
                           >
-                            Create
+                            {vybeCircleData ? "update" : "create"}
                           </Button>
                         </VStack>
                       </Form>
@@ -211,17 +233,16 @@ export const VybeCircleDialog = ({user}) => {
                 </Dialog.Body>
               </Box>
               <Dialog.CloseTrigger asChild>
-                            <CloseButton
-                              size="lg"
-                              color="brand.400"
-                              _hover={{
-                                bg: "whiteAlpha.300",
-                                border: "1px solid white",
-                              }}
-                              rounded="full"
-                              onClick={handleClose}
-                            />
-                          </Dialog.CloseTrigger>
+                <CloseButton
+                  size="lg"
+                  color="brand.400"
+                  _hover={{
+                    bg: "whiteAlpha.300",
+                    border: "1px solid white",
+                  }}
+                  rounded="full"
+                />
+              </Dialog.CloseTrigger>
             </Dialog.Content>
           </Dialog.Positioner>
         </Portal>

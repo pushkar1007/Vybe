@@ -26,13 +26,15 @@ class Firebase {
     this.db = getFirestore(this.app);
   }
 
-  async createPost({ content, image }, currentUser) {
+  async createPost({ content, image, targetId, targetType }, currentUser) {
     try {
       const postRef = await addDoc(collection(this.db, "posts"), {
         content,
         image: image ? image : "",
         likes: [],
         comments: [],
+        targetId,
+        targetType,
         createdBy: currentUser.uid,
         createdAt: String(Date.now()),
         updatedAt: null,
@@ -110,12 +112,15 @@ class Firebase {
     }
   }
 
-  listenToPosts(callback) {
+  listenToPosts(callback, filter) {
     try {
-      const postsQuery = query(
-        collection(this.db, "posts"),
-        orderBy("createdAt", "desc"),
-      );
+      let postsQuery;
+      if (!filter) {
+        postsQuery = query(
+          collection(this.db, "posts"),
+          orderBy("createdAt", "desc"),
+        );
+      } else postsQuery = filter;
 
       const unsubscribe = onSnapshot(postsQuery, (snapshot) => {
         const posts = snapshot.docs.map((doc) => ({
