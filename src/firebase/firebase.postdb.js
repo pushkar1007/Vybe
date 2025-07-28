@@ -12,9 +12,10 @@ import {
   getDocs,
   onSnapshot,
   query,
-  orderBy
+  orderBy,
 } from "firebase/firestore";
 import { firebaseConfig } from "./config.js";
+import { array } from "yup";
 
 class Firebase {
   app;
@@ -25,13 +26,15 @@ class Firebase {
     this.db = getFirestore(this.app);
   }
 
-  async createPost({ content, image }, currentUser) {
+  async createPost({ content, image, targetId, targetType }, currentUser) {
     try {
       const postRef = await addDoc(collection(this.db, "posts"), {
         content,
         image: image ? image : "",
         likes: [],
         comments: [],
+        targetId,
+        targetType,
         createdBy: currentUser.uid,
         createdAt: String(Date.now()),
         updatedAt: null,
@@ -109,12 +112,15 @@ class Firebase {
     }
   }
 
-  listenToPosts(callback) {
+  listenToPosts(callback, filter) {
     try {
-      const postsQuery = query(
-        collection(this.db, "posts"),
-        orderBy("createdAt", "desc"),
-      );
+      let postsQuery;
+      if (!filter) {
+        postsQuery = query(
+          collection(this.db, "posts"),
+          orderBy("createdAt", "desc"),
+        );
+      } else postsQuery = filter;
 
       const unsubscribe = onSnapshot(postsQuery, (snapshot) => {
         const posts = snapshot.docs.map((doc) => ({
@@ -197,7 +203,7 @@ class Firebase {
       const postRef = doc(this.db, "posts", postId);
       const commentRef = doc(this.db, "comments", commentId);
       await updateDoc(postRef, {
-        comments: arrayUnion(commentRef),
+        comments: arrayRemove(commentRef),
       });
     } catch (error) {
       const errorCode = error.code;

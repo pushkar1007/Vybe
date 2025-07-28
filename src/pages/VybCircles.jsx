@@ -1,5 +1,9 @@
+import { Main } from "@/components/ui/vybecircle/Main";
+
 const VybCircles = () => {
-  return;
+  return(
+    <Main/>
+  );
 };
 
 export default VybCircles;
