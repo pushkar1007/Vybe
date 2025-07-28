@@ -6,13 +6,10 @@ import {
   orderBy,
   onSnapshot,
   getFirestore,
-  updateDoc,
-  doc,
 } from "firebase/firestore";
 import { useAuth } from "@/context/AuthContext";
 import NotificationItem from "@/components/ui/notifications/NotificationItem";
 import { VStack, Spinner, Text } from "@chakra-ui/react";
-import { vybudreq } from "@/firebase/firebase.vybudreq";
 import { firebaseConfig } from "@/firebase/config"; 
 import { initializeApp } from "firebase/app";
 const app = initializeApp(firebaseConfig);
@@ -44,49 +41,16 @@ const NotificationsList = () => {
     return () => unsubscribe(); 
   }, [user?.uid]);
 
-
-  const updateNotificationStatus = async (id, status) => {
-    await updateDoc(doc(firestore, "notifications", id), { status });
-  };
-
-  const handleAccept = async (notification) => {
-    const { id, type, senderId } = notification;
-
-    if (type === "vybud-request") {
-      await vybudreq.acceptVybudRequest(id, senderId, user.uid);
-    }
-
-    if (type === "chat-request") {
-    }
-
-    await updateNotificationStatus(id, "accepted");
-  };
-
-  const handleReject = async (notification) => {
-    const { id, type } = notification;
-
-    if (type === "vybud-request") {
-      await vybudreq.rejectVybudRequest(id);
-    }
-
-    if (type === "chat-request") {
-    }
-
-    await updateNotificationStatus(id, "rejected");
-  };
-
   if (loading) return <Spinner />;
   if (notifications.length === 0)
-    return <Text color="gray.400">No notifications at the moment.</Text>;
+    return <Text color="gray.400" p={4}>No notifications at the moment.</Text>;
 
   return (
-    <VStack spacing={4} align="stretch">
+    <VStack spacing={4} align="stretch" p={4}>
       {notifications.map((n) => (
         <NotificationItem
           key={n.id}
           notification={n}
-          onAccept={() => handleAccept(n)}
-          onReject={() => handleReject(n)}
         />
       ))}
     </VStack>

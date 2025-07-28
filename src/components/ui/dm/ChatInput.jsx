@@ -1,42 +1,71 @@
 import { useRef, useState } from "react";
 import { Box, Input, HStack, Icon, Stack, Spinner } from "@chakra-ui/react";
 import { FiSend } from "react-icons/fi";
-import { addDoc, collection, serverTimestamp } from "firebase/firestore";
-import { connection } from "@/firebase/firebase.dmdb";
 import { HiOutlineEmojiHappy } from "react-icons/hi";
 import EmojiPicker from "emoji-picker-react";
+import { addDoc, collection, serverTimestamp } from "firebase/firestore";
+import { connection } from "@/firebase/firebase.dmdb";
+import { firebaseNotifications } from "@/firebase/firebase.notifications";
+import { useAuth } from "@/context/AuthContext";
 
-const ChatInput = ({ reqId, senderId }) => {
-  const [message, setMessage] = useState("");
+const ChatInput = ({
+  type = "dm",
+  reqId,
+  senderId,
+  chatPartner,
+  addComment, 
+  commentsLoading = false,
+  inputValue,
+  setInputValue,
+  inputRef,
+}) => {
+  const internalInputRef = useRef(null);
+  const ref = inputRef || internalInputRef;
+
+  const [localValue, setLocalValue] = useState("");
+  const value = inputValue ?? localValue;
+  const setValue = setInputValue ?? setLocalValue;
+
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
   const [loading, setLoading] = useState(false);
-  const inputRef = useRef(null);
+  const { userData } = useAuth();
 
   const handleEmojiClick = (emojiData) => {
     const emoji = emojiData.emoji;
-    const cursorPos = inputRef.current.selectionStart;
-    const text = message;
+    const cursorPos = ref.current?.selectionStart || 0;
+    const text = value || "";
     const newText = text.slice(0, cursorPos) + emoji + text.slice(cursorPos);
-    setMessage(newText);
+    setValue(newText);
 
     setTimeout(() => {
-      inputRef.current.focus();
-      inputRef.current.selectionEnd = cursorPos + emoji.length;
+      ref.current?.focus();
+      ref.current?.setSelectionRange(
+        cursorPos + emoji.length,
+        cursorPos + emoji.length,
+      );
     }, 0);
   };
 
   const sendMessage = async () => {
-    if (!message.trim()) return;
+    if (!value.trim()) return;
     setLoading(true);
-
     try {
       await addDoc(collection(connection.db, "dmReqs", reqId, "chats"), {
         senderId,
-        message: message.trim(),
+        message: value.trim(),
         createdAt: serverTimestamp(),
       });
-
-      setMessage("");
+      await firebaseNotifications.createNotification({
+        id: `chat_message_${reqId}`,
+        type: `chat_message`,
+        senderId,
+        receiverId: chatPartner,
+        senderHandle: userData.handlename || "Anonymous",
+        status: "static",
+        message: `${userData.handlename} has sent you a chat message`,
+        relatedId: `${chatPartner}-${userData.id}`,
+      });
+      setValue("");
       setShowEmojiPicker(false);
     } catch (error) {
       console.error("Error sending message:", error);
@@ -46,7 +75,15 @@ const ChatInput = ({ reqId, senderId }) => {
   };
 
   const handleKeyDown = (e) => {
-    if (e.key === "Enter") sendMessage();
+    if (e.key === "Enter") {
+      if (type === "dm") sendMessage();
+      else if (type === "comment") addComment?.();
+    }
+  };
+
+  const handleSubmit = () => {
+    if (type === "dm") sendMessage();
+    else if (type === "comment") addComment?.();
   };
 
   return (
@@ -61,10 +98,12 @@ const ChatInput = ({ reqId, senderId }) => {
       <HStack spacing={2} w="full" position="relative">
         <HStack w="full" position="relative">
           <Input
-            placeholder="Type your message..."
-            value={message}
-            ref={inputRef}
-            onChange={(e) => setMessage(e.target.value)}
+            placeholder={
+              type === "dm" ? "Type your message..." : "Add a comment..."
+            }
+            value={value}
+            ref={ref}
+            onChange={(e) => setValue(e.target.value)}
             onKeyDown={handleKeyDown}
             bg="white"
             border="2px solid #EF5D60"
@@ -88,9 +127,9 @@ const ChatInput = ({ reqId, senderId }) => {
           alignItems="center"
           justifyContent="center"
           cursor="pointer"
-          onClick={sendMessage}
+          onClick={handleSubmit}
         >
-          {loading ? (
+          {loading || commentsLoading ? (
             <Spinner size="sm" color="white" />
           ) : (
             <Icon as={FiSend} boxSize="20px" color="white" />

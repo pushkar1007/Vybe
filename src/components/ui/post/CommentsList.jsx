@@ -2,7 +2,6 @@ import {
   Flex,
   Spinner,
   Stack,
-  Text,
 } from "@chakra-ui/react";
 import Comment from "./Comment";
 

@@ -148,12 +148,22 @@ function App() {
                   </ProtectedRoute>
                 }/>
 
-                <Route path="/admin/migrate" element={
+     <Route path="/admin/migrate" element={
                   <ProtectedRoute>
                     <MigratePosts/>
                   </ProtectedRoute>
                 }/>
-              <Route path="/chat-room/:roomId" element={<ChatRoom />} />
+             
+
+              <Route
+                path="/chat-room/:roomId"
+                element={
+                  <ProtectedRoute>
+                    <ChatRoom />
+                  </ProtectedRoute>
+                }
+              />
+
 
               <Route
                 path="/profile/:uid"

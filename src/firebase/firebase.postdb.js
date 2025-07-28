@@ -139,6 +139,23 @@ class Firebase {
     }
   }
 
+  listenToPost(postId, callback) {
+    try {
+      const postRef = doc(this.db, "posts", postId);
+      const unsubscribe = onSnapshot(postRef, (docSnap) => {
+        if (docSnap.exists()) {
+          callback({ id: docSnap.id, ...docSnap.data() });
+        }
+      });
+      return unsubscribe;
+    } catch (error) {
+      const errorCode = error.code;
+      const errorMessage = error.message;
+      console.error("Error listening to post:", errorCode, errorMessage);
+      return () => {};
+    }
+  }
+
   async likePost(postId, userId) {
     try {
       const postRef = doc(this.db, "posts", postId);

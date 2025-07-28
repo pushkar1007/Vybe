@@ -8,28 +8,8 @@ import { use, useEffect, useState } from "react";
 
 const VyBuds = () => {
   const [vybuds, setVybuds] = useState([]);
-  const [userData, setUserData] = useState(null);
   const [loading, setLoading] = useState(true);
-  const { user } = useAuth();
-
-  useEffect(() => {
-    const fetchUser = async () => {
-      if (!user.uid) return;
-      try {
-        const userRef = doc(firebaseUserdb.db, "users", user.uid);
-        const userSnap = await getDoc(userRef);
-        if (userSnap.exists()) {
-          setUserData({ id: userSnap.id, ...userSnap.data() });
-        } else {
-          setUserData(null);
-        }
-      } catch (err) {
-        console.error("Error fetching user:", err);
-      }
-    };
-
-    fetchUser();
-  }, [user.uid]);
+  const { userData } = useAuth();
 
   useEffect(() => {
     const fetchVybuds = async () => {

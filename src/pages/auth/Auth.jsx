@@ -1,4 +1,4 @@
-import SpinnerBtn from "@/components/ui/SpinnerBtn";
+import SpinnerBtn from "@/components/ui/primitives/SpinnerBtn";
 import LogoIcon from "../../components/icons/LogoIcon";
 import { Heading, HStack, Icon, Stack, Text, VStack } from "@chakra-ui/react";
 

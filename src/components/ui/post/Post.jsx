@@ -16,6 +16,8 @@ import firebaseUserdb from "@/firebase/firebase.userdb";
 import firebasePostdb from "@/firebase/firebase.postdb";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "@/context/AuthContext";
+import { firebaseNotifications } from "@/firebase/firebase.notifications";
+import { toast } from "react-toastify";
 
 const Post = ({ post }) => {
   const {
@@ -33,7 +35,7 @@ const Post = ({ post }) => {
   const [likeCount, setLikeCount] = useState(likes?.length || 0);
   const [isLiking, setIsLiking] = useState(false);
   const [openPostInterface, setOpenPostInterface] = useState(true);
-  const { user } = useAuth();
+  const { user, userData } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
   const currentPath = location.pathname;
@@ -50,6 +52,15 @@ const Post = ({ post }) => {
     ? formatDistanceToNow(new Date(Number(createdAt)), { addSuffix: true })
     : "";
 
+  const handleShareClick = async () => {
+    try {
+      await navigator.clipboard.writeText(window.location.href);
+      toast.success("Link copied successfully to the Clipboard!");
+    } catch (error) {
+      toast.error("Failed to copy link");
+    }
+  };
+
   useEffect(() => {
     const fetchCreator = async () => {
       if (typeof createdBy === "string") {
@@ -59,7 +70,6 @@ const Post = ({ post }) => {
         setCreator(createdBy);
       }
     };
-
     fetchCreator();
   }, [createdBy]);
 
@@ -87,9 +97,31 @@ const Post = ({ post }) => {
       if (hasLiked) {
         await firebaseUserdb.unlikePost(postId, user);
         await firebasePostdb.unlikePost(postId, user.uid);
+        {
+          creator.id === user.uid
+            ? null
+            : await firebaseNotifications.updateNotificationStatus(
+                `post_like_${postId}_${user.uid}`,
+                "rejected",
+              );
+        }
       } else {
         await firebaseUserdb.likePost(postId, user);
         await firebasePostdb.likePost(postId, user.uid);
+        {
+          creator.id === user.uid
+            ? null
+            : await firebaseNotifications.createNotification({
+                id: `post_like_${postId}_${user.uid}`,
+                type: "post_like",
+                senderId: user.uid,
+                receiverId: createdBy.id,
+                senderHandle: userData.handlename || "Anonymous",
+                status: "static",
+                message: `${userData.handlename} has liked your Post!`,
+                relatedId: postId,
+              });
+        }
       }
     } catch (err) {
       console.error("Like toggle failed:", err);
@@ -201,8 +233,8 @@ const Post = ({ post }) => {
             <Icon as={FaRegComment} h="20px" w="20px" cursor="pointer" />
             <Text>{comments?.length || 0}</Text>
           </HStack>
-          <HStack gap={1}>
-            <Icon as={PiShareFat} h="22px" w="22px" cursor="pointer" />
+          <HStack gap={1} onClick={handleShareClick} cursor="pointer">
+            <Icon as={PiShareFat} h="22px" w="22px" />
             <Text>Share</Text>
           </HStack>
         </HStack>

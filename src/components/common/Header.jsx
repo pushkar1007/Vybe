@@ -3,7 +3,7 @@ import LogoIcon from "../icons/LogoIcon";
 import ProfileMenu from "../ui/profile/ProfileMenu";
 import { Link } from "react-router-dom";
 import HamburgerMenu from "./HamburgerMenu";
-import Search from "../ui/Search";
+import Search from "../ui/primitives/Search";
 
 const Header = () => {
   return (

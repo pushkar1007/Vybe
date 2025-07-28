@@ -37,12 +37,14 @@ class FirebaseDmConnection {
       if (itExistAlready) throw new Error("request already exists");
       if (revExistAlready)
         throw new Error("a request to your name already exists");
-      await addDoc(collection(this.db, "dmReqs"), {
+      const dmReqsRef = await addDoc(collection(this.db, "dmReqs"), {
         initiator: senderId,
         acceptor: receiverId,
         status: 0, //0 for pending req, 1 for accepted, -1 for rejecting
         createdAt: Date.now(),
       });
+      await updateDoc(dmReqsRef, { reqId: dmReqsRef.id });
+      return dmReqsRef;
     } catch (error) {
       const errorCode = error.code;
       const errorMessage = error.message;

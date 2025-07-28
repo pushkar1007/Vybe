@@ -19,7 +19,7 @@ class Firebase {
     this.db = getFirestore(this.app);
   }
 
-  async createComment( content,user ) {
+  async createComment( content,user, postId ) {
     try {
       const commentRef = await addDoc(collection(this.db, "comments"), {
         content,
@@ -27,6 +27,7 @@ class Firebase {
         createdAt: Date.now(),
         updatedAt: null,
         createdBy: user,
+        postId: postId,
       });
       await updateDoc(commentRef, { commentId: commentRef.id });
       return commentRef;

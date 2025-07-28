@@ -5,15 +5,15 @@ import { LuSearch } from "react-icons/lu";
 import { TbUserFilled } from "react-icons/tb";
 import VyBudsIcon from "../icons/VyBudsIcon";
 import VybCirclesIcon from "../icons/VybCirclesIcon";
-import RenderLink from "../ui/RenderLink";
-import SpinnerBtn from "../ui/SpinnerBtn";
+import RenderLink from "../ui/primitives/RenderLink";
+import SpinnerBtn from "../ui/primitives/SpinnerBtn";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import PostDialogue from "../ui/post/PostDialogue";
 import LogoIcon from "../icons/LogoIcon";
 import MobileLogoIcon from "../icons/MobileLogoIcon";
 
-const SideMenu = ({shouldHideHeader}) => {
+const SideMenu = ({ shouldHideHeader }) => {
   const { user } = useAuth();
   const navigate = useNavigate();
 
@@ -97,7 +97,7 @@ const SideMenu = ({shouldHideHeader}) => {
               xl: "70px",
             }}
             mt="10px"
-            onClick={() => navigate('/')}
+            onClick={() => navigate("/")}
           />
           <Icon
             as={MobileLogoIcon}

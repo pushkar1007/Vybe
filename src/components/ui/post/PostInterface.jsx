@@ -4,14 +4,13 @@ import firebasePostdb from "@/firebase/firebase.postdb";
 import { useAuth } from "@/context/AuthContext";
 import Post from "./Post";
 import CommentsList from "./CommentsList";
-import { Box, Heading, HStack, Icon, Input, Stack } from "@chakra-ui/react";
+import { Heading, HStack, Icon, Stack } from "@chakra-ui/react";
 import { FaArrowLeftLong } from "react-icons/fa6";
-import EmojiPicker from "emoji-picker-react";
-import { HiOutlineEmojiHappy } from "react-icons/hi";
-import { FiSend } from "react-icons/fi";
 import { isEqual } from "lodash";
 import firebaseCommentsdb from "@/firebase/firebase.commentsdb";
-
+import { firebaseNotifications } from "@/firebase/firebase.notifications";
+import ChatInput from "../dm/ChatInput";
+import PageHeader from "@/components/common/PageHeader";
 
 export const PostInterface = () => {
   const [loading, setLoading] = useState(true);
@@ -22,7 +21,7 @@ export const PostInterface = () => {
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
   const inputRef = useRef(null);
   const { postId } = useParams();
-  const { user } = useAuth();
+  const { user, userData } = useAuth();
   const navigate = useNavigate();
 
   const addCommentToPost = async (postId, commentId) => {
@@ -63,35 +62,27 @@ export const PostInterface = () => {
       const comment = await firebaseCommentsdb.createComment(
         inputRef.current.value,
         user.uid,
+        postId,
       );
       await addCommentToPost(postId, comment.id);
       await getComments(post?.comments);
+      {post.createdBy === user.uid
+        ? null
+        : await firebaseNotifications.createNotification({
+            id: `post_comment_${comment.id}_${user.uid}`,
+            type: "post_comment",
+            senderId: user.uid,
+            receiverId: post.createdBy,
+            senderHandle: userData.handlename || "Anonymous",
+            status: "static",
+            message: `${userData.handlename} has commented on your Post!`,
+            relatedId: postId,
+          });}
       setMyComment("");
       setShowEmojiPicker(false);
     } catch (error) {
       console.error("Error creating comment:", error);
     }
-  };
-
-  const handleKeyDown = async (e) => {
-    try {
-      if (e.key === "Enter") await addComment();
-    } catch (error) {
-      console.error("Error creating comment:", error);
-    }
-  };
-
-  const handleEmojiClick = (emojiData) => {
-    const emoji = emojiData.emoji;
-    const cursorPos = inputRef.current.selectionStart;
-    const text = myComment;
-    const newText = text.slice(0, cursorPos) + emoji + text.slice(cursorPos);
-    setMyComment(newText);
-
-    setTimeout(() => {
-      inputRef.current.focus();
-      inputRef.current.selectionEnd = cursorPos + emoji.length;
-    }, 0);
   };
 
   useEffect(() => {
@@ -106,44 +97,22 @@ export const PostInterface = () => {
   }, [post?.comments]);
 
   useEffect(() => {
-    (async () => {
-      try {
-        const postData = await firebasePostdb.getPostData(postId);
-        setPost(postData);
-        setLoading(false);
-      } catch (error) {
-        console.log("Error fetching post: ", error);
-      }
-    })();
-  }, []);
+    const unsubscribe = firebasePostdb.listenToPost(postId, (updatedPost) => {
+      setPost(updatedPost);
+      setLoading(false);
+    });
+
+    return () => unsubscribe();
+  }, [postId]);
 
   return loading ? (
     <>Loading....</>
   ) : (
     <Stack gap={0} h="100%">
-      <HStack
-        p={4}
-        gap={6}
-        alignItems="center"
-        h="50px"
-        bg="brand.400"
-        borderBottom="1px solid"
-        borderColor="brand.500"
-        position="sticky"
-        top="0"
-        zIndex="1000"
-      >
-        <Icon
-          as={FaArrowLeftLong}
-          color="brand.500"
-          my={1}
-          onClick={() => navigate(-1)}
-          cursor="pointer"
-        />
-        <Heading>Post</Heading>
-      </HStack>
+      <PageHeader page="Post" />
       <Stack gap={0} top="50px" h="100%">
         <Post post={post} />
+        <PageHeader page="Comments" />
         <CommentsList
           cref={post?.comments}
           post={post}
@@ -151,65 +120,14 @@ export const PostInterface = () => {
           comments={comments}
           commentsLoading={commentsLoading}
         />
-        <Box
-          p={3}
-          borderTop="1px solid #EF5D60"
-          bg="brand.400"
-          position="sticky"
-          bottom="0"
-          zIndex="1000"
-        >
-          <HStack spacing={2} w="full" position="relative">
-            <HStack w="full" position="relative">
-              <Input
-                placeholder="Type your message..."
-                value={myComment || ""}
-                ref={inputRef}
-                onChange={(e) => setMyComment(e.target.value)}
-                onKeyDown={handleKeyDown}
-                bg="white"
-                border="2px solid #EF5D60"
-                pr={10}
-              />
-              <Icon
-                position="absolute"
-                right="10px"
-                as={HiOutlineEmojiHappy}
-                boxSize="25px"
-                color="brand.500"
-                cursor="pointer"
-                onClick={() => setShowEmojiPicker((prev) => !prev)}
-              />
-            </HStack>
-            <Stack
-              bg="brand.500"
-              h="40px"
-              w="40px"
-              rounded="6px"
-              alignItems="center"
-              justifyContent="center"
-              cursor="pointer"
-              onClick={addComment}
-            >
-              {commentsLoading ? (
-                <Spinner size="sm" color="white" />
-              ) : (
-                <Icon as={FiSend} boxSize="20px" color="white" />
-              )}
-            </Stack>
-
-            {showEmojiPicker && (
-              <Box position="absolute" zIndex="1000" right="20px" bottom="80px">
-                <EmojiPicker
-                  onEmojiClick={handleEmojiClick}
-                  theme="light"
-                  height="350px"
-                  width="300px"
-                />
-              </Box>
-            )}
-          </HStack>
-        </Box>
+        <ChatInput
+          type="comment"
+          commentsLoading={commentsLoading}
+          addComment={addComment}
+          inputValue={myComment}
+          setInputValue={setMyComment}
+          inputRef={inputRef}
+        />
       </Stack>
     </Stack>
   );

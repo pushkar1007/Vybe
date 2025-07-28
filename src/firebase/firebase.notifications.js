@@ -10,6 +10,7 @@ import {
   updateDoc,
   where,
   orderBy,
+  deleteDoc,
 } from "firebase/firestore";
 import { firebaseConfig } from "./config";
 
@@ -82,6 +83,12 @@ class FirebaseNotification {
   async createOrUpdateNotification(id, data) {
     const ref = doc(this.db, this.collectionName, id);
     await setDoc(ref, { ...data, id }, { merge: true });
+  }
+
+  //Remove a notification by ID
+  async removeNotification(id) {
+    const ref = doc(this.db, this.collectionName, id);
+    await deleteDoc(ref);
   }
 }
 

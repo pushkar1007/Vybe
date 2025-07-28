@@ -8,10 +8,9 @@ import {
   Stack,
   Text,
 } from "@chakra-ui/react";
-import { FaArrowLeftLong } from "react-icons/fa6";
 import { useNavigate } from "react-router-dom";
 import EditProfileDialogue from "./EditProfileDialogue";
-import SpinnerBtn from "../SpinnerBtn";
+import SpinnerBtn from "../primitives/SpinnerBtn";
 import { IoMdPersonAdd } from "react-icons/io";
 import { RxEnvelopeClosed } from "react-icons/rx";
 import { useAuth } from "@/context/AuthContext";
@@ -21,54 +20,37 @@ import { useEffect, useState } from "react";
 import { deleteDoc, doc, getDoc } from "firebase/firestore";
 import { HiUserRemove } from "react-icons/hi";
 import { vybudreq } from "@/firebase/firebase.vybudreq";
+import { firebaseNotifications } from "@/firebase/firebase.notifications";
 
-const UserDetails = ({ userData, isOwner }) => {
+const UserDetails = ({ data, isOwner }) => {
   const navigate = useNavigate();
-  const { user } = useAuth();
+  const { user, userData: currentUserData } = useAuth();
 
   const [isVybud, setIsVybud] = useState(false);
   const [requestSent, setRequestSent] = useState(false);
-  const [currentUserData, setCurrentUserData] = useState(null);
 
   useEffect(() => {
-    const fetchCurrentUserData = async () => {
-      if (!user?.uid) return;
-      try {
-        const ref = doc(firebaseUserdb.db, "users", user.uid);
-        const snap = await getDoc(ref);
-        if (snap.exists()) {
-          setCurrentUserData({ id: snap.id, ...snap.data() });
-        }
-      } catch (error) {
-        console.error("Failed to fetch current user data", error);
-      }
-    };
-
-    fetchCurrentUserData();
-  }, [user]);
-
-  useEffect(() => {
-    if (currentUserData && userData) {
-      const isInVybuds = currentUserData.vybuds?.includes(userData.id);
+    if (currentUserData && data) {
+      const isInVybuds = currentUserData.vybuds?.includes(data.id);
       setIsVybud(isInVybuds);
     }
-  }, [currentUserData, userData]);
+  }, [currentUserData, data]);
 
   useEffect(() => {
     const checkRequest = async () => {
-      if (!user?.uid || !userData?.id || user.uid === userData.id) return;
+      if (!user?.uid || !data?.id || user.uid === data.id) return;
 
       try {
-        const reqId = `${user.uid}_${userData.id}`;
+        const reqId = `${user.uid}_${data.id}`;
         const ref = doc(firebaseUserdb.db, "vybudReqs", reqId);
         const snap = await getDoc(ref);
 
         if (snap.exists()) {
           const status = snap.data().status;
           if (status === 0) {
-            setRequestSent(true); 
+            setRequestSent(true);
           } else if (status === 1) {
-            setIsVybud(true); 
+            setIsVybud(true);
           }
         } else {
           setRequestSent(false);
@@ -78,19 +60,15 @@ const UserDetails = ({ userData, isOwner }) => {
       }
     };
     checkRequest();
-  }, [user, userData]);
-
-  const handleClick = () => {
-    navigate("/");
-  };
+  }, [user, data]);
 
   const handleDmClick = () => {
-    navigate(`/chat-room/${user.uid}-${userData.id}`);
+    navigate(`/chat-room/${user.uid}-${data.id}`);
   };
 
   const handleVyBudClick = async () => {
     try {
-      const reqId = `${user.uid}_${userData.id}`;
+      const reqId = `${user.uid}_${data.id}`;
       const ref = doc(firebaseUserdb.db, "vybudReqs", reqId);
       const snap = await getDoc(ref);
 
@@ -107,7 +85,7 @@ const UserDetails = ({ userData, isOwner }) => {
 
       await vybudreq.createVybudRequest(
         user.uid,
-        userData.id,
+        data.id,
         currentUserData.handlename,
       );
       toast.success("VyBud request sent!");
@@ -120,15 +98,16 @@ const UserDetails = ({ userData, isOwner }) => {
 
   const handleRemoveVybudClick = async () => {
     try {
-      console.log("Removing Vybud from:", userData.id, user.uid);
+      console.log("Removing Vybud from:", data.id, user.uid);
 
-      await firebaseUserdb.removeVyBud(userData.id, user);
-      await firebaseUserdb.removeVyBud(user.uid, userData);
+      await firebaseUserdb.removeVyBud(data.id, user);
+      await firebaseUserdb.removeVyBud(user.uid, data);
 
-      const reqId = `${user.uid}_${userData.id}`;
+      const reqId = `${user.uid}_${data.id}`;
       const ref = doc(firebaseUserdb.db, "vybudReqs", reqId);
       await deleteDoc(ref);
-
+      await firebaseNotifications.removeNotification(`vybud_${reqId}`);
+      await firebaseNotifications.removeNotification(`vybud_${reverse(reqId)}`);
       toast.success("Removed from VyBuds");
       setIsVybud(false);
       setRequestSent(false);
@@ -143,31 +122,6 @@ const UserDetails = ({ userData, isOwner }) => {
 
   return (
     <Stack position="relative" gap={0}>
-      <HStack
-        borderBottom="1px solid"
-        borderColor="brand.500"
-        h="70px"
-        alignItems="flex-start"
-        px={4}
-        py={3}
-        gap={4}
-      >
-        <Icon
-          as={FaArrowLeftLong}
-          color="brand.500"
-          my={1}
-          onClick={handleClick}
-          cursor="pointer"
-        />
-        <Stack gap={0} m={0}>
-          <Heading m={0}>{userData?.handlename || "Anonymous"}</Heading>
-          <Text fontSize="sm">
-            {userData?.createdPosts?.length ?? 0} Post
-            {userData?.createdPosts?.length === 1 ? "" : "s"}
-          </Text>
-        </Stack>
-      </HStack>
-
       <Box
         bg="brand.300"
         w="full"
@@ -175,9 +129,9 @@ const UserDetails = ({ userData, isOwner }) => {
         borderBottom="1px solid"
         borderColor="brand.500"
       >
-        {userData?.banner && (
+        {data?.banner && (
           <Image
-            src={userData.banner}
+            src={data.banner}
             alt="Banner"
             h="100%"
             w="100%"
@@ -193,12 +147,12 @@ const UserDetails = ({ userData, isOwner }) => {
         w="100px"
         position="absolute"
         bg="brand.400"
-        top="180px"
+        top="110px"
         left="20px"
       >
-        {userData?.avatar ? (
+        {data?.avatar ? (
           <Image
-            src={userData.avatar}
+            src={data.avatar}
             alt="Profile"
             boxSize="100px"
             rounded="full"
@@ -216,12 +170,12 @@ const UserDetails = ({ userData, isOwner }) => {
       >
         <Stack mt="50px" gap="10px">
           <Stack gap={0}>
-            <Heading>{userData?.handlename || "Anonymous"}</Heading>
+            <Heading>{data?.handlename || "Anonymous"}</Heading>
             <Text color="brand.100" lineHeight={1}>
-              @{userData?.username || "unknown"}
+              @{data?.username || "unknown"}
             </Text>
           </Stack>
-          <Text>{userData?.bio || "No bio added yet..."}</Text>
+          <Text>{data?.bio || "No bio added yet..."}</Text>
         </Stack>
 
         {isOwner ? (
