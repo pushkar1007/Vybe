@@ -2,7 +2,7 @@
 
 export const uploadImage = async (file) => {
   if(!file) return
-  const url = process.env.VITE_CLOUDINARY_URL;
+  const url = import.meta.env.VITE_CLOUDINARY_URL;
 
   const formData = new FormData();
   formData.append("file", file);

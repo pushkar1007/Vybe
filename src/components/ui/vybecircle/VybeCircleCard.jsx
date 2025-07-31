@@ -59,7 +59,7 @@ export const VybeCircleCard = ({ VybeCircleId }) => {
       <Box
         bgImage={`url(${
           circleData?.banner ||
-          `${process.env.VITE_CLOUDINARY_URL}/v1753372126/vybcricle_banner_uevbiz.png`
+          `${import.meta.env.VITE_CLOUDINARY_URL}/v1753372126/vybcricle_banner_uevbiz.png`
         })`}
         h="25%"
         backgroundSize="cover"
