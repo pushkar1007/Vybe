@@ -8,9 +8,12 @@ import { MdNotifications } from "react-icons/md";
 import { AiFillHome } from "react-icons/ai";
 import { Link } from "react-router-dom";
 import RenderLink from "../ui/primitives/RenderLink";
-import { useRef } from "react";
+import { useRef, useState } from "react";
+import { useAuth } from "@/context/AuthContext";
 
 const HamburgerMenu = () => {
+  const { user } = useAuth();
+  const [open, setOpen] = useState(false);
   const navLinks = [
     {
       icon: AiFillHome,
@@ -45,7 +48,7 @@ const HamburgerMenu = () => {
     {
       icon: TbUserFilled,
       text: "Profile",
-      link: "/profile",
+      link: `/profile/${user.uid}`,
       key: "ProfileMobile",
     },
   ];
@@ -59,7 +62,7 @@ const HamburgerMenu = () => {
   };
 
   return (
-    <Drawer.Root placement="start" closeOnInteractOutside={false}>
+    <Drawer.Root placement="start" open={open} onOpenChange={(e) => setOpen(e.open)} closeOnInteractOutside={false}>
       <Drawer.Trigger asChild>
         <Icon as={MobileLogoIcon} h="50px" w="60px" color="brand.300" />
       </Drawer.Trigger>
@@ -75,7 +78,7 @@ const HamburgerMenu = () => {
                     key={navLink.key}
                     onClick={handleClose}
                   >
-                    <RenderLink text={navLink.text} icon={navLink.icon} />
+                    <RenderLink onClick={(e) => setOpen(false)} text={navLink.text} icon={navLink.icon} />
                   </Link>
                 ))}
               </Box>

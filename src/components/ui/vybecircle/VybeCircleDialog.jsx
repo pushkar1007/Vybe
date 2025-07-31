@@ -3,250 +3,328 @@ import {
   Dialog,
   Portal,
   Button,
-  Input,
-  Textarea,
-  CloseButton,
   VStack,
-  Text,
+  Stack,
+  Image,
+  Icon,
+  CloseButton,
 } from "@chakra-ui/react";
-import firebaseVybecirclesdb from "@/firebase/firebase.vybecirclesdb";
-import { Formik, Field, Form } from "formik";
+import { Formik, Form, Field } from "formik";
+import { useRef, useState } from "react";
+import { MdOutlineAddAPhoto } from "react-icons/md";
 import { uploadImage } from "@/utils/uploadImage";
-import * as Yup from "yup";
+import firebaseVybecirclesdb from "@/firebase/firebase.vybecirclesdb";
 import firebaseUserdb from "@/firebase/firebase.userdb";
+import ProfileIcon from "@/components/icons/ProfileIcon";
+import ProfileInput from "../profile/ProfileInput";
+import BioInput from "../profile/BioInput";
+import { useAuth } from "@/context/AuthContext";
+import { toast } from "react-toastify";
 
-//this is the dialog used in creating a vybe circle and  in editing also in the future
+const FileInputTrigger = ({ onClick }) => (
+  <Box
+    _hover={{ bg: "rgba(239, 93, 95, 0.111)" }}
+    w="50px"
+    h="50px"
+    position="absolute"
+    left="43%"
+    top="7.5%"
+    display="flex"
+    alignItems="center"
+    justifyContent="center"
+    rounded="full"
+    cursor="pointer"
+    onClick={onClick}
+  >
+    <Icon
+      as={MdOutlineAddAPhoto}
+      position="absolute"
+      color="brand.500"
+      w="30px"
+      h="30px"
+    />
+  </Box>
+);
+
 export const VybeCircleDialog = ({
   user,
   text = "",
   styling = {},
   vybeCircleData,
+  onUpdate,
 }) => {
-  const initialValues = vybeCircleData
-    ? {
-        name: vybeCircleData.name,
-        description: vybeCircleData.description,
-        logo: vybeCircleData.logo,
-        banner: vybeCircleData.banner,
+  const avatarInputRef = useRef(null);
+  const bannerInputRef = useRef(null);
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const { refreshUser } = useAuth();
+
+  const handleImageUpload = async (e, type) => {
+    const file = e.target.files[0];
+    if (!file || !user) return;
+
+    try {
+      const imageUrl = await uploadImage(file);
+
+      const updateData = {};
+      if (type === "logo") updateData.logo = imageUrl;
+      if (type === "banner") updateData.banner = imageUrl;
+
+      if (vybeCircleData?.vybecircleId) {
+        await firebaseVybecirclesdb.updateVybecircle(
+          updateData,
+          vybeCircleData.vybecircleId,
+        );
+
+        if (onUpdate) onUpdate();
+      } else {
+        toast.warning("Can't update image without existing VybeCircle");
+        console.warn("Can't update image without existing VybeCircle");
       }
-    : {
-        name: "",
-        description: "",
-        logo: null,
-        banner: null,
-      };
-
-  const validationSchema = Yup.object({
-    name: Yup.string()
-      .min(5, "the name must be atllease 5 characters long")
-      .required("name Required"),
-    description: Yup.string()
-      .min(10, "the name must be atllease 5 characters long")
-      .required("description Required"),
-    logo: Yup.mixed().required("logo Required"),
-    banner: Yup.mixed().nullable().notRequired(),
-  });
-
-  const style = `
-    .vybe-textarea::placeholder {
-      color: white;
-      opacity: 0.7;
+    } catch (err) {
+      console.error("Image upload or DB update failed:", err);
     }
-  `;
+  };
+
+  const initialValues = {
+    name: vybeCircleData?.name || "",
+    description: vybeCircleData?.description || "",
+    logo: vybeCircleData?.logo || null,
+    banner: vybeCircleData?.banner || null,
+  };
 
   const handleSubmit = async (values) => {
     try {
       if (!vybeCircleData) {
         const userId = user.uid;
+        console.log(userId);
         values.logo = await uploadImage(values.logo);
         values.banner = await uploadImage(values.banner);
-        const vybeCircledata = await firebaseVybecirclesdb.createVybecircle(
+        const newVybe = await firebaseVybecirclesdb.createVybecircle(
           values,
           userId,
         );
-        await firebaseVybecirclesdb.addUser(userId, vybeCircledata.id);
-        await firebaseUserdb.addVybeCircle(vybeCircledata.id, user);
+
+        if (!newVybe?.id) {
+          throw new Error("VybeCircle creation failed: missing ID");
+        }
+
+        await firebaseVybecirclesdb.addUser(userId, newVybe.id);
+        await firebaseUserdb.addVybeCircle(newVybe.id, user);
+        refreshUser();
       } else {
-        if (typeof values.logo != "string" && values.logo) {
+        if (typeof values.logo !== "string") {
           values.logo = await uploadImage(values.logo);
         }
-        if (typeof values.banner != "string" && values.banner) {
+        if (typeof values.banner !== "string") {
           values.banner = await uploadImage(values.banner);
         }
-        //if the user has uploaded a file then the link must be generated
-        await firebaseVybecirclesdb.updateVybecircle(values, vybeCircleData.id);
-        console.log(values, vybeCircleData.id);
+
+        await firebaseVybecirclesdb.updateVybecircle(
+          values,
+          vybeCircleData.vybecircleId,
+        );
       }
+
+      if (onUpdate) onUpdate();
+      setIsDialogOpen(false);
     } catch (error) {
-      console.error("error creating vybeCircle", error);
+      console.error("Error creating/updating VybeCircle:", error);
     }
   };
 
   return (
-    <>
-      <Dialog.Root closeOnInteractOutside={false}>
-        <Dialog.Trigger asChild>
-          <Button
-            w={"100%"}
-            p={"4px"}
-            bg={"white"}
-            color={"black"}
-            outlineStyle={"none"}
-            {...styling}
-          >
-            {text}
-          </Button>
-        </Dialog.Trigger>
-        <Portal>
-          <style>{style}</style>
-          <Dialog.Backdrop />
-          <Dialog.Positioner>
-            <Dialog.Content>
-              <Box
-                bg="#EF5D60"
-                color="white"
-                p={8}
-                borderRadius="lg"
-                maxW="lg"
-                mx="auto"
-                m={0}
-                boxShadow="xl"
-                rounded={4}
-              >
-                <Dialog.Header mb={6} fontSize="2xl" textAlign="center">
-                  {text} VybeCircle
-                </Dialog.Header>
+    <Dialog.Root
+      closeOnInteractOutside={false}
+      open={isDialogOpen}
+      onOpenChange={setIsDialogOpen}
+    >
+      <Dialog.Trigger asChild>
+        <Button
+          w="100%"
+          fontSize="16px"
+          fontWeight="400"
+          p="3px"
+          bg="white"
+          color="black"
+          outline="none"
+          {...styling}
+        >
+          {text}
+        </Button>
+      </Dialog.Trigger>
 
-                <Dialog.Body>
-                  <Formik
-                    initialValues={initialValues}
-                    validationSchema={validationSchema}
-                    onSubmit={handleSubmit}
-                  >
-                    {({ setFieldValue, errors, touched }) => (
-                      <Form>
-                        <VStack spacing={4}>
-                          <Field name="name">
-                            {({ field }) => (
-                              <Box w="100%">
-                                <Input
-                                  {...field}
-                                  placeholder="Enter VybeCircle name"
-                                  bg="white"
-                                  color="#EF5D60"
-                                />
-                                {touched.name && errors.name && (
-                                  <Text fontSize="sm" color="white" mt={1}>
-                                    {errors.name}
-                                  </Text>
-                                )}
-                              </Box>
-                            )}
-                          </Field>
+      <Portal>
+        <style>
+          {`.vybe-textarea::placeholder { color: white; opacity: 0.7; }`}
+        </style>
+        <Dialog.Backdrop />
+        <Dialog.Positioner>
+          <Dialog.Content w="100%">
+            <Box
+              bg="#EF5D60"
+              color="white"
+              py={8}
+              borderRadius="lg"
+              w="100%"
+              boxShadow="xl"
+            >
+              <Dialog.Header mb={6} px={8} fontSize="2xl" textAlign="center">
+                {text} VybeCircle
+              </Dialog.Header>
 
-                          <Field name="description">
-                            {({ field }) => (
-                              <Box w="100%">
-                                <Textarea
-                                  {...field}
-                                  placeholder="Describe your VybeCircle"
-                                  bg="white"
-                                  color="#EF5D60"
-                                />
-                                {touched.description && errors.description && (
-                                  <Text fontSize="sm" color="white" mt={1}>
-                                    {errors.description}
-                                  </Text>
-                                )}
-                              </Box>
-                            )}
-                          </Field>
+              <Dialog.Body w="full" p={0}>
+                <Formik
+                  initialValues={initialValues}
+                  onSubmit={handleSubmit}
+                  enableReinitialize
+                >
+                  {() => (
+                    <Form style={{ width: "100%" }}>
+                      <VStack w="100%">
+                        <Stack position="relative" w="100%">
+                          <input
+                            type="file"
+                            accept="image/*"
+                            hidden
+                            ref={avatarInputRef}
+                            onChange={(e) => handleImageUpload(e, "logo")}
+                          />
+                          <input
+                            type="file"
+                            accept="image/*"
+                            hidden
+                            ref={bannerInputRef}
+                            onChange={(e) => handleImageUpload(e, "banner")}
+                          />
 
-                          <Box w="100%">
-                            {vybeCircleData?.logo ? (
-                              <img
-                                width="64px"
-                                height="64px"
-                                src={`${vybeCircleData.logo}`}
-                              />
-                            ) : null}
-                            <>
-                              <Input
-                                type="file"
-                                accept="image/*"
-                                bg="white"
-                                color="#EF5D60"
-                                pt={1}
-                                onChange={(event) =>
-                                  setFieldValue(
-                                    "logo",
-                                    event.currentTarget.files[0],
-                                  )
-                                }
-                              />
-                              {touched.logo && errors.logo && (
-                                <Text fontSize="sm" color="white" mt={1}>
-                                  {errors.logo}
-                                </Text>
-                              )}
-                            </>
-                          </Box>
-
-                          <Box w="100%">
-                            {vybeCircleData?.banner ? (
-                              <img src={`${vybeCircleData.banner}`} />
-                            ) : null}
-                            <>
-                              <Input
-                                type="file"
-                                accept="image/*"
-                                bg="white"
-                                color="#EF5D60"
-                                pt={1}
-                                onChange={(event) =>
-                                  setFieldValue(
-                                    "banner",
-                                    event.currentTarget.files[0],
-                                  )
-                                }
-                              />
-                              {touched.banner && errors.banner && (
-                                <Text fontSize="sm" color="white" mt={1}>
-                                  {errors.banner}
-                                </Text>
-                              )}
-                            </>
-                          </Box>
-
-                          <Button
-                            type="submit"
-                            color="#EF5D60"
-                            bg="white"
-                            _hover={{ bg: "#fefefe" }}
+                          <Box
+                            bg="brand.300"
+                            w="full"
+                            h="120px"
+                            borderBottom="1px solid"
+                            borderColor="brand.500"
                           >
-                            {vybeCircleData ? "update" : "create"}
-                          </Button>
-                        </VStack>
-                      </Form>
-                    )}
-                  </Formik>
-                </Dialog.Body>
-              </Box>
-              <Dialog.CloseTrigger asChild>
-                <CloseButton
-                  size="lg"
-                  color="brand.400"
-                  _hover={{
-                    bg: "whiteAlpha.300",
-                    border: "1px solid white",
-                  }}
-                  rounded="full"
-                />
-              </Dialog.CloseTrigger>
-            </Dialog.Content>
-          </Dialog.Positioner>
-        </Portal>
-      </Dialog.Root>
-    </>
+                            {vybeCircleData?.banner && (
+                              <Image
+                                src={vybeCircleData.banner}
+                                alt="Banner"
+                                h="100%"
+                                w="100%"
+                                objectFit="cover"
+                              />
+                            )}
+                            <FileInputTrigger
+                              onClick={() => bannerInputRef.current?.click()}
+                            />
+                          </Box>
+
+                          <Box
+                            border="1px solid #000"
+                            rounded="full"
+                            h="100px"
+                            w="100px"
+                            bg="brand.400"
+                            position="absolute"
+                            top="70px"
+                            left="20px"
+                          >
+                            {vybeCircleData?.logo ? (
+                              <Image
+                                src={vybeCircleData.logo}
+                                alt="Profile"
+                                boxSize="100px"
+                                rounded="full"
+                              />
+                            ) : (
+                              <Image as={ProfileIcon} />
+                            )}
+                            <Box
+                              _hover={{ bg: "rgba(239, 93, 95, 0.111)" }}
+                              w="50px"
+                              h="50px"
+                              position="absolute"
+                              left="23px"
+                              top="23px"
+                              display="flex"
+                              alignItems="center"
+                              justifyContent="center"
+                              rounded="full"
+                              cursor="pointer"
+                              onClick={() => avatarInputRef.current?.click()}
+                            >
+                              <Icon
+                                as={MdOutlineAddAPhoto}
+                                color="brand.500"
+                                w="30px"
+                                h="30px"
+                              />
+                            </Box>
+                          </Box>
+                          <Stack mt="50px" p={4} w="100%" gapY={6}>
+                            <Field name="name">
+                              {({ field, meta, form }) => (
+                                <ProfileInput
+                                  label="Name"
+                                  value={field.value}
+                                  onChange={(e) =>
+                                    form.setFieldValue(
+                                      field.name,
+                                      e.target.value,
+                                    )
+                                  }
+                                  name={field.name}
+                                  error={
+                                    meta.touched && meta.error
+                                      ? meta.error
+                                      : undefined
+                                  }
+                                />
+                              )}
+                            </Field>
+                            <Field name="description">
+                              {({ field, meta }) => (
+                                <BioInput
+                                  isVybCircle
+                                  bio={field.value}
+                                  handleChange={field.onChange("description")}
+                                  error={
+                                    meta.touched && meta.error
+                                      ? meta.error
+                                      : undefined
+                                  }
+                                />
+                              )}
+                            </Field>
+                          </Stack>
+                        </Stack>
+                        <Button
+                          type="submit"
+                          color="#EF5D60"
+                          bg="white"
+                          _hover={{ bg: "#fefefe" }}
+                        >
+                          {vybeCircleData ? "Update" : "Create"}
+                        </Button>
+                      </VStack>
+                    </Form>
+                  )}
+                </Formik>
+              </Dialog.Body>
+            </Box>
+            <Dialog.CloseTrigger asChild>
+              <CloseButton
+                size="lg"
+                color="brand.400"
+                _hover={{ bg: "whiteAlpha.300", border: "1px solid white" }}
+                rounded="full"
+                onClick={() => setIsDialogOpen(false)}
+              />
+            </Dialog.CloseTrigger>
+          </Dialog.Content>
+        </Dialog.Positioner>
+      </Portal>
+    </Dialog.Root>
   );
 };
+
+export default VybeCircleDialog;

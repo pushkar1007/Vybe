@@ -93,6 +93,7 @@ const ChatInput = ({
       borderTop="1px solid #EF5D60"
       position="sticky"
       bottom="0"
+      zIndex="1000"
       bg="brand.400"
     >
       <HStack spacing={2} w="full" position="relative">

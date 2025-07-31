@@ -17,22 +17,19 @@ import Login from "./pages/auth/Login";
 import ChatRoom from "./pages/dm/ChatRoom";
 import { useEffect } from "react";
 import { initPresence } from "./firebase/firebase.presence";
-import {PostInterface} from "./components/ui/post/PostInterface";
+import { PostInterface } from "./components/ui/post/PostInterface";
 import { VybeCircleHome } from "./components/ui/vybecircle/VybeCircleHome";
-import MigratePosts from "./pages/admin/Migrate";
 
 function App() {
   const { user } = useAuth();
   const location = useLocation();
 
   const hideVybeHighlights = ["/explore"];
-  const hideHeader = ["/vybuds"];
+  const hideHeader = ["/vybuds", "/vybcircles"];
   const shouldHideVybeHighlights = hideVybeHighlights.includes(
     location.pathname,
   );
-  const shouldHideHeader = hideHeader.includes(
-    location.pathname,
-  );
+  const shouldHideHeader = hideHeader.includes(location.pathname);
 
   const isAuthPage = ["/auth", "/signup", "/login"].includes(location.pathname);
 
@@ -142,18 +139,14 @@ function App() {
                   </ProtectedRoute>
                 }
               />
-              <Route path="/vybcircles/:vybecircleId" element={
+              <Route
+                path="/vybcircles/:vybecircleId"
+                element={
                   <ProtectedRoute>
-                    <VybeCircleHome/>
+                    <VybeCircleHome />
                   </ProtectedRoute>
-                }/>
-
-     <Route path="/admin/migrate" element={
-                  <ProtectedRoute>
-                    <MigratePosts/>
-                  </ProtectedRoute>
-                }/>
-             
+                }
+              />
 
               <Route
                 path="/chat-room/:roomId"
@@ -163,7 +156,6 @@ function App() {
                   </ProtectedRoute>
                 }
               />
-
 
               <Route
                 path="/profile/:uid"

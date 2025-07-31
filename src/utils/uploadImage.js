@@ -2,7 +2,7 @@
 
 export const uploadImage = async (file) => {
   if(!file) return
-  const url = "https://api.cloudinary.com/v1_1/dw1ikwae9/upload";
+  const url = process.env.VITE_CLOUDINARY_URL;
 
   const formData = new FormData();
   formData.append("file", file);

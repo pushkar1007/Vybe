@@ -23,9 +23,9 @@ import firebaseUserdb from "@/firebase/firebase.userdb";
 import firebasePostdb from "@/firebase/firebase.postdb";
 import ProfileIcon from "@/components/icons/ProfileIcon";
 
-const MAX_CHAR_LIMIT = 550;
+const MAX_CHAR_LIMIT = 1000;
 
-const PostDialogue = () => {
+const PostDialogue = ({isVybeCircle}) => {
   const [value, setValue] = useState("");
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
   const [imagePreview, setImagePreview] = useState(null);
@@ -35,7 +35,7 @@ const PostDialogue = () => {
   const fileInputRef = useRef(null);
   const { user, userData } = useAuth();
   const [target, setTarget] = useState({
-    targetId: userData.id,
+    targetId: userData?.id,
     targetType: "user",
   });
   const handleChange = (e) => {
@@ -116,32 +116,34 @@ const PostDialogue = () => {
   return (
     <Dialog.Root closeOnInteractOutside={false}>
       <Dialog.Trigger asChild>
-        <Button
-          bg="brand.400"
-          color="brand.200"
-          boxShadow="4px 8px 4px rgba(0,0,0,0.1)"
-          mt="12px"
-          fontSize="16px"
-          fontWeight="bold"
-          rounded="full"
-          height="4opx"
-          width={{
-            base: "138px",
-            md: "90px",
-            lg: "120px",
-            lgx: "120px",
-            xl: "138px",
-          }}
-          mr={{
-            base: "50px",
-            md: "10px",
-            lg: "40px",
-            lgx: "40px",
-            xl: "50px",
-          }}
-        >
-          Post
-        </Button>
+        {isVybeCircle ? <Text pl={1} cursor="pointer">Post</Text> : (
+          <Button
+            bg="brand.400"
+            color="brand.200"
+            boxShadow="4px 8px 4px rgba(0,0,0,0.1)"
+            mt="12px"
+            fontSize="16px"
+            fontWeight="bold"
+            rounded="full"
+            height="4opx"
+            width={{
+              base: "138px",
+              md: "90px",
+              lg: "120px",
+              lgx: "120px",
+              xl: "138px",
+            }}
+            mr={{
+              base: "50px",
+              md: "10px",
+              lg: "40px",
+              lgx: "40px",
+              xl: "50px",
+            }}
+          >
+            Post
+          </Button>
+        )}
       </Dialog.Trigger>
       <Portal>
         <style>{style}</style>

@@ -3,11 +3,13 @@ import Search from "../primitives/Search";
 import { LuSearch } from "react-icons/lu";
 import { FaArrowLeftLong } from "react-icons/fa6";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "@/context/AuthContext";
 
-const VyBudsHeader = ({ userData }) => {
+const VyBudsHeader = ({ page = "VyBuds", scope = "vybuds" }) => {
   const navigate = useNavigate();
+  const { userData } = useAuth();
   const handleClick = () => {
-    navigate("/");
+    navigate(-1);
   };
 
   return (
@@ -38,11 +40,11 @@ const VyBudsHeader = ({ userData }) => {
         alignItems="center"
       >
         <Heading fontSize="24px" fontWeight="700">
-          VyBuds
+          {page}
         </Heading>
         <Search
-          scope="vybuds"
-          vybuds={userData?.vybuds || []}
+          scope={scope}
+          vybuds={scope == "vybuds" ? userData?.vybuds || [] : userData?.vybecircles || []}
           border="1px solid #EF5D60"
           _placeholder={{
             color: "#EF5D60",

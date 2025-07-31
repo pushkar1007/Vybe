@@ -8,13 +8,14 @@ import PostFeed from "../post/PostFeed";
 import { VybeCircleFilter } from "./vybeCircleFilter";
 import { query } from "firebase/database";
 import { collection, orderBy } from "firebase/firestore";
+import { useAuth } from "@/context/AuthContext";
 
-//the page of a single vybecircle interface
 export const VybeCircleHome = () => {
   const { vybecircleId } = useParams();
   const [circleData, setCircleData] = useState(null);
   const [filter, setFilter] = useState(null);
   const [loading, setLoading] = useState(true);
+  const { refreshUser } = useAuth();
   const navigate = useNavigate();
   let q = null;
 
@@ -40,23 +41,23 @@ export const VybeCircleHome = () => {
     );
   }
 
-  async function fetchCircleData() {
+  const fetchCircleData = async () => {
     try {
-      const fetchedData =
-        await firebaseVybecirclesdb.getVybecircle(vybecircleId);
+      const fetchedData = await firebaseVybecirclesdb.getVybecircle(vybecircleId);
       if (fetchedData) {
         setCircleData(fetchedData);
       }
+      refreshUser();
     } catch (error) {
       console.error("Error fetching vybecircle data", error);
     } finally {
       setLoading(false);
     }
-  }
+  };
 
   useEffect(() => {
     fetchCircleData();
-  }, []);
+  }, [vybecircleId]);
 
   if (!circleData && !loading) {
     return <div>no such vybecircle exists!</div>;
@@ -68,7 +69,7 @@ export const VybeCircleHome = () => {
         <HStack
           bgImage={`url(${
             circleData?.banner ||
-            "https://res.cloudinary.com/dw1ikwae9/image/upload/v1753372126/vybcricle_banner_uevbiz.png"
+            `${process.env.VITE_CLOUDINARY_URL}/upload/v1753372126/vybcricle_banner_uevbiz.png`
           })`}
           bgRepeat="no-repeat"
           backgroundPosition="center"
@@ -96,9 +97,15 @@ export const VybeCircleHome = () => {
           />
           <Stack gap={0} m={0}>
             <Heading m={0}>{circleData?.name || ""}</Heading>
-            <div fontSize="sm">{circleData?.users?.length ?? 0} Members</div>
+            <div fontSize="sm">
+              {circleData?.users?.length ?? 0} Member
+              {circleData?.users?.length === 1 ? "" : "s"}
+            </div>
           </Stack>
-          <VybeCircleMenu vybeCircleData={circleData} />
+          <VybeCircleMenu
+            vybeCircleData={circleData}
+            onUpdate={fetchCircleData}
+          />
         </HStack>
         <Box display="flex" justifyContent="end" padding="4px">
           <VybeCircleFilter filterSetter={setFilter} />

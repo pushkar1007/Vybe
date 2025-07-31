@@ -15,7 +15,7 @@ import { useNavigate } from "react-router-dom";
 
 const MAX_CHAR_LIMIT = 550;
 
-const PostInput = () => {
+const PostInput = ({}) => {
   const [value, setValue] = useState("");
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
   const [imagePreview, setImagePreview] = useState(null);
@@ -24,6 +24,10 @@ const PostInput = () => {
   const textareaRef = useRef(null);
   const fileInputRef = useRef(null);
   const { user, userData } = useAuth();
+  const target = {
+    targetId: userData?.id,
+    targetType: "user",
+  };
   const navigate = useNavigate();
 
   const handleChange = (e) => {
@@ -68,7 +72,7 @@ const PostInput = () => {
         imageUrl = await uploadImage(imageFile);
       }
       const postRef = await firebasePostdb.createPost(
-        { content: value.trim(), image: imageUrl },
+        { content: value.trim(), image: imageUrl, ...target },
         user,
       );
       if (postRef) {

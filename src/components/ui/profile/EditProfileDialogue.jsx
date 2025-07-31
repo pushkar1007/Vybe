@@ -220,10 +220,10 @@ const EditProfileDialogue = () => {
                     w="50px"
                   />
                   <ProfileInput
-                    label="UserName"
+                    label="Username"
                     value={username}
                     onChange={(e) => setUsername(e.target.value)}
-                    w="82px"
+                    w="50px"
                   />
                   <BioInput bio={bio} handleChange={handleChange} />
                   <Field.Root>

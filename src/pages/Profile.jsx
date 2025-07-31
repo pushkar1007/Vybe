@@ -67,7 +67,7 @@ const Profile = () => {
   }, [userData]);
 
   return (
-    <Stack gap={0}>
+    <Stack gap={0} zIndex="0">
       <PageHeader page="profile" data={userData} />
       {userData && (
         <UserDetails data={userData} isOwner={uid === currentUser?.uid} />

@@ -14,7 +14,7 @@ const Header = () => {
       justifyContent="space-between"
       alignItems="center"
       top="0"
-      zIndex="1000"
+      zIndex="1100"
       position="sticky"
       minH="115px"
       maxH="115px"

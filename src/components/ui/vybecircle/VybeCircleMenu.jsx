@@ -1,15 +1,21 @@
-import { Icon, Menu, Portal } from "@chakra-ui/react";
-
+import { Icon, Menu, Portal, Text } from "@chakra-ui/react";
 import { useAuth } from "@/context/AuthContext";
-import { VybeCircleDialog } from "./VybeCircleDialog";
 import { CgMoreVertical } from "react-icons/cg";
-
 import PostDialogue from "../post/PostDialogue";
+import VybeCircleDialog from "./VybeCircleDialog";
+import firebaseVybecirclesdb from "@/firebase/firebase.vybecirclesdb";
+import { useNavigate } from "react-router-dom";
 
-const VybeCircleMenu = ({ vybeCircleData }) => {
-  const { user } = useAuth();
+const VybeCircleMenu = ({ vybeCircleData, onUpdate }) => {
+  const { user, refreshUser } = useAuth();
+  const navigate = useNavigate();
 
-  //the side menu of vybecircle header in vybe circle home page
+  const handleDelete = async () => {
+    await firebaseVybecirclesdb.deleteVybecircle(vybeCircleData.vybecircleId);
+    navigate(-1);
+    refreshUser();
+  }
+
   return (
     <Menu.Root>
       <Menu.Trigger asChild>
@@ -26,14 +32,22 @@ const VybeCircleMenu = ({ vybeCircleData }) => {
       <Portal>
         <Menu.Positioner>
           <Menu.Content>
-            <PostDialogue></PostDialogue>
+            <PostDialogue isVybeCircle />
             <VybeCircleDialog
-              text={"edit"}
+              text={"Edit"}
               user={user}
               styling={{ display: "flex", justifyContent: "start" }}
               vybeCircleData={vybeCircleData}
+              onUpdate={onUpdate}
             />
-            <Menu.Item value="new-win">Exit</Menu.Item>
+            <Text cursor="pointer" pl="4px">
+              Exit
+            </Text>
+            {vybeCircleData.createdBy === user.uid ? (
+              <Text pt={2} color="red" cursor="pointer" pl="4px" onClick={handleDelete}>
+                Delete
+              </Text>
+            ) : null}
           </Menu.Content>
         </Menu.Positioner>
       </Portal>

@@ -3,7 +3,7 @@ import TextareaAutosize from "react-textarea-autosize";
 
 const MAX_CHAR_LIMIT = 550;
 
-const BioInput = ({ bio, handleChange }) => {
+const BioInput = ({ bio, handleChange, isVybCircle }) => {
   return (
     <Box position="relative">
       <Text
@@ -14,11 +14,11 @@ const BioInput = ({ bio, handleChange }) => {
         bg="brand.500"
         zIndex="1"
         h="11px"
-        w="32px"
+        w={isVybCircle ? ("86px") : ("32px")}
         display="flex"
         justifyContent="center"
       >
-        Bio
+        {isVybCircle ? "Description" : "Bio"}
       </Text>
       <TextareaAutosize
         className="bio"

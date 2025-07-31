@@ -7,10 +7,8 @@ import { useNavigate } from "react-router-dom";
 import { FaCrown } from "react-icons/fa";
 import { IoExitOutline } from "react-icons/io5";
 
-//this is a card format of a vybecircle
-
 export const VybeCircleCard = ({ VybeCircleId }) => {
-  const { user } = useAuth();
+  const { user, refreshUser } = useAuth();
   const [circleData, setCircleData] = useState(null);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
@@ -32,6 +30,7 @@ export const VybeCircleCard = ({ VybeCircleId }) => {
     try {
       await firebaseVybecirclesdb.removeUser(user.uid, VybeCircleId);
       await firebaseUserdb.removeVybeCircle(VybeCircleId, user);
+      await refreshUser();
       console.log("exited successfully");
     } catch (error) {
       console.error("error removing user ", error);
@@ -52,12 +51,15 @@ export const VybeCircleCard = ({ VybeCircleId }) => {
       border="1px solid #ed1c5b"
       display="flex"
       flexDirection="column"
+      cursor="pointer"
+      onClick={() => {
+        navigate(`/vybcircles/${VybeCircleId}`);
+      }}
     >
-      {/* Header: 30% */}
       <Box
         bgImage={`url(${
           circleData?.banner ||
-          "https://res.cloudinary.com/dw1ikwae9/image/upload/v1753372126/vybcricle_banner_uevbiz.png"
+          `${process.env.VITE_CLOUDINARY_URL}/v1753372126/vybcricle_banner_uevbiz.png`
         })`}
         h="25%"
         backgroundSize="cover"
@@ -76,19 +78,13 @@ export const VybeCircleCard = ({ VybeCircleId }) => {
           border="1px solid white"
           bg="white"
         />
-        {circleData?.createdBy == user.uid ? <Icon as={FaCrown} /> : null}
+        {circleData?.createdBy == user.uid ? (
+          <Icon color="yellow.600" boxSize={5} as={FaCrown} />
+        ) : null}
       </Box>
 
-      {/* Body: 70% */}
       <Box h="70%" p={4} display="flex" flexDirection="column">
-        <Text
-          cursor={"pointer"}
-          onClick={() => {
-            navigate(`/vybcircles/${VybeCircleId}`);
-          }}
-          fontWeight="bold"
-          fontSize="md"
-        >
+        <Text cursor={"pointer"} fontWeight="bold" fontSize="md">
           {circleData?.name || "Name"}
         </Text>
         <Text fontSize="sm" color="gray.600" mt={1}>
@@ -96,14 +92,16 @@ export const VybeCircleCard = ({ VybeCircleId }) => {
             "a basic description about the vybcircle short and simple"}
         </Text>
 
-        {/* Push the button to the bottom-right */}
-
         <Icon
           as={IoExitOutline}
-          onClick={handleExit}
+          onClick={(e) => {
+            e.stopPropagation();
+            handleExit();
+          }}
           size="lg"
           mt="auto"
           alignSelf="end"
+          cursor="pointer"
         />
       </Box>
     </Box>
