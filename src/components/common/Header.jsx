@@ -1,6 +1,5 @@
 import { Box, HStack, Icon, Image, Stack } from "@chakra-ui/react";
 import LogoIcon from "../icons/LogoIcon";
-import ProfileMenu from "../ui/profile/ProfileMenu";
 import { Link, useNavigate } from "react-router-dom";
 import HamburgerMenu from "./HamburgerMenu";
 import Search from "../ui/primitives/Search";
