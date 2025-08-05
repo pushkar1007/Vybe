@@ -166,6 +166,11 @@ const VybeHighlights = () => {
                   fontSize={{
                     base: "sm",
                   }}
+                  cursor="pointer"
+                  _hover={{ textDecoration: "underline" }}
+                  onClick={() => {
+                    navigate(`/profile/${user.id}`);
+                  }}
                 >
                   {user.handlename || "Anonymous"}
                 </Text>
@@ -181,6 +186,11 @@ const VybeHighlights = () => {
                     base: "xs",
                   }}
                   color="gray.300"
+                  cursor="pointer"
+                  _hover={{ textDecoration: "underline" }}
+                  onClick={() => {
+                    navigate(`/profile/${user.id}`);
+                  }}
                 >
                   @{user.username}
                 </Text>

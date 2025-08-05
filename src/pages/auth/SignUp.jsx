@@ -9,7 +9,7 @@ const SignUp = () => {
       justifyContent="center"
       h="100vh"
       w="100vw"
-      bgImage="url(./images/bg-3.png)"
+      bgImage="url(./images/bg-image.png)"
       bgSize="cover"
     >
       <AuthForm mode="signup" />
