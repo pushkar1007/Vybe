@@ -4,8 +4,9 @@ import { doc, getDoc } from "firebase/firestore";
 import { useParams } from "react-router-dom";
 import { useAuth } from "@/context/AuthContext";
 import firebaseUserdb from "@/firebase/firebase.userdb";
-import Post from "@/components/ui/Post";
-import UserDetails from "@/components/ui/UserDetails";
+import Post from "@/components/ui/post/Post";
+import UserDetails from "@/components/ui/profile/UserDetails";
+import PageHeader from "@/components/common/PageHeader";
 
 const Profile = () => {
   const { uid } = useParams();
@@ -66,9 +67,10 @@ const Profile = () => {
   }, [userData]);
 
   return (
-    <Stack>
+    <Stack gap={0} zIndex="0">
+      <PageHeader page="profile" data={userData} />
       {userData && (
-        <UserDetails userData={userData} isOwner={uid === currentUser?.uid} />
+        <UserDetails data={userData} isOwner={uid === currentUser?.uid} />
       )}
       {loading ? (
         <Spinner alignSelf="center" mt={6} size="lg" />

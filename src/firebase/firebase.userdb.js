@@ -85,7 +85,7 @@ class Firebase {
       console.error("Error in fetching user details:", errorCode, errorMessage);
     }
   }
-  
+
   //updates user credentials like dob, bio, avatar etc
   async updateUserCredentials(fieldName, fieldValue, currentUser) {
     try {
@@ -95,7 +95,14 @@ class Firebase {
       }
 
       // List of allowed string fields to update
-      const allowedFields = ["handlename", "username", "bio", "DOB", "avatar", "banner"]; // you can modify this
+      const allowedFields = [
+        "handlename",
+        "username",
+        "bio",
+        "DOB",
+        "avatar",
+        "banner",
+      ]; // you can modify this
 
       if (!allowedFields.includes(fieldName)) {
         throw new Error(
@@ -275,7 +282,7 @@ class Firebase {
     } catch (error) {
       const errorCode = error.code;
       const errorMessage = error.message;
-      // ❌ Handle error
+      //Handle error
       console.error(
         "Error in adding removing liked posts from user db:",
         errorCode,
@@ -285,28 +292,25 @@ class Firebase {
   }
 
   // adds a vybud
-  async addVybud(userId, currentUser) {
+  async addVybud(userIdToAdd, currentUser) {
     try {
-      if (!currentUser) {
-        throw new Error("User not authenticated.");
+      if (!currentUser || !currentUser.id) {
+        throw new Error("User not authenticated or invalid user object.");
       }
 
-      // Get references
-      const userRef = doc(this.db, "users", currentUser.uid);
-      const vybudRef = doc(this.db, "vybuds", userId); // This is your DocumentReference
+      const userRef = doc(this.db, "users", currentUser.id);
 
-      // Update the array field atomically
       await updateDoc(userRef, {
-        vybuds: arrayUnion(vybudRef),
+        vybuds: arrayUnion(userIdToAdd),
       });
+
+      console.log(
+        `✅ Successfully added vybud ${userIdToAdd} to ${currentUser.id}`,
+      );
     } catch (error) {
-      const errorCode = error.code;
-      const errorMessage = error.message;
-      // ❌ Handle error
       console.error(
-        "Error in adding vybud to user db:",
-        errorCode,
-        errorMessage,
+        "❌ Error in addVybud():",
+        error.stack || error.message || error,
       );
     }
   }
@@ -314,27 +318,29 @@ class Firebase {
   //removes a vybud
   async removeVyBud(userId, currentUser) {
     try {
-      if (!currentUser) {
-        throw new Error("User not authenticated.");
+      if (!currentUser || (!currentUser.uid && !currentUser.id)) {
+        throw new Error("Invalid currentUser object.");
       }
 
-      // Get references
-      const userRef = doc(this.db, "users", currentUser.uid);
-      const vybudRef = doc(this.db, "vybuds", userId); // This is your DocumentReference
+      if (!userId) {
+        throw new Error("User ID to remove is undefined.");
+      }
 
-      // Update the array field atomically
+      const userRef = doc(this.db, "users", currentUser.uid || currentUser.id);
+
       await updateDoc(userRef, {
-        vybuds: arrayRemove(vybudRef),
+        vybuds: arrayRemove(userId),
       });
-    } catch (error) {
-      const errorCode = error.code;
-      const errorMessage = error.message;
-      // ❌ Handle error
-      console.error(
-        "Error in removing vybud to user db:",
-        errorCode,
-        errorMessage,
+
+      console.log(
+        `✅ Successfully removed ${userId} from ${currentUser.uid || currentUser.id}'s vybuds.`,
       );
+    } catch (error) {
+      console.error(
+        "🔥 Error in removeVyBud():",
+        error?.stack || error?.message || error,
+      );
+      throw error; // 👈 Rethrow so the calling function can catch it
     }
   }
 
@@ -445,8 +451,6 @@ class Firebase {
       );
     }
   }
-
-  
 }
 
 export default new Firebase();

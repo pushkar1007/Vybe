@@ -1,11 +1,14 @@
-import { Box, HStack, Icon, Stack } from "@chakra-ui/react";
+import { Box, HStack, Icon, Image, Stack } from "@chakra-ui/react";
 import LogoIcon from "../icons/LogoIcon";
-import ProfileMenu from "../ui/ProfileMenu";
-import { Link } from "react-router-dom";
+import ProfileMenu from "../ui/profile/ProfileMenu";
+import { Link, useNavigate } from "react-router-dom";
 import HamburgerMenu from "./HamburgerMenu";
-import Search from "../ui/Search";
+import Search from "../ui/primitives/Search";
+import { useAuth } from "@/context/AuthContext";
 
 const Header = () => {
+  const { userData } = useAuth();
+  const navigate = useNavigate();
 
   return (
     <HStack
@@ -15,7 +18,7 @@ const Header = () => {
       justifyContent="space-between"
       alignItems="center"
       top="0"
-      zIndex="1000"
+      zIndex="1100"
       position="sticky"
       minH="115px"
       maxH="115px"
@@ -62,10 +65,15 @@ const Header = () => {
         alignItems="end"
         position="relative"
       >
-        <Search />
-        <Box cursor="pointer" rounded="full" minW="50px" w="50px" h="50px">
-          <ProfileMenu />
-        </Box>
+        <Search scope="all" />
+        <Image
+          src={userData.avatar || "/images/profilepic.png"}
+          alt="Profile"
+          boxSize="50px"
+          rounded="full"
+          cursor="pointer"
+          onClick={() => navigate(`/profile/${userData.id}`)}
+        />
       </HStack>
     </HStack>
   );

@@ -1,19 +1,21 @@
-import { Box, Stack } from "@chakra-ui/react";
+import { Box, Icon, Stack } from "@chakra-ui/react";
 import { AiFillHome } from "react-icons/ai";
 import { MdNotifications } from "react-icons/md";
 import { LuSearch } from "react-icons/lu";
 import { TbUserFilled } from "react-icons/tb";
 import VyBudsIcon from "../icons/VyBudsIcon";
 import VybCirclesIcon from "../icons/VybCirclesIcon";
-import RenderLink from "../ui/RenderLink";
-import SpinnerBtn from "../ui/SpinnerBtn";
-import { Link } from "react-router-dom";
+import RenderLink from "../ui/primitives/RenderLink";
+import SpinnerBtn from "../ui/primitives/SpinnerBtn";
+import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
-import PostDialogue from "../ui/PostDialogue";
+import PostDialogue from "../ui/post/PostDialogue";
+import LogoIcon from "../icons/LogoIcon";
+import MobileLogoIcon from "../icons/MobileLogoIcon";
 
-const SideMenu = () => {
-
+const SideMenu = ({ shouldHideHeader }) => {
   const { user } = useAuth();
+  const navigate = useNavigate();
 
   const sideMenuLinks = [
     {
@@ -75,6 +77,44 @@ const SideMenu = () => {
       py={4}
       overflow="hidden"
     >
+      {shouldHideHeader && (
+        <Box mb="20px">
+          <Icon
+            as={LogoIcon}
+            h="63px"
+            w="100px"
+            color="brand.300"
+            cursor="pointer"
+            display={{
+              base: "none",
+              lg: "block",
+            }}
+            mr={{
+              base: 0,
+              md: 0,
+              lg: "40px",
+              lgx: "55px",
+              xl: "70px",
+            }}
+            mt="10px"
+            onClick={() => navigate("/")}
+          />
+          <Icon
+            as={MobileLogoIcon}
+            h="50px"
+            w="60px"
+            color="brand.300"
+            cursor="pointer"
+            mt="10px"
+            mr="32px"
+            display={{
+              base: "none",
+              md: "block",
+              lg: "none",
+            }}
+          />
+        </Box>
+      )}
       <Box
         mr={{
           base: 0,

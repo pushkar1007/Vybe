@@ -10,19 +10,26 @@ import VybCircles from "./pages/VybCircles";
 import Profile from "./pages/Profile";
 import VybeHighlights from "./components/common/VybeHighlights";
 import ProtectedRoute from "./components/common/ProtectedRoute";
-import Auth from "./pages/Auth";
+import Auth from "./pages/auth/Auth";
 import { useAuth } from "./context/AuthContext";
-import SignUp from "./pages/SignUp";
-import Login from "./pages/Login";
+import SignUp from "./pages/auth/SignUp";
+import Login from "./pages/auth/Login";
+import ChatRoom from "./pages/dm/ChatRoom";
+import { useEffect } from "react";
+import { initPresence } from "./firebase/firebase.presence";
+import { PostInterface } from "./components/ui/post/PostInterface";
+import { VybeCircleHome } from "./components/ui/vybecircle/VybeCircleHome";
 
 function App() {
   const { user } = useAuth();
   const location = useLocation();
 
   const hideVybeHighlights = ["/explore"];
+  const hideHeader = ["/vybuds", "/vybcircles"];
   const shouldHideVybeHighlights = hideVybeHighlights.includes(
     location.pathname,
   );
+  const shouldHideHeader = hideHeader.includes(location.pathname);
 
   const isAuthPage = ["/auth", "/signup", "/login"].includes(location.pathname);
 
@@ -37,14 +44,19 @@ function App() {
         <Route path="/signup" element={<SignUp />} />
         <Route path="/login" element={<Login />} />
         <Route path="*" element={<Navigate to="/auth" replace />} />
+        <Route path="/chat-room" element={<ChatRoom />} />
       </Routes>
     );
   }
 
+  useEffect(() => {
+    initPresence();
+  }, []);
+
   return (
     <>
       <VStack h="100vh" gap="0">
-        <Header />
+        {!shouldHideHeader && <Header />}
         <HStack
           alignItems="start"
           justifyContent="space-between"
@@ -68,7 +80,7 @@ function App() {
             }}
             h="full"
           >
-            <SideMenu />
+            <SideMenu shouldHideHeader={shouldHideHeader} />
           </Box>
           <Box
             flex="1"
@@ -128,10 +140,37 @@ function App() {
                 }
               />
               <Route
+                path="/vybcircles/:vybecircleId"
+                element={
+                  <ProtectedRoute>
+                    <VybeCircleHome />
+                  </ProtectedRoute>
+                }
+              />
+
+              <Route
+                path="/chat-room/:roomId"
+                element={
+                  <ProtectedRoute>
+                    <ChatRoom />
+                  </ProtectedRoute>
+                }
+              />
+
+              <Route
                 path="/profile/:uid"
                 element={
                   <ProtectedRoute>
                     <Profile />
+                  </ProtectedRoute>
+                }
+              />
+
+              <Route
+                path="/post/:postId"
+                element={
+                  <ProtectedRoute>
+                    <PostInterface />
                   </ProtectedRoute>
                 }
               />

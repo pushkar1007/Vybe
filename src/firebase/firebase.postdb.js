@@ -26,13 +26,15 @@ class Firebase {
     this.db = getFirestore(this.app);
   }
 
-  async createPost({ content, image }, currentUser) {
+  async createPost({ content, image, targetId, targetType }, currentUser) {
     try {
       const postRef = await addDoc(collection(this.db, "posts"), {
         content,
         image: image ? image : "",
         likes: [],
         comments: [],
+        targetId,
+        targetType,
         createdBy: currentUser.uid,
         createdAt: String(Date.now()),
         updatedAt: null,
@@ -84,7 +86,7 @@ class Firebase {
       const postRef = doc(this.db, "posts", postId);
       const snap = await getDoc(postRef);
       if (snap.exists()) {
-        return { id: snap.id, ...snap.data };
+        return { id: snap.id, ...snap.data() };
       } else {
         return null;
       }
@@ -110,12 +112,15 @@ class Firebase {
     }
   }
 
-  listenToPosts(callback) {
+  listenToPosts(callback, filter) {
     try {
-      const postsQuery = query(
-        collection(this.db, "posts"),
-        orderBy("createdAt", "desc"),
-      );
+      let postsQuery;
+      if (!filter) {
+        postsQuery = query(
+          collection(this.db, "posts"),
+          orderBy("createdAt", "desc"),
+        );
+      } else postsQuery = filter;
 
       const unsubscribe = onSnapshot(postsQuery, (snapshot) => {
         const posts = snapshot.docs.map((doc) => ({
@@ -130,6 +135,23 @@ class Firebase {
       const errorCode = error.code;
       const errorMessage = error.message;
       console.error("Error listening to posts:", errorCode, errorMessage);
+      return () => {};
+    }
+  }
+
+  listenToPost(postId, callback) {
+    try {
+      const postRef = doc(this.db, "posts", postId);
+      const unsubscribe = onSnapshot(postRef, (docSnap) => {
+        if (docSnap.exists()) {
+          callback({ id: docSnap.id, ...docSnap.data() });
+        }
+      });
+      return unsubscribe;
+    } catch (error) {
+      const errorCode = error.code;
+      const errorMessage = error.message;
+      console.error("Error listening to post:", errorCode, errorMessage);
       return () => {};
     }
   }

@@ -12,7 +12,7 @@ import {
 import PostSelect from "./PostSelect";
 import TextareaAutosize from "react-textarea-autosize";
 import { useRef, useState } from "react";
-import SpinnerBtn from "./SpinnerBtn";
+import SpinnerBtn from "../primitives/SpinnerBtn";
 import { LuImage } from "react-icons/lu";
 import { HiOutlineEmojiHappy } from "react-icons/hi";
 import { useAuth } from "@/context/AuthContext";
@@ -21,10 +21,11 @@ import { uploadImage } from "@/utils/uploadImage";
 import { toast } from "react-toastify";
 import firebaseUserdb from "@/firebase/firebase.userdb";
 import firebasePostdb from "@/firebase/firebase.postdb";
+import ProfileIcon from "@/components/icons/ProfileIcon";
 
-const MAX_CHAR_LIMIT = 550;
+const MAX_CHAR_LIMIT = 1000;
 
-const PostDialogue = () => {
+const PostDialogue = ({isVybeCircle}) => {
   const [value, setValue] = useState("");
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
   const [imagePreview, setImagePreview] = useState(null);
@@ -33,7 +34,10 @@ const PostDialogue = () => {
   const textareaRef = useRef(null);
   const fileInputRef = useRef(null);
   const { user, userData } = useAuth();
-
+  const [target, setTarget] = useState({
+    targetId: userData?.id,
+    targetType: "user",
+  });
   const handleChange = (e) => {
     const newValue = e.target.value;
     if (newValue.length <= MAX_CHAR_LIMIT) {
@@ -76,7 +80,7 @@ const PostDialogue = () => {
         imageUrl = await uploadImage(imageFile);
       }
       const postRef = await firebasePostdb.createPost(
-        { content: value.trim(), image: imageUrl },
+        { content: value.trim(), image: imageUrl, ...target },
         user,
       );
       if (postRef) {
@@ -100,7 +104,7 @@ const PostDialogue = () => {
     setImagePreview(null);
     setImageFile(null);
     setShowEmojiPicker(false);
-  }
+  };
 
   const style = `
     .vybe-textarea::placeholder {
@@ -112,32 +116,34 @@ const PostDialogue = () => {
   return (
     <Dialog.Root closeOnInteractOutside={false}>
       <Dialog.Trigger asChild>
-        <Button
-          bg="brand.400"
-          color="brand.200"
-          boxShadow="4px 8px 4px rgba(0,0,0,0.1)"
-          mt="12px"
-          fontSize="16px"
-          fontWeight="bold"
-          rounded="full"
-          height="4opx"
-          width={{
-            base: "138px",
-            md: "90px",
-            lg: "120px",
-            lgx: "120px",
-            xl: "138px",
-          }}
-          mr={{
-            base: "50px",
-            md: "10px",
-            lg: "40px",
-            lgx: "40px",
-            xl: "50px",
-          }}
-        >
-          Post
-        </Button>
+        {isVybeCircle ? <Text pl={1} cursor="pointer">Post</Text> : (
+          <Button
+            bg="brand.400"
+            color="brand.200"
+            boxShadow="4px 8px 4px rgba(0,0,0,0.1)"
+            mt="12px"
+            fontSize="16px"
+            fontWeight="bold"
+            rounded="full"
+            height="4opx"
+            width={{
+              base: "138px",
+              md: "90px",
+              lg: "120px",
+              lgx: "120px",
+              xl: "138px",
+            }}
+            mr={{
+              base: "50px",
+              md: "10px",
+              lg: "40px",
+              lgx: "40px",
+              xl: "50px",
+            }}
+          >
+            Post
+          </Button>
+        )}
       </Dialog.Trigger>
       <Portal>
         <style>{style}</style>
@@ -185,7 +191,7 @@ const PostDialogue = () => {
                     </Box>
                   )}
                   <Stack flex="1">
-                    <PostSelect />
+                    <PostSelect targetSetter={setTarget} />
                     <Box position="relative" w="100%">
                       <TextareaAutosize
                         className="vybe-textarea"

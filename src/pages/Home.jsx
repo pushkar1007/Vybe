@@ -1,9 +1,7 @@
-import PostFeed from "@/components/ui/PostFeed";
+import PostFeed from "@/components/ui/post/PostFeed";
 
 const Home = () => {
-    return (
-        <PostFeed />
-    );
-}
+  return <PostFeed />;
+};
 
 export default Home;

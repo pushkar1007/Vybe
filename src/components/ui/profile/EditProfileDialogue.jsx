@@ -10,9 +10,9 @@ import {
   Field,
   Icon,
 } from "@chakra-ui/react";
-import SpinnerBtn from "./SpinnerBtn";
+import SpinnerBtn from "../primitives/SpinnerBtn";
 import { useAuth } from "@/context/AuthContext";
-import ProfileIcon from "../icons/ProfileIcon";
+import ProfileIcon from "../../icons/ProfileIcon";
 import ProfileInput from "./ProfileInput";
 import { useEffect, useRef, useState } from "react";
 import firebaseUserdb from "@/firebase/firebase.userdb";
@@ -220,10 +220,10 @@ const EditProfileDialogue = () => {
                     w="50px"
                   />
                   <ProfileInput
-                    label="UserName"
+                    label="Username"
                     value={username}
                     onChange={(e) => setUsername(e.target.value)}
-                    w="82px"
+                    w="50px"
                   />
                   <BioInput bio={bio} handleChange={handleChange} />
                   <Field.Root>

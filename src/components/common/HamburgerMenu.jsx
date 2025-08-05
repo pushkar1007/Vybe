@@ -7,10 +7,13 @@ import { LuSearch } from "react-icons/lu";
 import { MdNotifications } from "react-icons/md";
 import { AiFillHome } from "react-icons/ai";
 import { Link } from "react-router-dom";
-import RenderLink from "../ui/RenderLink";
-import { useRef } from "react";
+import RenderLink from "../ui/primitives/RenderLink";
+import { useRef, useState } from "react";
+import { useAuth } from "@/context/AuthContext";
 
 const HamburgerMenu = () => {
+  const { user } = useAuth();
+  const [open, setOpen] = useState(false);
   const navLinks = [
     {
       icon: AiFillHome,
@@ -45,23 +48,23 @@ const HamburgerMenu = () => {
     {
       icon: TbUserFilled,
       text: "Profile",
-      link: "/profile",
+      link: `/profile/${user.uid}`,
       key: "ProfileMobile",
     },
   ];
 
-    const menuRef = useRef(null);
-    
-    const handleClose = () => {
-        if (Drawer.ref) {
-            menuRef.current.close();
-        }
+  const menuRef = useRef(null);
+
+  const handleClose = () => {
+    if (Drawer.ref) {
+      menuRef.current.close();
     }
-    
+  };
+
   return (
-    <Drawer.Root placement="start" closeOnInteractOutside={false}>
+    <Drawer.Root placement="start" open={open} onOpenChange={(e) => setOpen(e.open)} closeOnInteractOutside={false}>
       <Drawer.Trigger asChild>
-        <Icon as={MobileLogoIcon} size="2xl" color="brand.300" />
+        <Icon as={MobileLogoIcon} h="50px" w="60px" color="brand.300" />
       </Drawer.Trigger>
       <Portal>
         <Drawer.Backdrop />
@@ -70,14 +73,22 @@ const HamburgerMenu = () => {
             <Drawer.Body mt="60px">
               <Box>
                 {navLinks.map((navLink) => (
-                  <Link to={navLink.link} key={navLink.key} onClick={handleClose}>
-                    <RenderLink text={navLink.text} icon={navLink.icon} />
+                  <Link
+                    to={navLink.link}
+                    key={navLink.key}
+                    onClick={handleClose}
+                  >
+                    <RenderLink onClick={(e) => setOpen(false)} text={navLink.text} icon={navLink.icon} />
                   </Link>
                 ))}
               </Box>
             </Drawer.Body>
             <Drawer.CloseTrigger asChild>
-              <CloseButton size="xl" color="brand.400" _hover={{bg: "transparent"}} />
+              <CloseButton
+                size="xl"
+                color="brand.400"
+                _hover={{ bg: "transparent" }}
+              />
             </Drawer.CloseTrigger>
           </Drawer.Content>
         </Drawer.Positioner>

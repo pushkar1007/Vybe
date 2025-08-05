@@ -1,6 +1,22 @@
-import { Box, Heading, Stack } from "@chakra-ui/react";
+import firebaseExplore from "@/firebase/firebase.explore";
+import { Box, Heading, HStack, Image, Stack, Text, VStack } from "@chakra-ui/react";
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 const VybeHighlights = () => {
+  const [trendingWords, setTrendingWords] = useState([]);
+  const [randomUsers, setRandomUsers] = useState([]);
+  const navigate = useNavigate();
+  let limit = 5;
+
+  useEffect(() => {
+    async function fetchData() {
+      setTrendingWords(await firebaseExplore.getTrendingKeywords(limit));
+      setRandomUsers(await firebaseExplore.getRandomUsers(limit = 3));
+    }
+    fetchData();
+  }, []);
+
   return (
     <Stack
       bg="brand.500"
@@ -25,6 +41,7 @@ const VybeHighlights = () => {
     >
       <Box
         w="70%"
+        maxH="260px"
         css={{
           "@media (max-height: 700px)": {
             height: "200px",
@@ -37,6 +54,7 @@ const VybeHighlights = () => {
         borderRadius="12px"
         p="16px"
         mt="20px"
+        spaceY={4}
       >
         <Heading
           fontSize={{
@@ -49,9 +67,28 @@ const VybeHighlights = () => {
         >
           Hot Vybes
         </Heading>
+        <Stack spacing={2} wrap="wrap">
+          {trendingWords.map(({ word }) => (
+            <Text
+              key={word}
+              fontSize={{
+                base: "sm",
+                md: "md",
+                lg: "lg",
+                lgx: "xl",
+                xl: "xl",
+              }}
+              variant="solid"
+              colorScheme="purple"
+            >
+              #{word}
+            </Text>
+          ))}
+        </Stack>
       </Box>
       <Box
         w="70%"
+        maxH="250px"
         css={{
           "@media (max-height: 700px)": {
             height: "200px",
@@ -64,6 +101,7 @@ const VybeHighlights = () => {
         borderRadius="12px"
         p="16px"
         mt="20px"
+        spaceY={4}
       >
         <Heading
           fontSize={{
@@ -76,6 +114,80 @@ const VybeHighlights = () => {
         >
           VybeRadar
         </Heading>
+        <Stack spaceY={2}>
+          {randomUsers.map((user) => (
+            <HStack
+              key={user.id}
+              spaceX={{
+                xl: "8px",
+              }}
+              borderWidth="1px"
+              borderRadius="lg"
+              borderColor="brand.500"
+            >
+              <Image
+                src={user.avatar || "/images/profilepic.png"}
+                h={{
+                  base: "30px",
+                  md: "40px",
+                  lg: "40px",
+                }}
+                minH={{
+                  base: "30px",
+                  md: "40px",
+                  lg: "40px",
+                }}
+                w={{
+                  base: "30px",
+                  md: "40px",
+                  lg: "40px",
+                }}
+                minW={{
+                  base: "30px",
+                  md: "40px",
+                  lg: "40px",
+                }}
+                alt="profile-picture"
+                rounded="full"
+                cursor="pointer"
+                onClick={() => {
+                  navigate(`/profile/${user.id}`);
+                }}
+              />
+              <Stack gap={0}>
+                <Text
+                  whiteSpace="nowrap"
+                  overflow="hidden"
+                  textOverflow="ellipsis"
+                  maxW={{
+                    base: "60px",
+                    xl: "180px",
+                  }}
+                  fontSize={{
+                    base: "sm",
+                  }}
+                >
+                  {user.handlename || "Anonymous"}
+                </Text>
+                <Text
+                  whiteSpace="nowrap"
+                  overflow="hidden"
+                  textOverflow="ellipsis"
+                  maxW={{
+                    base: "60px",
+                    xl: "180px",
+                  }}
+                  fontSize={{
+                    base: "xs",
+                  }}
+                  color="gray.300"
+                >
+                  @{user.username}
+                </Text>
+              </Stack>
+            </HStack>
+          ))}
+        </Stack>
       </Box>
     </Stack>
   );

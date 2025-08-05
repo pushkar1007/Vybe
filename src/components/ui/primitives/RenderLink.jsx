@@ -1,10 +1,11 @@
 import { HStack, Icon, Text } from "@chakra-ui/react";
 
-const RenderLink = ({ text, icon }) => {
+const RenderLink = ({ text, icon, onClick }) => {
   return (
     <HStack
       key={text}
       px="4"
+      onClick={onClick ? onClick : null}
       css={{
         "@media (max-height: 650px)": {
           marginY: "10px",
