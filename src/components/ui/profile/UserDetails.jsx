@@ -141,7 +141,7 @@ const UserDetails = ({ data, isOwner }) => {
       </Box>
 
       <Box
-        border="1px solid #000000"
+        border={data?.avatar ? "1px solid #000000" : "none"}
         rounded="full"
         h="100px"
         w="100px"
@@ -150,16 +150,12 @@ const UserDetails = ({ data, isOwner }) => {
         top="110px"
         left="20px"
       >
-        {data?.avatar ? (
-          <Image
-            src={data.avatar}
-            alt="Profile"
-            boxSize="100px"
-            rounded="full"
-          />
-        ) : (
-          <Image as={ProfileIcon} />
-        )}
+        <Image
+          src={data.avatar || "/images/profilepic.png"}
+          alt="Profile"
+          boxSize="100px"
+          rounded="full"
+        />
       </Box>
 
       <HStack

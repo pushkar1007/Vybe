@@ -7,7 +7,7 @@ import { useNavigate } from "react-router-dom";
 import { FaCrown } from "react-icons/fa";
 import { IoExitOutline } from "react-icons/io5";
 
-export const VybeCircleCard = ({ VybeCircleId }) => {
+export const VybeCircleCard = ({ VybeCircleId, isExplore }) => {
   const { user, refreshUser } = useAuth();
   const [circleData, setCircleData] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -92,17 +92,19 @@ export const VybeCircleCard = ({ VybeCircleId }) => {
             "a basic description about the vybcircle short and simple"}
         </Text>
 
-        <Icon
-          as={IoExitOutline}
-          onClick={(e) => {
-            e.stopPropagation();
-            handleExit();
-          }}
-          size="lg"
-          mt="auto"
-          alignSelf="end"
-          cursor="pointer"
-        />
+        {!isExplore && (
+          <Icon
+            as={IoExitOutline}
+            onClick={(e) => {
+              e.stopPropagation();
+              handleExit();
+            }}
+            size="lg"
+            mt="auto"
+            alignSelf="end"
+            cursor="pointer"
+          />
+        )}
       </Box>
     </Box>
   );

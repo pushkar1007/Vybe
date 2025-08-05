@@ -69,7 +69,7 @@ export const VybeCircleHome = () => {
         <HStack
           bgImage={`url(${
             circleData?.banner ||
-            `${process.env.VITE_CLOUDINARY_URL}/upload/v1753372126/vybcricle_banner_uevbiz.png`
+            `${import.meta.env.VITE_CLOUDINARY_URL}/upload/v1753372126/vybcricle_banner_uevbiz.png`
           })`}
           bgRepeat="no-repeat"
           backgroundPosition="center"
@@ -104,6 +104,7 @@ export const VybeCircleHome = () => {
           </Stack>
           <VybeCircleMenu
             vybeCircleData={circleData}
+            setVybeCircleData={setCircleData}
             onUpdate={fetchCircleData}
           />
         </HStack>

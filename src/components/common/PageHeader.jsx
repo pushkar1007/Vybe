@@ -28,7 +28,7 @@ const PageHeader = ({ page,data }) => {
           />
         )}
         <Stack gap={0}>
-          <Heading>{page == "profile" ? data?.handlename : page}</Heading>
+          <Heading>{page == "profile" ? (data?.handlename || "Anonymous") : page}</Heading>
           {page == "profile" ? (
             <Text fontSize="sm">
               {data?.createdPosts?.length ?? 0} Post
