@@ -89,6 +89,7 @@ const VyBudCard = ({ vybud, onRemove }) => {
             src={vybud.avatar}
             alt="Profile"
             boxSize="40px"
+            minW="40px"
             rounded="full"
             cursor="pointer"
             onClick={() => navigate(`/profile/${vybud.id}`)}
@@ -115,6 +116,13 @@ const VyBudCard = ({ vybud, onRemove }) => {
             <Heading
               _hover={{ textDecoration: "underline" }}
               cursor="pointer"
+              fontSize={{
+                base: "16px",
+                md: "20px",
+              }}
+              whiteSpace="nowrap"
+              overflow="hidden"
+              textOverflow="ellipsis"
               onClick={() => navigate(`/profile/${vybud.id}`)}
             >
               {vybud.handlename}
@@ -122,6 +130,13 @@ const VyBudCard = ({ vybud, onRemove }) => {
             <Text
               _hover={{ textDecoration: "underline" }}
               cursor="pointer"
+              fontSize={{
+                base: "12px",
+                md: "16px",
+              }}
+              whiteSpace="nowrap"
+              overflow="hidden"
+              textOverflow="ellipsis"
               onClick={() => navigate(`/profile/${vybud.id}`)}
             >
               @{vybud.username}

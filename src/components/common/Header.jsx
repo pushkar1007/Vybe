@@ -66,7 +66,7 @@ const Header = () => {
       >
         <Search scope="all" />
         <Image
-          src={userData.avatar || "/images/profilepic.png"}
+          src={userData?.avatar || "/images/profilepic.png"}
           alt="Profile"
           boxSize="50px"
           rounded="full"

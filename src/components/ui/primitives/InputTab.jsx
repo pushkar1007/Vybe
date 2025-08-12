@@ -1,8 +1,8 @@
-import { Input, InputGroup } from "@chakra-ui/react";
+import { Input, InputGroup, Stack } from "@chakra-ui/react";
 
 export const InputTab = ({startElement, ...props}) => {
   return (
-    <>
+    <Stack w="100%">
       <InputGroup flex="1" startElement={startElement}>
         <Input
           variant="unstyled"
@@ -22,7 +22,7 @@ export const InputTab = ({startElement, ...props}) => {
           {...props}
         />
       </InputGroup>
-    </>
+    </Stack>
   );
 };
 

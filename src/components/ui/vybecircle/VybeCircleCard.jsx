@@ -103,6 +103,7 @@ export const VybeCircleCard = ({ VybeCircleId, isExplore }) => {
             mt="auto"
             alignSelf="end"
             cursor="pointer"
+            color="brand.500"
           />
         )}
       </Box>

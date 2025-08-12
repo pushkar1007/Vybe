@@ -103,7 +103,7 @@ const EditProfileDialogue = () => {
       <Portal>
         <style>{style}</style>
         <Dialog.Backdrop />
-        <Dialog.Positioner>
+        <Dialog.Positioner w="90%" ml="3%" alignItems="center">
           <Dialog.Content bg="brand.500">
             <Dialog.Header justifyContent="space-between" px={7} my={4}>
               <Dialog.Title fontSize="2xl" color="brand.400">

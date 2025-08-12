@@ -10,7 +10,6 @@ const SignUp = () => {
       h="100vh"
       w="100vw"
       bgImage="url(./images/bg-image.png)"
-      bgSize="cover"
     >
       <AuthForm mode="signup" />
     </Stack>

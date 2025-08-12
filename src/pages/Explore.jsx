@@ -28,7 +28,7 @@ const Explore = () => {
           <Heading size="lg" mb={2}>
             Top Vybecircles
           </Heading>
-          <HStack overflowX="auto" justifyContent="space-between">
+          <HStack overflowX="auto" display="grid" gridTemplateColumns="repeat(auto-fit, minmax(250px,1fr))" gapY={4} justifyContent="space-between">
             {topCircles.map((circle) => (
               <VybeCircleCard
                 key={circle.id}
@@ -39,8 +39,14 @@ const Explore = () => {
           </HStack>
         </Box>
 
-        <Box display="flex" justifyContent="space-between">
-          <Box p={6} w="30%" rounded={16} spaceY={4} border="1px solid #1D4ED8">
+        <Box display="flex" flexDirection={{
+          base: "column",
+          md: "row"
+        }} gap={{base: 6, md: 0}} justifyContent="space-between">
+          <Box p={6} w={{
+            base: "80%",
+            md: "30%",
+          }} rounded={16} spaceY={4} border="1px solid #1D4ED8">
             <Heading size="lg" mb={2}>
               Hot Vybes
             </Heading>
@@ -71,7 +77,7 @@ const Explore = () => {
                   }}
                 >
                   <Image
-                    src={user.avatar || "/images/profilepic.png"}
+                    src={user?.avatar || "/images/profilepic.png"}
                     h="50px"
                     w="50px"
                     alt="profile-picture"

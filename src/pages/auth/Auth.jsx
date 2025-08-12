@@ -1,6 +1,14 @@
 import SpinnerBtn from "@/components/ui/primitives/SpinnerBtn";
 import LogoIcon from "../../components/icons/LogoIcon";
-import { Heading, HStack, Icon, Stack, Text, VStack } from "@chakra-ui/react";
+import {
+  Center,
+  Heading,
+  HStack,
+  Icon,
+  Stack,
+  Text,
+  VStack,
+} from "@chakra-ui/react";
 
 const Auth = () => {
   const buttonDetails = [
@@ -28,15 +36,27 @@ const Auth = () => {
         boxShadow="12px 12px 4px rgba(0,0,0,0.1)"
         display={{
           base: "none",
-          md: "flex"
+          md: "flex",
         }}
       >
         <Icon as={LogoIcon} h="120px" w="275px" color="brand.200" />
       </Stack>
-      <VStack p="100px" w={{
-        base: "100%",
-        md: "50%"
-      }} h="100vh">
+      <VStack
+        p={{
+          base: "30px",
+          md: "100px",
+        }}
+        pt={{
+          base: "100px",
+          md: "none",
+        }}
+        w={{
+          base: "100%",
+          md: "50%",
+        }}
+        
+        h="100vh"
+      >
         <Heading
           fontSize="64px"
           fontWeight="bold"
@@ -48,7 +68,13 @@ const Auth = () => {
         >
           Your Tribe Your Vybe
         </Heading>
-        <VStack w="100%" gap="40px" my="auto" alignItems="center" justifyContent="center">
+        <VStack
+          w="100%"
+          gap="40px"
+          my="auto"
+          alignItems="center"
+          justifyContent="center"
+        >
           {buttonDetails.map((detail) => (
             <VStack key={detail.text}>
               <Text color="brand.400" fontSize="20px" fontWeight="bold">

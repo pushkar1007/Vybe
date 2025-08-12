@@ -158,9 +158,9 @@ export const VybeCircleDialog = ({
           {`.vybe-textarea::placeholder { color: white; opacity: 0.7; }`}
         </style>
 
-        <Dialog.Positioner>
+        <Dialog.Positioner w="90%" ml="5%" alignItems="center">
           <Dialog.Backdrop />
-          <Dialog.Content w="100%">
+          <Dialog.Content bg="brand.500">
             <Box
               bg="#EF5D60"
               color="white"
