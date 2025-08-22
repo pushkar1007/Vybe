@@ -37,13 +37,13 @@ const Comment = ({ comment }) => {
       alignItems="start"
     >
       <Image
-        src={commentUser.avatar || "/images/profilepic.png"}
+        src={commentUser?.avatar || "/images/profilepic.png"}
         h="50px"
         w="50px"
         alt="profile-picture"
         rounded="full"
         cursor="pointer"
-        onClick={() => navigate(`/profile/${commentUser.id}`)}
+        onClick={() => navigate(`/profile/${commentUser?.id}`)}
       />
       <Stack flex={1}>
         <HStack justifyContent="space-between" w="100%">
@@ -55,7 +55,7 @@ const Comment = ({ comment }) => {
               textOverflow="ellipsis"
               _hover={{ textDecoration: "underline" }}
               cursor="pointer"
-              onClick={() => navigate(`/profile/${creator.id}`)}
+              onClick={() => navigate(`/profile/${commentUser?.id}`)}
             >
               {commentUser.handlename || "Anonymous"}
             </Heading>
@@ -68,7 +68,7 @@ const Comment = ({ comment }) => {
               maxW="130px"
               cursor="pointer"
               _hover={{ textDecoration: "underline" }}
-              onClick={() => navigate(`/profile/${creator.id}`)}
+              onClick={() => navigate(`/profile/${commentUser?.id}`)}
             >
               @{commentUser.username || "user"}
             </Text>

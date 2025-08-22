@@ -8,9 +8,14 @@ export default defineConfig({
   base: "/",
   resolve: {
     alias: {
-      '@': path.resolve(__dirname, 'src')
-    }
-  },server:{
-    open:true,
-  }
-})
+      "@": path.resolve(__dirname, "src"),
+    },
+  },
+  server: {
+    open: true,
+    headers: {
+      "Content-Security-Policy": "frame-ancestors 'none';",
+      "X-Frame-Options": "DENY",
+    },
+  },
+});
